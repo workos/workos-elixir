@@ -1,3 +1,5 @@
+Note: this SDK is currently in beta and breaking changes may occur. Please create an issue if you come across a bug.
+
 # workos-elixir
 
 WorkOS official Elixir package for interacting with WorkOS APIs
