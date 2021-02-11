@@ -14,7 +14,7 @@ defmodule WorkOS.Api do
         {"Authorization", "Bearer " <> WorkOS.api_key(opts)}
       ]}
     ]
-    Tesla.client(middleware)
+    Tesla.client(middleware, WorkOS.adapter)
   end
 
   @doc """

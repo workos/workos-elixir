@@ -12,13 +12,15 @@ defmodule WorkOS.MixProject do
       package: package(),
       deps: deps(),
       source_url: "https://github.com/workos-inc/workos-elixir/",
-      homepage_url: "https://workos.com"
+      homepage_url: "https://workos.com",
+      docs: docs()
     ]
   end
 
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: [:logger],
+      env: env()
     ]
   end
 
@@ -26,7 +28,8 @@ defmodule WorkOS.MixProject do
     [
       {:tesla, "~> 1.4"},
       {:hackney, "~> 1.16.0"},
-      {:jason, ">= 1.0.0"}
+      {:jason, ">= 1.0.0"},
+      {:ex_doc, "~> 0.23", only: :dev, runtime: false},
     ]
   end
 
@@ -36,13 +39,27 @@ defmodule WorkOS.MixProject do
     """
   end
 
+  defp docs do
+    [
+      main: "readme", # The main page in the docs
+      extras: ["README.md"]
+    ]
+  end
+
+  defp env do
+    [
+      host: "api.workos.com"
+    ]
+  end
+
   defp package do
     [
       files: ["lib", "LICENSE*", "mix.exs", "README*"],
       licenses: ["MIT"],
       links: %{
         "GitHub" => "https://github.com/workos-inc/workos-elixir",
-        "Docs" => "https://workos.com/docs"
+        "Online documentation" => "https://workos.com/docs",
+        "Homepage" => "https://workos.com"
       },
       maintainers: ["Conner Fritz"]
     ]

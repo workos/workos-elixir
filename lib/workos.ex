@@ -1,8 +1,7 @@
 defmodule WorkOS do
-  @type options :: {:api_key, String.t()} | {:client_id, integer()} 
-
   def host, do: Application.get_env(:workos, :host)
   def base_url, do: "https://" <> Application.get_env(:workos, :host)
+  def adapter, do: Application.get_env(:workos, :adapter) || Tesla.Adapter.Hackney
 
   def api_key(opts \\ [])
   def api_key(api_key: api_key), do: api_key

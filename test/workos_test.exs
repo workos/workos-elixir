@@ -14,6 +14,12 @@ defmodule WorkOSTest do
     end
   end
 
+  describe "#adapter/1" do
+    test "returns the configured adapter value" do
+      assert WorkOS.adapter() == Tesla.Mock
+    end
+  end
+
   describe "#api_key/1" do
     test "returns the configured api_key value by default" do
       assert WorkOS.api_key() == "sk_TEST"
