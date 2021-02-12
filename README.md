@@ -12,7 +12,7 @@ Complete documentation for the latest version of WorkOS Ruby Gem can be found [h
 Add this package to the list of dependencies in your `mix.exs` file:
 ```
 def deps do
-  [{:workos, "~> 0.1.0"}]
+  [{:workos, "~> 0.1.1"}]
 end
 ```
 
