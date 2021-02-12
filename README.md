@@ -15,6 +15,7 @@ def deps do
   [{:workos, "~> 0.1.1"}]
 end
 ```
+The hex package can be found here: https://hex.pm/packages/workos
 
 ## Configuration
 The WorkOS API relies on two configuration parameters, the `client_id` and the `api_key`. There are two ways to configure these values with this package.
