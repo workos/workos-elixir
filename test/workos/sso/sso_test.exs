@@ -10,7 +10,12 @@ defmodule WorkOS.SSOTest do
 
   describe "#get_authorization_url/2 with a custom client_id" do
     setup do
-      {:ok, url} = SSO.get_authorization_url(%{domain: "test", provider: "provider", redirect_uri: "project", state: "nope"}, client_id: "8vf9xg")
+      {:ok, url} =
+        SSO.get_authorization_url(
+          %{domain: "test", provider: "provider", redirect_uri: "project", state: "nope"},
+          client_id: "8vf9xg"
+        )
+
       {:ok, url: URI.parse(url)}
     end
 
@@ -22,7 +27,14 @@ defmodule WorkOS.SSOTest do
 
   describe "#get_authorization_url/2 with a domain" do
     setup do
-      {:ok, url} = SSO.get_authorization_url(%{domain: "test", provider: "provider", redirect_uri: "project", state: "nope"})
+      {:ok, url} =
+        SSO.get_authorization_url(%{
+          domain: "test",
+          provider: "provider",
+          redirect_uri: "project",
+          state: "nope"
+        })
+
       {:ok, url: URI.parse(url)}
     end
 
@@ -31,7 +43,7 @@ defmodule WorkOS.SSOTest do
     end
 
     test "returns the expected hostname", %{url: url} do
-      assert url.host == WorkOS.host
+      assert url.host == WorkOS.host()
     end
 
     test "returns the expected query string", %{url: %URI{query: query}} do
@@ -42,7 +54,14 @@ defmodule WorkOS.SSOTest do
 
   describe "#get_authorization_url/2 with a provider" do
     setup do
-      {:ok, url} = SSO.get_authorization_url(%{domain: "test", provider: "provider", redirect_uri: "project", state: "nope"})
+      {:ok, url} =
+        SSO.get_authorization_url(%{
+          domain: "test",
+          provider: "provider",
+          redirect_uri: "project",
+          state: "nope"
+        })
+
       {:ok, url: URI.parse(url)}
     end
 
@@ -51,7 +70,7 @@ defmodule WorkOS.SSOTest do
     end
 
     test "returns the expected hostname", %{url: url} do
-      assert url.host == WorkOS.host
+      assert url.host == WorkOS.host()
     end
 
     test "returns the expected query string", %{url: %URI{query: query}} do
@@ -60,10 +79,36 @@ defmodule WorkOS.SSOTest do
     end
   end
 
-  describe "#get_authorization_url/2 with neither domain nor provider" do
+  describe "#get_authorization_url/2 with a connection" do
+    setup do
+      {:ok, url} =
+        SSO.get_authorization_url(%{
+          connection: "connection_123",
+          redirect_uri: "project",
+          state: "nope"
+        })
+
+      {:ok, url: URI.parse(url)}
+    end
+
+    test "returns a valid URL", %{url: url} do
+      assert %URI{} = url
+    end
+
+    test "returns the expected hostname", %{url: url} do
+      assert url.host == WorkOS.host()
+    end
+
+    test "returns the expected query string", %{url: %URI{query: query}} do
+      params = URI.query_decoder(query) |> Enum.to_list()
+      assert {"connection", "connection_123"} in params
+    end
+  end
+
+  describe "#get_authorization_url/2 with neither connection, domain, nor provider" do
     test "returns an error" do
       assert_raise ArgumentError, fn ->
-        {:ok, url:  SSO.get_authorization_url(%{redirect_uri: "project", state: "nope"})}
+        {:ok, url: SSO.get_authorization_url(%{redirect_uri: "project", state: "nope"})}
       end
     end
   end

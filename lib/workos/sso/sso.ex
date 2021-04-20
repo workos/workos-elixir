@@ -5,10 +5,10 @@ defmodule WorkOS.SSO do
   The SSO module provides convenience methods for working with the WorkOS
   SSO platform. You'll need a valid API key, a client ID, and to have
   created an SSO connection on your WorkOS dashboard.
-  
+
   @see https://docs.workos.com/sso/overview
   """
-  
+
   @doc """
   Generate an Oauth2 authorization URL where your users will
   authenticate using the configured SSO Identity Provider.
@@ -20,6 +20,9 @@ defmodule WorkOS.SSO do
      required
     - provider (string) A provider name for an Identity Provider
      configured on your WorkOS dashboard. Only 'Google' is supported.
+    - connection (string) Unique identifier for a WorkOS Connection
+    - client_id (string) Client ID for a WorkOS Environment. This
+     value can be found in the WorkOS dashboard.
     - redirect_uri (string) The URI where users are directed
      after completing the authentication step. Must match a
      configured redirect URI on your WorkOS dashboard.
@@ -33,15 +36,26 @@ defmodule WorkOS.SSO do
   })
   """
   def get_authorization_url(params, opts \\ [])
-  def get_authorization_url(params, opts) when is_map_key(params, :domain) or is_map_key(params, :provider) do
-    query = Api.process_params(params, [:domain, :provider, :project_id, :redirect_uri, :state], %{
-      client_id: WorkOS.client_id(opts),
-      response_type: "code"
-    })
-    |> URI.encode_query()
-    {:ok, "#{WorkOS.base_url}/sso/authorize?#{query}"}
+
+  def get_authorization_url(params, opts)
+      when is_map_key(params, :domain) or is_map_key(params, :provider) or
+             is_map_key(params, :connection) do
+    query =
+      Api.process_params(
+        params,
+        [:domain, :provider, :connection, :client_id, :redirect_uri, :state],
+        %{
+          client_id: WorkOS.client_id(opts),
+          response_type: "code"
+        }
+      )
+      |> URI.encode_query()
+
+    {:ok, "#{WorkOS.base_url()}/sso/authorize?#{query}"}
   end
-  def get_authorization_url(_params, _opts), do: raise ArgumentError, message: "need either domain or provider in params"
+
+  def get_authorization_url(_params, _opts),
+    do: raise(ArgumentError, message: "Either domain, provider, or connection required in params")
 
   @doc """
   Create a Connection
@@ -66,11 +80,15 @@ defmodule WorkOS.SSO do
   WorkOS.SSO.get_profile("12345")
   """
   def get_profile(code, opts \\ []) do
-    Api.post("/sso/token", %{
-      code: code,
-      client_id: WorkOS.client_id(opts),
-      client_secret: WorkOS.api_key(opts),
-      grant_type: "authorization_code"
-    }, opts)
+    Api.post(
+      "/sso/token",
+      %{
+        code: code,
+        client_id: WorkOS.client_id(opts),
+        client_secret: WorkOS.api_key(opts),
+        grant_type: "authorization_code"
+      },
+      opts
+    )
   end
 end
