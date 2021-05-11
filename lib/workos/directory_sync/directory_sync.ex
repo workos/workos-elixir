@@ -91,4 +91,17 @@ defmodule WorkOS.DirectorySync do
   def get_group(group, opts \\ []) do
     Api.get("/directory_groups/#{group}", %{}, opts)
   end
+
+  @doc """
+  Delete the directory with the given ID.
+
+  ### Parameters
+  - directory (string) the id of the directory to delete
+
+  ### Example
+  WorkOS.DirectorySync.delete_directory("directory_12345")
+  """
+  def delete_directory(directory, opts \\ []) do
+    Api.delete("/directories/#{directory}", %{}, opts)
+  end
 end

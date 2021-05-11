@@ -12,6 +12,9 @@ defmodule WorkOS.ApiTest do
 
       %{method: :post, url: "https://api.workos.com/test"} ->
         %Tesla.Env{status: 200, body: "hello"}
+
+      %{method: :delete, url: "https://api.workos.com/test"} ->
+        %Tesla.Env{status: 200, body: "hello"}
     end)
 
     :ok
@@ -26,6 +29,12 @@ defmodule WorkOS.ApiTest do
   describe "#post/3" do
     test "returns a response object" do
       assert {:ok, "hello"} = Api.post("/test")
+    end
+  end
+
+  describe "#delete/3" do
+    test "returns a response object" do
+      assert {:ok, "hello"} = Api.delete("/test")
     end
   end
 

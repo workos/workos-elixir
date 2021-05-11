@@ -36,6 +36,15 @@ defmodule WorkOS.Api do
   end
 
   @doc """
+  Performs a DELETE request
+  """
+  def delete(path, params \\ "", opts \\ []) do
+    client(opts)
+    |> Tesla.delete(path, query: params)
+    |> handle_response
+  end
+
+  @doc """
   Processes the HTTP response
   Converts non-200 responses (400+ status code) into error tuples
   """
