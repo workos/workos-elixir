@@ -23,11 +23,28 @@ defmodule WorkOS.Portal do
   })
   """
   def create_organization(params, opts \\ [])
-  def create_organization(params, opts) when is_map_key(params, :domains) and is_map_key(params, :name) do
+
+  def create_organization(params, opts)
+      when is_map_key(params, :domains) and is_map_key(params, :name) do
     query = Api.process_params(params, [:domains, :name])
     Api.post("/organizations", query, opts)
   end
-  def create_organization(_params, _opts), do: raise ArgumentError, message: "need both domains and name in params"
+
+  def create_organization(_params, _opts),
+    do: raise(ArgumentError, message: "need both domains and name in params")
+
+  @doc """
+  Delete an organization
+
+  ### Parameters
+   - organization_id (string) the id of the organization to delete
+
+  ### Example
+  WorkOS.Portal.delete_organization("organization_12345")
+  """
+  def delete_organization(organization, opts \\ []) do
+    Api.delete("/organizations/#{organization}", %{}, opts)
+  end
 
   @doc """
   Generate a link to grant access to an organization's Admin Portal
@@ -49,11 +66,14 @@ defmodule WorkOS.Portal do
   })
   """
   def generate_link(params, opts \\ [])
+
   def generate_link(params, opts) when is_map_key(params, :organization) do
     query = Api.process_params(params, [:intent, :organization, :return_url], %{intent: "sso"})
     Api.post("/portal/generate_link", query, opts)
   end
-  def generate_link(_params, _opts), do: raise ArgumentError, message: "need both intent and organization in params"
+
+  def generate_link(_params, _opts),
+    do: raise(ArgumentError, message: "need both intent and organization in params")
 
   @doc """
   Retrieve a list of organizations that have connections configured
