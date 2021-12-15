@@ -5,10 +5,10 @@ defmodule WorkOS.Passwordless do
   The Passwordless module provides convenience methods for working with
   passwordless sessions including the WorkOS Magic Link. You'll need a valid
   API key.
-  
+
   @see https://workos.com/docs/sso/configuring-magic-link
   """
-  
+
   @doc """
   Create a Passwordless Session.
 
@@ -32,11 +32,12 @@ defmodule WorkOS.Passwordless do
   })
   """
   def create_session(params, opts \\ [])
-  def create_session(params, opts) when is_map_key(params, :email) do
-    query = Api.process_params(params, [:email, :redirect_uri, :state, :type], %{type: "MagicLink"})
+
+  def create_session(params, opts) when is_map_key(params, :email) or is_map_key(params, :connection) do
+      query = Api.process_params(params, [:email, :connection, :redirect_uri, :state, :type], %{type: "MagicLink"})
     Api.post("/passwordless/sessions", query, opts)
   end
-  def create_session(_params, _opts), do: raise ArgumentError, message: "need email in params"
+  def create_session(_params, _opts), do: raise ArgumentError, message: "need email in params or connection id"
 
   @doc """
   Send a Passwordless Session via email.
