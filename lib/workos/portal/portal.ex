@@ -7,57 +7,18 @@ defmodule WorkOS.Portal do
 
   @see https://workos.com/docs/admin-portal/guide
   """
-
-  @doc """
-  Create an organization
-
-  ### Parameters
-  - params (map)
-    - domains (list of strings) List of domains that belong to the organization
-    - name (string) A unique, descriptive name for the organization
-
-  ### Example
-  WorkOS.Portal.create_organization(%{
-    domains: ["workos.com"],
-    name: "WorkOS"
-  })
-  """
-  def create_organization(params, opts \\ [])
-
-  def create_organization(params, opts)
-      when is_map_key(params, :domains) and is_map_key(params, :name) do
-    query = Api.process_params(params, [:domains, :name])
-    Api.post("/organizations", query, opts)
-  end
-
-  def create_organization(_params, _opts),
-    do: raise(ArgumentError, message: "need both domains and name in params")
-
-  @doc """
-  Delete an organization
-
-  ### Parameters
-   - organization_id (string) the id of the organization to delete
-
-  ### Example
-  WorkOS.Portal.delete_organization("organization_12345")
-  """
-  def delete_organization(organization, opts \\ []) do
-    Api.delete("/organizations/#{organization}", %{}, opts)
-  end
-
   @doc """
   Generate a link to grant access to an organization's Admin Portal
 
   ### Parameters
   - params (map)
     - intent (string) The access scope for the generated Admin Portal
-     link. Valid values are: ["sso"]
+    link. Valid values are: ["sso"]
     - organization (string) The ID of the organization the Admin
-     Portal link will be generated for.
+    Portal link will be generated for.
     - return_url (string) The URL that the end user will be redirected to upon
-     exiting the generated Admin Portal. If none is provided, the default
-     redirect link set in your WorkOS Dashboard will be used.
+    exiting the generated Admin Portal. If none is provided, the default
+    redirect link set in your WorkOS Dashboard will be used.
 
   ### Example
   WorkOS.Portal.generate_link(%{
