@@ -20,31 +20,31 @@ defmodule WorkOS.Organizations do
       name: "WorkOS"
     })
     """
-    def create_organization(params, opts \\ [])
+  def create_organization(params, opts \\ [])
 
-    def create_organization(params, opts)
-      when (is_map_key(params, :domains) or is_map_key(params, :allow_profiles_outside_organization)) and is_map_key(params, :name) do
-        query = Api.process_params(params, [:name, :domains, :allow_profiles_outside_organization])
-        Api.post("/organizations", query, opts)
-    end
+  def create_organization(params, opts)
+    when (is_map_key(params, :domains) or is_map_key(params, :allow_profiles_outside_organization)) and is_map_key(params, :name) do
+      query = Api.process_params(params, [:name, :domains, :allow_profiles_outside_organization])
+      Api.post("/organizations", query, opts)
+  end
 
-    def create_organization(_params, _opts),
-      do: raise(ArgumentError, message: "need both domains(unless external profiles set to true) and name in params")
+  def create_organization(_params, _opts),
+    do: raise(ArgumentError, message: "need both domains(unless external profiles set to true) and name in params")
 
-    @doc """
-    Delete an organization
+  @doc """
+  Delete an organization
 
-    ### Parameters
-    - organization_id (string) the id of the organization to delete
+  ### Parameters
+  - organization_id (string) the id of the organization to delete
 
-    ### Example
-    WorkOS.Portal.delete_organization("organization_12345")
-    """
-    def delete_organization(organization, opts \\ []) do
-      Api.delete("/organizations/#{organization}", %{}, opts)
-    end
+  ### Example
+  WorkOS.delete_organization("organization_12345")
+  """
+  def delete_organization(organization, opts \\ []) do
+    Api.delete("/organizations/#{organization}", %{}, opts)
+  end
 
-    @doc """
+  @doc """
     Update an organization
 
     ### Parameters
@@ -55,18 +55,27 @@ defmodule WorkOS.Organizations do
 
     ### Example
     WorkOS.Portal.update_organization(organization="organization_12345")
-    """
-    def update_organization(organization, params, opts \\ [])
-      when (is_map_key(params, :domains) or is_map_key(params, :allow_profiles_outside_organization)) and is_map_key(params, :name) do
-        query = Api.process_params(params, [:name, :domains, :allow_profiles_outside_organization])
-        Api.post("/organizations/#{organization}", query, opts)
-    end
+  """
+  def update_organization(organization, params, opts \\ [])
+    when (is_map_key(params, :domains) or is_map_key(params, :allow_profiles_outside_organization)) and is_map_key(params, :name) do
+      query = Api.process_params(params, [:name, :domains, :allow_profiles_outside_organization])
+      Api.post("/organizations/#{organization}", query, opts)
+  end
 
-    def get_organization(organization, opts) do
-      Api.get("/organizations/#{organization}", %{}, opts)
-    end
+  @doc """
+  Get an organization
 
-    def list_organizations(params, opts \\ []) do
-      Api.get("/organizations", %{}, opts)
-    end
+  ### Parameters
+  - organization_id (string) the id of the organization to update
+
+  ### Example
+  WorkOS.get_organization(organization="org_123")
+  """
+  def get_organization(organization, opts \\ []) do
+    Api.get("/organizations/#{organization}", %{}, opts)
+  end
+
+  def list_organizations(params, opts \\ []) do
+    Api.get("/organizations", %{}, opts)
+  end
 end
