@@ -3,8 +3,6 @@ defmodule WorkOS.DirectorySyncTest do
   doctest WorkOS.DirectorySync
   import Tesla.Mock
 
-  alias WorkOS.DirectorySync
-
   describe "#delete_directory/1 with a valid directory id" do
     setup do
       mock(fn
