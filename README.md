@@ -41,7 +41,7 @@ config :workos,
 Alternatively, you can override or avoid using these globally configured variables by passing a `:api_key` or `:client_id` directly to SDK methods via the optional `opts` parameter available on all methods:
 ```
 WorkOS.SSO.get_authorization_url(%{
-  domain: "workos.com",
+  connection: "<Connection ID>",
   redirect_uri: "https://workos.com"
 }, [
   client_id: "project_12345",
