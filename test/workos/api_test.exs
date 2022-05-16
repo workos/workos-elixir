@@ -22,7 +22,7 @@ defmodule WorkOS.ApiTest do
 
   describe "#get/3" do
     test "returns a response object" do
-      assert {:ok, "hello"} = Api.get("/test") 
+      assert {:ok, "hello"} = Api.get("/test")
     end
   end
 
@@ -55,20 +55,20 @@ defmodule WorkOS.ApiTest do
   describe "#process_response/1" do
     test "removes message fluff and returns just the message" do
       assert %{body: %{"message" => "test"}}
-      |> Api.process_response()
-      == "test"
+             |> Api.process_response() ==
+               "test"
     end
 
     test "removes data fluff and returns just the data" do
       assert %{body: %{"data" => ["test"]}}
-      |> Api.process_response()
-      == ["test"]
+             |> Api.process_response() ==
+               ["test"]
     end
 
     test "returns the response body otherwise" do
       assert %{body: %{"type" => "test"}}
-      |> Api.process_response()
-      == %{"type" => "test"}
+             |> Api.process_response() ==
+               %{"type" => "test"}
     end
 
     test "returns the raw argument when a body isn't defined" do
@@ -79,20 +79,20 @@ defmodule WorkOS.ApiTest do
   describe "#process_params/3" do
     test "only takes allowed params" do
       assert %{test: 1, blocked: 1}
-      |> Api.process_params([:test])
-      == %{test: 1}
+             |> Api.process_params([:test]) ==
+               %{test: 1}
     end
 
     test "merges default params" do
       assert %{test: 1}
-      |> Api.process_params([:test], %{merged: 1})
-      == %{test: 1, merged: 1}
+             |> Api.process_params([:test], %{merged: 1}) ==
+               %{test: 1, merged: 1}
     end
 
     test "overrides default params" do
       assert %{test: 1, overrides: 1}
-      |> Api.process_params([:test], %{overrides: 0})
-      == %{test: 1, overrides: 1}
+             |> Api.process_params([:test], %{overrides: 0}) ==
+               %{test: 1, overrides: 1}
     end
   end
 end

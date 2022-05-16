@@ -33,11 +33,18 @@ defmodule WorkOS.Passwordless do
   """
   def create_session(params, opts \\ [])
 
-  def create_session(params, opts) when is_map_key(params, :email) or is_map_key(params, :connection) do
-      query = Api.process_params(params, [:email, :connection, :redirect_uri, :state, :type], %{type: "MagicLink"})
+  def create_session(params, opts)
+      when is_map_key(params, :email) or is_map_key(params, :connection) do
+    query =
+      Api.process_params(params, [:email, :connection, :redirect_uri, :state, :type], %{
+        type: "MagicLink"
+      })
+
     Api.post("/passwordless/sessions", query, opts)
   end
-  def create_session(_params, _opts), do: raise ArgumentError, message: "need email in params or connection id"
+
+  def create_session(_params, _opts),
+    do: raise(ArgumentError, message: "need email in params or connection id")
 
   @doc """
   Send a Passwordless Session via email.
