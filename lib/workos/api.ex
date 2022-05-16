@@ -8,13 +8,15 @@ defmodule WorkOS.Api do
   """
   def client(opts \\ []) do
     middleware = [
-      {Tesla.Middleware.BaseUrl, WorkOS.base_url},
+      {Tesla.Middleware.BaseUrl, WorkOS.base_url()},
       Tesla.Middleware.JSON,
-      {Tesla.Middleware.Headers, [
-        {"Authorization", "Bearer " <> WorkOS.api_key(opts)}
-      ]}
+      {Tesla.Middleware.Headers,
+       [
+         {"Authorization", "Bearer " <> WorkOS.api_key(opts)}
+       ]}
     ]
-    Tesla.client(middleware, WorkOS.adapter)
+
+    Tesla.client(middleware, WorkOS.adapter())
   end
 
   @doc """
@@ -48,10 +50,13 @@ defmodule WorkOS.Api do
   Processes the HTTP response
   Converts non-200 responses (400+ status code) into error tuples
   """
-  def handle_response({:ok, %{status: status} = response}) when status >= 400, do: handle_error({:error, response})
+  def handle_response({:ok, %{status: status} = response}) when status >= 400,
+    do: handle_error({:error, response})
+
   def handle_response({:ok, response}) do
     {:ok, process_response(response)}
   end
+
   def handle_response({:error, response}), do: handle_error({:error, response})
 
   @doc """
@@ -67,6 +72,7 @@ defmodule WorkOS.Api do
   def process_response(%{body: %{"data" => data, "listMetadata" => metadata}}) do
     %{data: data, metadata: metadata}
   end
+
   def process_response(%{body: %{"data" => data}}), do: data
   def process_response(%{body: %{"message" => message}}), do: message
   def process_response(%{body: body}), do: body

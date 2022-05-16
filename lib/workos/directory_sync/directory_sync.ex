@@ -1,11 +1,11 @@
 defmodule WorkOS.DirectorySync do
   alias WorkOS.Api
-  
+
   @moduledoc """
   The Directory Sync module provides convenience methods for working with the
   WorkOS Directory Sync platform. You'll need a valid API key and to have
   created a Directory Sync connection on your WorkOS dashboard.
-  
+
   @see https://docs.workos.com/directory-sync/overview
   """
 
@@ -21,12 +21,18 @@ defmodule WorkOS.DirectorySync do
   WorkOS.DirectorySync.list_groups(%{directory: "directory_12345"})
   """
   def list_groups(params, opts \\ [])
-  def list_groups(params, opts) when is_map_key(params, :directory) or is_map_key(params, :user) do
-    query = params
-    |> Map.take([:directory, :user])
+
+  def list_groups(params, opts)
+      when is_map_key(params, :directory) or is_map_key(params, :user) do
+    query =
+      params
+      |> Map.take([:directory, :user])
+
     Api.get("/directory_groups", query, opts)
   end
-  def list_groups(_params, _opts), do: raise ArgumentError, message: "need either domain or user in params"
+
+  def list_groups(_params, _opts),
+    do: raise(ArgumentError, message: "need either domain or user in params")
 
   @doc """
   Retrieve directory users.
@@ -40,12 +46,18 @@ defmodule WorkOS.DirectorySync do
   WorkOS.DirectorySync.list_users(%{directory: "directory_12345"})
   """
   def list_users(params, opts \\ [])
-  def list_users(params, opts) when is_map_key(params, :directory) or is_map_key(params, :group) do
-    query = params
-    |> Map.take([:directory, :user])
+
+  def list_users(params, opts)
+      when is_map_key(params, :directory) or is_map_key(params, :group) do
+    query =
+      params
+      |> Map.take([:directory, :user])
+
     Api.get("/directory_users", query, opts)
   end
-  def list_users(_params, _opts), do: raise ArgumentError, message: "need either directory or group in params"
+
+  def list_users(_params, _opts),
+    do: raise(ArgumentError, message: "need either directory or group in params")
 
   @doc """
   Retrieve directories.
@@ -59,12 +71,18 @@ defmodule WorkOS.DirectorySync do
   WorkOS.DirectorySync.list_directories(%{domain: "workos.com"})
   """
   def list_directories(params, opts \\ [])
-  def list_directories(params, opts) when is_map_key(params, :domain) or is_map_key(params, :search) do
-    query = params
-    |> Map.take([:domain, :search])
+
+  def list_directories(params, opts)
+      when is_map_key(params, :domain) or is_map_key(params, :search) do
+    query =
+      params
+      |> Map.take([:domain, :search])
+
     Api.get("/directories", query, opts)
   end
-  def list_directories(_params, _opts), do: raise ArgumentError, message: "need either domain or search in params"
+
+  def list_directories(_params, _opts),
+    do: raise(ArgumentError, message: "need either domain or search in params")
 
   @doc """
   Retrieve the directory group with the given ID.
