@@ -13,7 +13,7 @@ See the [API Reference](https://workos.com/docs/reference/client-libraries) for 
 Add this package to the list of dependencies in your `mix.exs` file:
 ```
 def deps do
-  [{:workos, "~> 0.1.2"}]
+  [{:workos, "~> 0.1.3"}]
 end
 ```
 The hex package can be found here: https://hex.pm/packages/workos
