@@ -1,5 +1,5 @@
 defmodule WorkOS.DirectorySync do
-  alias WorkOS.Api
+  import WorkOS.API
 
   @moduledoc """
   The Directory Sync module provides convenience methods for working with the
@@ -28,7 +28,7 @@ defmodule WorkOS.DirectorySync do
       params
       |> Map.take([:directory, :user])
 
-    Api.get("/directory_groups", query, opts)
+    get("/directory_groups", query, opts)
   end
 
   def list_groups(_params, _opts),
@@ -53,7 +53,7 @@ defmodule WorkOS.DirectorySync do
       params
       |> Map.take([:directory, :user])
 
-    Api.get("/directory_users", query, opts)
+    get("/directory_users", query, opts)
   end
 
   def list_users(_params, _opts),
@@ -78,7 +78,7 @@ defmodule WorkOS.DirectorySync do
       params
       |> Map.take([:domain, :search])
 
-    Api.get("/directories", query, opts)
+    get("/directories", query, opts)
   end
 
   def list_directories(_params, _opts),
@@ -94,7 +94,7 @@ defmodule WorkOS.DirectorySync do
   WorkOS.DirectorySync.get_user("directory_user_12345")
   """
   def get_user(user, opts \\ []) do
-    Api.get("/directory_users/#{user}", %{}, opts)
+    get("/directory_users/#{user}", %{}, opts)
   end
 
   @doc """
@@ -107,7 +107,7 @@ defmodule WorkOS.DirectorySync do
   WorkOS.DirectorySync.get_group("directory_group_12345")
   """
   def get_group(group, opts \\ []) do
-    Api.get("/directory_groups/#{group}", %{}, opts)
+    get("/directory_groups/#{group}", %{}, opts)
   end
 
   @doc """
@@ -120,6 +120,6 @@ defmodule WorkOS.DirectorySync do
   WorkOS.DirectorySync.delete_directory("directory_12345")
   """
   def delete_directory(directory, opts \\ []) do
-    Api.delete("/directories/#{directory}", %{}, opts)
+    delete("/directories/#{directory}", %{}, opts)
   end
 end

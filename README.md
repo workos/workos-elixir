@@ -11,7 +11,8 @@ See the [API Reference](https://workos.com/docs/reference/client-libraries) for 
 ## Installation
 
 Add this package to the list of dependencies in your `mix.exs` file:
-```
+
+```ex
 def deps do
   [{:workos, "~> 0.1.3"}]
 end
@@ -24,14 +25,16 @@ The WorkOS API relies on two configuration parameters, the `client_id` and the `
 
 ### Recommended Method
 In your `config/config.exs` file you can set the `:client_id` and `:api_key` scoped to `:workos` to be used globally by default across the SDK:
-```
+
+```ex
 config :workos,
   client_id: "project_12345"
   api_key: "sk_12345",
 ```
 
 Ideally, you should use environment variables to store protected keys like your `:api_key` like so:
-```
+
+```ex
 config :workos,
   client_id: System.get_env("WORKOS_CLIENT_ID"),
   api_key: System.get_env("WORKOS_API_KEY")
@@ -39,7 +42,8 @@ config :workos,
 
 ### Opts Method
 Alternatively, you can override or avoid using these globally configured variables by passing a `:api_key` or `:client_id` directly to SDK methods via the optional `opts` parameter available on all methods:
-```
+
+```ex
 WorkOS.SSO.get_authorization_url(%{
   connection: "<Connection ID>",
   redirect_uri: "https://workos.com"

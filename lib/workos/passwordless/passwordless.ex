@@ -1,5 +1,5 @@
 defmodule WorkOS.Passwordless do
-  alias WorkOS.Api
+  import WorkOS.API
 
   @moduledoc """
   The Passwordless module provides convenience methods for working with
@@ -36,11 +36,11 @@ defmodule WorkOS.Passwordless do
   def create_session(params, opts)
       when is_map_key(params, :email) or is_map_key(params, :connection) do
     query =
-      Api.process_params(params, [:email, :connection, :redirect_uri, :state, :type], %{
+      process_params(params, [:email, :connection, :redirect_uri, :state, :type], %{
         type: "MagicLink"
       })
 
-    Api.post("/passwordless/sessions", query, opts)
+    post("/passwordless/sessions", query, opts)
   end
 
   def create_session(_params, _opts),
@@ -57,6 +57,6 @@ defmodule WorkOS.Passwordless do
   WorkOS.Passwordless.send_session("passwordless_session_12345")
   """
   def send_session(session_id, opts \\ []) do
-    Api.post("/passwordless/sessions/#{session_id}/send", %{}, opts)
+    post("/passwordless/sessions/#{session_id}/send", %{}, opts)
   end
 end

@@ -1,4 +1,4 @@
-defmodule WorkOS.Api do
+defmodule WorkOS.API do
   @moduledoc """
   Provides core API communication and data processing functionality.
   """

@@ -1,5 +1,5 @@
 defmodule WorkOS.SSO do
-  alias WorkOS.Api
+  import WorkOS.API
 
   @moduledoc """
   The SSO module provides convenience methods for working with the WorkOS
@@ -41,7 +41,7 @@ defmodule WorkOS.SSO do
       when is_map_key(params, :domain) or is_map_key(params, :provider) or
              is_map_key(params, :connection) do
     query =
-      Api.process_params(
+      process_params(
         params,
         [:domain, :provider, :connection, :client_id, :redirect_uri, :state],
         %{
@@ -67,7 +67,7 @@ defmodule WorkOS.SSO do
   WorkOS.SSO.create_connection('draft_conn_12345')
   """
   def create_connection(source, opts \\ []) do
-    Api.post("/connections", %{source: source}, opts)
+    post("/connections", %{source: source}, opts)
   end
 
   @doc """
@@ -80,7 +80,7 @@ defmodule WorkOS.SSO do
   WorkOS.SSO.get_profile("12345")
   """
   def get_profile(code, opts \\ []) do
-    Api.post(
+    post(
       "/sso/token",
       %{
         code: code,
