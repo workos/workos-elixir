@@ -1,4 +1,6 @@
 defmodule WorkOS do
+  @moduledoc false
+
   def host, do: Application.get_env(:workos, :host)
   def base_url, do: "https://" <> Application.get_env(:workos, :host)
   def adapter, do: Application.get_env(:workos, :adapter) || Tesla.Adapter.Hackney
