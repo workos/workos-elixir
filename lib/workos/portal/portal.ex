@@ -1,5 +1,5 @@
 defmodule WorkOS.Portal do
-  alias WorkOS.Api
+  import WorkOS.API
 
   @moduledoc """
   The Portal module provides resource methods for working with the Admin
@@ -26,8 +26,8 @@ defmodule WorkOS.Portal do
 
   def create_organization(params, opts)
       when is_map_key(params, :domains) and is_map_key(params, :name) do
-    query = Api.process_params(params, [:domains, :name])
-    Api.post("/organizations", query, opts)
+    query = process_params(params, [:domains, :name])
+    post("/organizations", query, opts)
   end
 
   def create_organization(_params, _opts),
@@ -43,7 +43,7 @@ defmodule WorkOS.Portal do
   WorkOS.Portal.delete_organization("organization_12345")
   """
   def delete_organization(organization, opts \\ []) do
-    Api.delete("/organizations/#{organization}", %{}, opts)
+    delete("/organizations/#{organization}", %{}, opts)
   end
 
   @doc """
@@ -68,8 +68,8 @@ defmodule WorkOS.Portal do
   def generate_link(params, opts \\ [])
 
   def generate_link(params, opts) when is_map_key(params, :organization) do
-    query = Api.process_params(params, [:intent, :organization, :return_url], %{intent: "sso"})
-    Api.post("/portal/generate_link", query, opts)
+    query = process_params(params, [:intent, :organization, :return_url], %{intent: "sso"})
+    post("/portal/generate_link", query, opts)
   end
 
   def generate_link(_params, _opts),
@@ -94,7 +94,7 @@ defmodule WorkOS.Portal do
   WorkOS.Portal.list_organizations()
   """
   def list_organizations(params \\ %{}, opts \\ []) do
-    query = Api.process_params(params, [:domains, :limit, :before, :after])
-    Api.get("/organizations", query, opts)
+    query = process_params(params, [:domains, :limit, :before, :after])
+    get("/organizations", query, opts)
   end
 end
