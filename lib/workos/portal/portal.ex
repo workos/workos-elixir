@@ -14,12 +14,14 @@ defmodule WorkOS.Portal do
   ### Parameters
   - params (map)
     - intent (string) The access scope for the generated Admin Portal
-     link. Valid values are: ["sso"]
+    link. Valid values are: ["sso"]
     - organization (string) The ID of the organization the Admin
-     Portal link will be generated for.
+    Portal link will be generated for.
     - return_url (string) The URL that the end user will be redirected to upon
-     exiting the generated Admin Portal. If none is provided, the default
-     redirect link set in your WorkOS Dashboard will be used.
+    exiting the generated Admin Portal. If none is provided, the default
+    redirect link set in your WorkOS Dashboard will be used.
+    - success_url (string) he URL to which WorkOS will redirect users to upon
+    successfully setting up Single Sign On or Directory Sync.
 
   ### Example
   WorkOS.Portal.generate_link(%{
@@ -30,7 +32,7 @@ defmodule WorkOS.Portal do
   def generate_link(params, opts \\ [])
 
   def generate_link(params, opts) when is_map_key(params, :organization) do
-    query = process_params(params, [:intent, :organization, :return_url], %{intent: "sso"})
+    query = process_params(params, [:intent, :organization, :return_url, :success_url], %{intent: "sso"})
     post("/portal/generate_link", query, opts)
   end
 
