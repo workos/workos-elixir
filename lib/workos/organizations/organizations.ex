@@ -81,12 +81,16 @@ defmodule WorkOS.Organizations do
   ### Parameters
   - params (map)
     - domains (list of strings - optional) List of domains that belong to the organization
-
+    - limit (number - optional) Upper limit on the number of objects to return, between 1 and 100. The default value is 10
+    - before (string - optional) An object ID that defines your place in the list
+    - after (string - optional) An object ID that defines your place in the list
+    - order ("asc" or "desc" - optional) Supported values are "asc" and "desc" for ascending and descending order respectively
+ 
   ### Example
   WorkOS.list_organizations(organization="org_123")
   """
   def list_organizations(params, opts \\ []) do
-    query = process_params(params, [:domains])
+    query = process_params(params, [:domains, :limit, :before, :after, :order])
     get("/organizations", %{}, opts)
   end
 end
