@@ -20,7 +20,7 @@ defmodule WorkOS.OrganizationsTest do
     end 
   end
 
-  describe "#create_organization/1 with a name" do 
+  describe "#create_organization/1 with a name and domain" do 
     setup do
       mock(fn
         %{method: :post, url: "https://api.workos.com/organizations"} ->
@@ -31,7 +31,10 @@ defmodule WorkOS.OrganizationsTest do
     end
 
     test "returns a 200 status" do 
-      assert {:ok, "Success"} = Organizations.create_organization(%{name: "Test Corp"})
+      assert {:ok, "Success"} = Organizations.create_organization(%{
+        name: "Test Corp",
+        domain: ["workos.com"]
+      })
     end 
   end 
 

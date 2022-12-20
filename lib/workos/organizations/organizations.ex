@@ -15,7 +15,7 @@ defmodule WorkOS.Organizations do
     - domains (array of strings - optional) List of domains that belong to the organization
 
   ### Example
-  WorkOS.Portal.create_organization(%{
+  WorkOS.Organizations.create_organization(%{
     domains: ["workos.com"],
     name: "WorkOS"
   })
@@ -38,7 +38,7 @@ defmodule WorkOS.Organizations do
   - organization_id (string) the id of the organization to delete
 
   ### Example
-  WorkOS.delete_organization("organization_12345")
+  WorkOS.Organizations.delete_organization("organization_12345")
   """
   def delete_organization(organization, opts \\ []) do
     delete("/organizations/#{organization}", %{}, opts)
@@ -54,7 +54,7 @@ defmodule WorkOS.Organizations do
   - domains (array of strings - optional if allow_profiles_outside_organization is set to true)
   
   ### Example
-  WorkOS.Portal.update_organization(organization="organization_12345")
+  WorkOS.Organizations.update_organization(organization="organization_12345")
   """
   def update_organization(organization, params, opts \\ [])
     when (is_map_key(params, :domains) or is_map_key(params, :allow_profiles_outside_organization)) and is_map_key(params, :name) do
@@ -69,7 +69,7 @@ defmodule WorkOS.Organizations do
   - organization_id (string) the id of the organization to update
 
   ### Example
-  WorkOS.get_organization(organization="org_123")
+  WorkOS.Organizations.get_organization(organization="org_123")
   """
   def get_organization(organization, opts \\ []) do
     get("/organizations/#{organization}", %{}, opts)
@@ -87,7 +87,7 @@ defmodule WorkOS.Organizations do
     - order ("asc" or "desc" - optional) Supported values are "asc" and "desc" for ascending and descending order respectively
  
   ### Example
-  WorkOS.list_organizations()
+  WorkOS.Organizations.list_organizations()
   """
   def list_organizations(params \\ %{}, opts \\ []) do
     query = process_params(params, [:domains, :limit, :before, :after, :order])
