@@ -29,7 +29,7 @@ defmodule WorkOS.Organizations do
   end
 
   def create_organization(_params, _opts),
-    do: raise(ArgumentError, message: "need both domains(unless external profiles set to true) and name in params")
+    do: raise(ArgumentError, message: "need both domains (unless external profiles set to true) and name in params")
   
   @doc """
   Delete an organization
@@ -87,9 +87,9 @@ defmodule WorkOS.Organizations do
     - order ("asc" or "desc" - optional) Supported values are "asc" and "desc" for ascending and descending order respectively
  
   ### Example
-  WorkOS.list_organizations(organization="org_123")
+  WorkOS.list_organizations()
   """
-  def list_organizations(params, opts \\ []) do
+  def list_organizations(params \\ %{}, opts \\ []) do
     query = process_params(params, [:domains, :limit, :before, :after, :order])
     get("/organizations", query, opts)
   end

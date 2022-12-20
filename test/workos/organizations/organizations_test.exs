@@ -16,7 +16,7 @@ defmodule WorkOS.OrganizationsTest do
     end
 
     test "returns a 200 status" do 
-      assert {:ok, "Success"} = WorkOS.Organizations.list_organizations()
+      assert {:ok, "Success"} = Organizations.list_organizations
     end 
   end
 
@@ -31,7 +31,7 @@ defmodule WorkOS.OrganizationsTest do
     end
 
     test "returns a 200 status" do 
-      assert {:ok, "Success"} = WorkOS.Organizations.create_organization(%{name: "Test Corp"})
+      assert {:ok, "Success"} = Organizations.create_organization(%{name: "Test Corp"})
     end 
   end 
 
@@ -46,7 +46,7 @@ defmodule WorkOS.OrganizationsTest do
     end
 
     test "returns a 200 status" do
-      assert {:ok, "Success"} = WorkOS.Organizations.get_organization('org_12345')
+      assert {:ok, "Success"} = Organizations.get_organization('org_12345')
     end
   end
 
@@ -61,7 +61,7 @@ defmodule WorkOS.OrganizationsTest do
     end
 
     test "returns a 200 status" do
-      assert {:ok, "Success"} = WorkOS.Organizations.update_organization('org_12345', %{
+      assert {:ok, "Success"} = Organizations.update_organization('org_12345', %{
         name: 'Test Corp 2'
       })
     end
@@ -78,7 +78,7 @@ defmodule WorkOS.OrganizationsTest do
     end
 
     test "returns a 404 status" do
-      assert {:error, "Error"} = WorkOS.Organizations.update_organization('invalid')
+      assert {:error, "Error"} = Organizations.update_organization('invalid')
     end
   end
 
@@ -93,7 +93,7 @@ defmodule WorkOS.OrganizationsTest do
     end
 
     test "returns a 200 status" do
-      assert {:ok, "Success"} = WorkOS.Organizations.delete_organization('org_12345')
+      assert {:ok, "Success"} = Organizations.delete_organization('org_12345')
     end
   end
 
@@ -108,7 +108,7 @@ defmodule WorkOS.OrganizationsTest do
     end
 
     test "returns a 404 status" do
-      assert {:error, "Not Found"} = WorkOS.Organizations.delete_organization('invalid')
+      assert {:error, "Not Found"} = Organizations.delete_organization('invalid')
     end
   end
 end
