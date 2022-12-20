@@ -91,6 +91,6 @@ defmodule WorkOS.Organizations do
   """
   def list_organizations(params, opts \\ []) do
     query = process_params(params, [:domains, :limit, :before, :after, :order])
-    get("/organizations", %{}, opts)
+    get("/organizations", query, opts)
   end
 end
