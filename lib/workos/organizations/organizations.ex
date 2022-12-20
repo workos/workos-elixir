@@ -48,11 +48,12 @@ defmodule WorkOS.Organizations do
   Update an organization
 
   ### Parameters
-  - organization_id (string) the id of the organization to update
-  - name (string) name of the organization
-  - allow_profiles_outside_organization (boolean - optional)
-  - domains (array of strings - optional if allow_profiles_outside_organization is set to true)
-  
+  - organization (string) The ID of the organization to update
+  - params (map)
+    - name (string) Name of organization
+    - allow_profiles_outside_organization (boolean - optional) Whether the Connections within this Organization should allow Profiles that do not have a domain that is set
+    - domains (array of strings - optional) List of domains that belong to the organization
+
   ### Example
   WorkOS.Organizations.update_organization(organization="organization_12345", %{
     domains: ["workos.com"],
