@@ -10,9 +10,9 @@ defmodule WorkOS.Organizations do
 
   ### Parameters
   - params (map)
-    - allow_profiles_outside_organization (boolean) Whether the Connections within this Organization should allow Profiles that do not have a domain that is set
-    - domains (list of strings) List of domains that belong to the organization
     - name (string) A unique, descriptive name for the organization
+    - allow_profiles_outside_organization (boolean - optional) Whether the Connections within this Organization should allow Profiles that do not have a domain that is set
+    - domains (array of strings - optional) List of domains that belong to the organization
 
   ### Example
   WorkOS.Portal.create_organization(%{
@@ -30,7 +30,7 @@ defmodule WorkOS.Organizations do
 
   def create_organization(_params, _opts),
     do: raise(ArgumentError, message: "need both domains(unless external profiles set to true) and name in params")
-
+  
   @doc """
   Delete an organization
 
@@ -80,7 +80,7 @@ defmodule WorkOS.Organizations do
 
   ### Parameters
   - params (map)
-    - domains (list of strings - optional) List of domains that belong to the organization
+    - domains (array of strings - optional) List of domains that belong to the organization
     - limit (number - optional) Upper limit on the number of objects to return, between 1 and 100. The default value is 10
     - before (string - optional) An object ID that defines your place in the list
     - after (string - optional) An object ID that defines your place in the list
