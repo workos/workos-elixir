@@ -21,8 +21,6 @@ defmodule WorkOS.Organizations do
   })
   """
   def create_organization(params, opts \\ [])
-
-  def create_organization(params, opts)
     when (is_map_key(params, :domains) or is_map_key(params, :allow_profiles_outside_organization)) and is_map_key(params, :name) do
       query = process_params(params, [:name, :domains, :allow_profiles_outside_organization])
       post("/organizations", query, opts)
@@ -54,7 +52,10 @@ defmodule WorkOS.Organizations do
   - domains (array of strings - optional if allow_profiles_outside_organization is set to true)
   
   ### Example
-  WorkOS.Organizations.update_organization(organization="organization_12345")
+  WorkOS.Organizations.update_organization(organization="organization_12345", %{
+    domains: ["workos.com"],
+    name: "WorkOS"
+  })
   """
   def update_organization(organization, params, opts \\ [])
     when (is_map_key(params, :domains) or is_map_key(params, :allow_profiles_outside_organization)) and is_map_key(params, :name) do

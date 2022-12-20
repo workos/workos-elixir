@@ -33,7 +33,7 @@ defmodule WorkOS.OrganizationsTest do
     test "returns a 200 status" do 
       assert {:ok, "Success"} = Organizations.create_organization(%{
         name: "Test Corp",
-        domain: ["workos.com"]
+        domains: ["workos.com"]
       })
     end 
   end 
@@ -65,7 +65,8 @@ defmodule WorkOS.OrganizationsTest do
 
     test "returns a 200 status" do
       assert {:ok, "Success"} = Organizations.update_organization('org_12345', %{
-        name: 'Test Corp 2'
+        name: "WorkOS",
+        domains: ["workos.com"],
       })
     end
   end
@@ -81,7 +82,10 @@ defmodule WorkOS.OrganizationsTest do
     end
 
     test "returns a 404 status" do
-      assert {:error, "Error"} = Organizations.update_organization('invalid')
+      assert {:error, "Error"} = Organizations.update_organization('invalid', %{
+        name: "WorkOS",
+        domains: ["workos.com"],
+      })
     end
   end
 
