@@ -59,7 +59,7 @@ defmodule WorkOS.Organizations do
   def update_organization(organization, params, opts \\ [])
     when (is_map_key(params, :domains) or is_map_key(params, :allow_profiles_outside_organization)) and is_map_key(params, :name) do
       query = process_params(params, [:name, :domains, :allow_profiles_outside_organization])
-      post("/organizations/#{organization}", query, opts)
+      put("/organizations/#{organization}", query, opts)
   end
 
   @doc """
@@ -80,7 +80,7 @@ defmodule WorkOS.Organizations do
 
   ### Parameters
   - params (map)
-    - domains (list of strings) List of domains that belong to the organization
+    - domains (list of strings - optional) List of domains that belong to the organization
 
   ### Example
   WorkOS.list_organizations(organization="org_123")

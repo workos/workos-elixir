@@ -47,6 +47,15 @@ defmodule WorkOS.API do
   end
 
   @doc """
+  Performs a PUT request
+  """
+  def put(path, params \\ "", opts \\ []) do
+    client(opts)
+    |> Tesla.put(path, query: params)
+    |> handle_response
+  end
+
+  @doc """
   Processes the HTTP response
   Converts non-200 responses (400+ status code) into error tuples
   """
