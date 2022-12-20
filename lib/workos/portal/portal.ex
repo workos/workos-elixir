@@ -31,8 +31,8 @@ defmodule WorkOS.Portal do
   """
   def generate_link(params, opts \\ [])
 
-  def generate_link(params, opts) when is_map_key(params, :organization) do
-    query = process_params(params, [:intent, :organization, :return_url, :success_url], %{intent: "sso"})
+  def generate_link(params, opts) when is_map_key(params, :organization) and is_map_key(params, :intent) do
+    query = process_params(params, [:intent, :organization, :return_url, :success_url])
     post("/portal/generate_link", query, opts)
   end
 

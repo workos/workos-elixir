@@ -21,6 +21,8 @@ defmodule WorkOS.Organizations do
   })
   """
   def create_organization(params, opts \\ [])
+
+  def create_organization(params, opts)
     when (is_map_key(params, :domains) or is_map_key(params, :allow_profiles_outside_organization)) and is_map_key(params, :name) do
       query = process_params(params, [:name, :domains, :allow_profiles_outside_organization])
       post("/organizations", query, opts)
