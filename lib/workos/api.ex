@@ -51,7 +51,7 @@ defmodule WorkOS.API do
   """
   def put(path, params \\ "", opts \\ []) do
     client(opts)
-    |> Tesla.put(path, query: params)
+    |> Tesla.put(path, params)
     |> handle_response
   end
 

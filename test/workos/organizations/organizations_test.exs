@@ -82,7 +82,7 @@ defmodule WorkOS.OrganizationsTest do
     end
 
     test "returns a 404 status" do
-      assert {:error, "Error"} = Organizations.update_organization('invalid', %{
+      assert {:error, "Not Found"} = Organizations.update_organization('invalid', %{
         name: "WorkOS",
         domains: ["workos.com"],
       })
