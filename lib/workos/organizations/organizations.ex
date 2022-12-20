@@ -24,8 +24,8 @@ defmodule WorkOS.Organizations do
 
   def create_organization(params, opts)
     when (is_map_key(params, :domains) or is_map_key(params, :allow_profiles_outside_organization)) and is_map_key(params, :name) do
-      query = process_params(params, [:name, :domains, :allow_profiles_outside_organization])
-      post("/organizations", query, opts)
+      body = process_params(params, [:name, :domains, :allow_profiles_outside_organization])
+      post("/organizations", body, opts)
   end
 
   def create_organization(_params, _opts),
@@ -62,8 +62,8 @@ defmodule WorkOS.Organizations do
   """
   def update_organization(organization, params, opts \\ [])
     when (is_map_key(params, :domains) or is_map_key(params, :allow_profiles_outside_organization)) and is_map_key(params, :name) do
-      query = process_params(params, [:name, :domains, :allow_profiles_outside_organization])
-      put("/organizations/#{organization}", query, opts)
+      body = process_params(params, [:name, :domains, :allow_profiles_outside_organization])
+      put("/organizations/#{organization}", body, opts)
   end
 
   @doc """
@@ -94,7 +94,7 @@ defmodule WorkOS.Organizations do
   WorkOS.Organizations.list_organizations()
   """
   def list_organizations(params \\ %{}, opts \\ []) do
-    query = process_params(params, [:domains, :limit, :before, :after, :order])
-    get("/organizations", query, opts)
+    body = process_params(params, [:domains, :limit, :before, :after, :order])
+    get("/organizations", body, opts)
   end
 end
