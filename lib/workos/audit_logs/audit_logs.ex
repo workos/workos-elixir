@@ -65,7 +65,11 @@ defmodule WorkOS.AuditLogs do
 
   def create_event(params, opts)
       when is_map_key(params, :organization) and is_map_key(params, :event) do
-    body = process_params(params, [:organization, :event])
+    body =
+      process_params(params, [:event, :organization_id], %{
+        organization_id: params.organization
+      })
+
     post(
       "/audit_logs/events",
       body,
@@ -117,14 +121,19 @@ defmodule WorkOS.AuditLogs do
              is_map_key(params, :range_start) and
              is_map_key(params, :range_end) do
     body =
-      process_params(params, [
-        :organization,
-        :range_start,
-        :range_end,
-        :actions,
-        :actors,
-        :targets
-      ])
+      process_params(
+        params,
+        [
+          :range_start,
+          :range_end,
+          :actions,
+          :actors,
+          :targets
+        ],
+        %{
+          organization_id: params.organization
+        }
+      )
 
     post(
       "/audit_logs/exports",
