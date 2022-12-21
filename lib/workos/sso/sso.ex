@@ -91,11 +91,13 @@ defmodule WorkOS.SSO do
   WorkOS.SSO.get_profile("12345")
   """
   def get_profile(access_token, opts \\ []) do
+    access_token = %{
+      access_token: access_token
+    }
+    opts = Map.merge(opts, access_token)
     get(
       "/sso/profile",
-      %{
-        access_token: access_token
-      },
+      %{},
       opts
     )
   end
