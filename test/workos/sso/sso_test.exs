@@ -112,4 +112,64 @@ defmodule WorkOS.SSOTest do
       end
     end
   end
+
+  describe "#list_connections/1" do 
+    setup do
+      mock(fn
+        %{method: :get, url: "https://api.workos.com/connections"} ->
+          %Tesla.Env{status: 200, body: "Success"}
+      end)
+
+      :ok
+    end
+
+    test "returns a 200 status" do 
+      assert {:ok, "Success"} = SSO.list_connections
+    end 
+  end
+
+  describe "#get_connection/2 with an valid id" do
+    setup do
+      mock(fn
+        %{method: :get, url: "https://api.workos.com/conenctions/conn_12345"} ->
+          %Tesla.Env{status: 200, body: "Success"}
+      end)
+
+      :ok
+    end
+
+    test "returns a 200 status" do
+      assert {:ok, "Success"} = SSO.get_connection('conn_12345')
+    end
+  end
+
+  describe "#delete_connection/1 with a valid id" do
+    setup do
+      mock(fn
+        %{method: :delete, url: "https://api.workos.com/connections/conn_12345"} ->
+          %Tesla.Env{status: 200, body: "Success"}
+      end)
+
+      :ok
+    end
+
+    test "returns a 200 status" do
+      assert {:ok, "Success"} = SSO.delete_connection('conn_12345')
+    end
+  end
+
+  describe "#delete_connection/1 with an invalid id" do
+    setup do
+      mock(fn
+        %{method: :delete, url: "https://api.workos.com/connections/invalid"} ->
+          %Tesla.Env{status: 404, body: "Not Found"}
+      end)
+
+      :ok
+    end
+
+    test "returns a 404 status" do
+      assert {:error, "Not Found"} = SSO.delete_connection('invalid')
+    end
+  end
 end
