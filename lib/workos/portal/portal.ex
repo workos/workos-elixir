@@ -1,6 +1,8 @@
 defmodule WorkOS.Portal do
   import WorkOS.API
 
+  @generate_link_intents ["sso", "dsync", "audit_logs", "log_streams"]
+
   @moduledoc """
   The Portal module provides resource methods for working with the Admin
   Portal product
@@ -32,7 +34,7 @@ defmodule WorkOS.Portal do
   def generate_link(params, opts \\ [])
 
   def generate_link(%{intent: intent} = _params, _opts)
-      when intent not in ["sso", "dsync", "audit_logs", "log_streams"],
+      when intent not in @generate_link_intents,
       do:
         raise(ArgumentError,
           message:
