@@ -2,6 +2,8 @@ defmodule WorkOS.SSO do
   import WorkOS.API
   require Logger
 
+  @provider_values ["GoogleOAuth", "MicrosoftOAuth"]
+
   @moduledoc """
   The SSO module provides convenience methods for working with the WorkOS
   SSO platform. You'll need a valid API key, a client ID, and to have
@@ -46,20 +48,21 @@ defmodule WorkOS.SSO do
   """
   def get_authorization_url(params, opts \\ [])
 
+  def get_authorization_url(%{provider: provider} = _params, _opts)
+    when provider not in @provider_values,
+      do:
+        raise(ArgumentError,
+          message:
+          "#{provider} is not a valid value. `provider` must be in #{@provider_values}"
+        )
+
   def get_authorization_url(params, opts)
+    when is_map_key(params, :domain) or is_map_key(params, :provider) or
+      is_map_key(params, :connection) or is_map_key(params, :organization) do
+
     if is_map_key(params, :domain) do
       Logger.warn("[DEPRECATION] `domain` is deprecated. Please use `organization` instead.")
     end
-
-    if is_map_key(params, :provider) do
-      providers = ['GoogleOAuth', 'MicrosoftOAuth']
-      if !Enum.member(providers, params[:provider]) do
-        raise(ArgumentError, message: "#{params[:provider]} is not a valid value. `provider` must be in #{providers}")
-      end
-    end
-
-    when is_map_key(params, :domain) or is_map_key(params, :provider) or
-      is_map_key(params, :connection) or is_map_key(params, :organization) do
 
     query =
       process_params(
@@ -80,10 +83,10 @@ defmodule WorkOS.SSO do
 
   @doc """
   Fetch the user profile details with an access token.
-    
+
   ### Parameters
   - access_token (string) An access token that can be exchanged for a user profile
-    
+
   ### Example
   WorkOS.SSO.get_profile("12345")
   """
@@ -131,7 +134,7 @@ defmodule WorkOS.SSO do
      - before (string - optional) An object ID that defines your place in the list
      - after (string - optional) An object ID that defines your place in the list
      - order ("asc" or "desc" - optional) Supported values are "asc" and "desc" for ascending and descending order respectively
-  
+
    ### Example
    WorkOS.SSO.list_connections()
    """
@@ -142,7 +145,7 @@ defmodule WorkOS.SSO do
 
  @doc """
    Get a connection
-   
+
    ### Parameters
    - connection (string) The ID of the connection to retrieve
 
