@@ -22,9 +22,9 @@ defmodule WorkOS.API do
   @doc """
   Performs a GET request
   """
-  def get(path, params \\ [], opts \\ []) do
+  def get(path, query \\ [], opts \\ []) do
     client(opts)
-    |> Tesla.get(path, query: params)
+    |> Tesla.get(path, query: query)
     |> handle_response
   end
 
@@ -43,6 +43,15 @@ defmodule WorkOS.API do
   def delete(path, params \\ "", opts \\ []) do
     client(opts)
     |> Tesla.delete(path, query: params)
+    |> handle_response
+  end
+
+  @doc """
+  Performs a PUT request
+  """
+  def put(path, params \\ "", opts \\ []) do
+    client(opts)
+    |> Tesla.put(path, params)
     |> handle_response
   end
 
