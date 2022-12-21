@@ -22,9 +22,9 @@ defmodule WorkOS.API do
   @doc """
   Performs a GET request
   """
-  def get(path, params \\ [], opts \\ []) do
+  def get(path, query \\ [], opts \\ []) do
     client(opts)
-    |> Tesla.get(path, query: params)
+    |> Tesla.get(path, query: query)
     |> handle_response
   end
 

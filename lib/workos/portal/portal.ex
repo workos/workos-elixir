@@ -14,7 +14,7 @@ defmodule WorkOS.Portal do
   ### Parameters
   - params (map)
     - intent (string) The access scope for the generated Admin Portal
-    link. Valid values are: ["sso"]
+    link. Valid values are: ["sso", "dsync", "audit_logs", "log_streams"]
     - organization (string) The ID of the organization the Admin
     Portal link will be generated for.
     - return_url (string) The URL that the end user will be redirected to upon
@@ -31,7 +31,16 @@ defmodule WorkOS.Portal do
   """
   def generate_link(params, opts \\ [])
 
-  def generate_link(params, opts) when is_map_key(params, :organization) and is_map_key(params, :intent) do
+  def generate_link(%{intent: intent} = _params, _opts)
+      when intent not in ["sso", "dsync", "audit_logs", "log_streams"],
+      do:
+        raise(ArgumentError,
+          message:
+            "invalid intent, must be one of the following: sso, dsync, audit_logs or log_streams"
+        )
+
+  def generate_link(params, opts)
+      when is_map_key(params, :organization) and is_map_key(params, :intent) do
     query = process_params(params, [:intent, :organization, :return_url, :success_url])
     post("/portal/generate_link", query, opts)
   end
