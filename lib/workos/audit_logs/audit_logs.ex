@@ -65,19 +65,16 @@ defmodule WorkOS.AuditLogs do
 
   def create_event(params, opts)
       when is_map_key(params, :organization) and is_map_key(params, :event) do
+    body = process_params(params, [:organization, :event])
     post(
       "/audit_logs/events",
-      %{
-        organization_id: params.organization,
-        event: params.event
-      },
+      body,
       opts
     )
   end
 
   def create_event(_params, _opts),
     do: raise(ArgumentError, message: "Missing required parameters: organization, event")
-
 
   @doc """
   Create an Export of Audit Log Events.
@@ -88,9 +85,9 @@ defmodule WorkOS.AuditLogs do
      that the event is associated with.
     - range_start (string) ISO-8601 value for start of the export range.
     - range_end (string) ISO-8601 value for end of the export range.
-    - actions (list) List of actions to filter against.
-    - actors (list) List of actors to filter against.
-    - targets (list) List of targets to filter against.
+    - actions (list of strings) List of actions to filter against.
+    - actors (list of strings) List of actors to filter against.
+    - targets (list of strings) List of targets to filter against.
 
   ### Examples
 
@@ -114,26 +111,33 @@ defmodule WorkOS.AuditLogs do
   """
 
   def create_export(params, opts \\ [])
+
   def create_export(params, opts)
       when is_map_key(params, :organization) and
              is_map_key(params, :range_start) and
              is_map_key(params, :range_end) do
+    body =
+      process_params(params, [
+        :organization,
+        :range_start,
+        :range_end,
+        :actions,
+        :actors,
+        :targets
+      ])
+
     post(
       "/audit_logs/exports",
-      %{
-        organization_id: params.organization,
-        range_start: params.range_start,
-        range_end: params.range_end,
-        actions: params.actions,
-        actors: params.actors,
-        targets: params.targets
-      },
+      body,
       opts
     )
   end
 
   def create_export(_params, _opts),
-    do: raise(ArgumentError, message: "Missing required parameters: organization, range_start, range_end")
+    do:
+      raise(ArgumentError,
+        message: "Missing required parameters: organization, range_start, range_end"
+      )
 
   @doc """
   Retrieve an Export of Audit Log Events.
@@ -156,11 +160,11 @@ defmodule WorkOS.AuditLogs do
   """
 
   def get_export(id, opts \\ [])
+
   def get_export(id, opts) when is_binary(id) do
     get("/audit_logs/exports/#{id}", opts)
   end
 
   def get_export(_id, _opts),
     do: raise(ArgumentError, message: "Missing required parameters: id")
-
 end
