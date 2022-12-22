@@ -8,9 +8,11 @@ defmodule WorkOS.API do
   """
   def client(opts \\ []) do
     auth = WorkOS.api_key(opts)
-    if is_map_key(opts, :access_token) do
-      auth = opts[:access_token]
+
+    if opts[:access_token] do
+      ^auth = opts[:access_token]
     end
+
     middleware = [
       {Tesla.Middleware.BaseUrl, WorkOS.base_url()},
       Tesla.Middleware.JSON,
