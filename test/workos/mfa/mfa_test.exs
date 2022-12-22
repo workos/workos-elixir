@@ -68,7 +68,7 @@ defmodule WorkOS.MFATest do
         url:
           "https://api.workos.com/auth/factors/auth_factor_01FVYZ5QM8N98T9ME5BCB2BBMJ/challenge",
         body:
-          "{\"authentication_factor_id\":\"auth_factor_01FVYZ5QM8N98T9ME5BCB2BBMJ\",\"sms_template\":\"sms_template\"}"
+          "{\"authentication_factor_id\":\"auth_factor_01FVYZ5QM8N98T9ME5BCB2BBMJ\",\"sms_template\":\"Your Foo Corp one-time code is {{code}}\"}"
       } ->
         %Tesla.Env{
           status: 201,
@@ -250,7 +250,7 @@ defmodule WorkOS.MFATest do
               }} =
                WorkOS.MFA.challenge_factor(%{
                  authentication_factor_id: "auth_factor_01FVYZ5QM8N98T9ME5BCB2BBMJ",
-                 sms_template: "sms_template"
+                 sms_template: "Your Foo Corp one-time code is {{code}}"
                })
     end
   end
