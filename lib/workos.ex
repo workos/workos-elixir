@@ -1,4 +1,8 @@
 defmodule WorkOS do
+  @moduledoc """
+  Use the WorkOS module to authenticate your requests to the WorkOS API
+  """
+
   def host, do: Application.get_env(:workos, :host)
   def base_url, do: "https://" <> Application.get_env(:workos, :host)
   def adapter, do: Application.get_env(:workos, :adapter) || Tesla.Adapter.Hackney
