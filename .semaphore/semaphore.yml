@@ -11,6 +11,7 @@ blocks:
     task:
       jobs:
         - name: Format and lint
+          commands:
             - checkout
             - mix do local.hex --force, local.rebar --force
             - mix do deps.get, deps.compile
