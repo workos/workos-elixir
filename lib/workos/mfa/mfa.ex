@@ -145,6 +145,7 @@ defmodule WorkOS.MFA do
 
       iex> WorkOS.MFA.challenge_factor(%{
       ...>  authentication_factor_id: "auth_factor_01FVYZ5QM8N98T9ME5BCB2BBMJ",
+      ...>  sms_template: "Your Foo Corp one-time code is {{code}}"
       ...> })
 
       {:ok, %{
