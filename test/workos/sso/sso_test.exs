@@ -2,6 +2,8 @@ defmodule WorkOS.SSOTest do
   use ExUnit.Case
   doctest WorkOS.SSO
   alias WorkOS.SSO
+  import Tesla.Mock
+
 
   def parse_uri(url) do
     uri = URI.parse(url)
@@ -12,7 +14,7 @@ defmodule WorkOS.SSOTest do
     setup do
       {:ok, url} =
         SSO.get_authorization_url(
-          %{domain: "test", provider: "provider", redirect_uri: "project", state: "nope"},
+          %{domain: "test", provider: "GoogleOAuth", redirect_uri: "project", state: "nope"},
           client_id: "8vf9xg"
         )
 
@@ -30,7 +32,7 @@ defmodule WorkOS.SSOTest do
       {:ok, url} =
         SSO.get_authorization_url(%{
           domain: "test",
-          provider: "provider",
+          provider: "GoogleOAuth",
           redirect_uri: "project",
           state: "nope"
         })
@@ -57,7 +59,7 @@ defmodule WorkOS.SSOTest do
       {:ok, url} =
         SSO.get_authorization_url(%{
           domain: "test",
-          provider: "provider",
+          provider: "GoogleOAuth",
           redirect_uri: "project",
           state: "nope"
         })
@@ -113,7 +115,7 @@ defmodule WorkOS.SSOTest do
     end
   end
 
-  describe "#list_connections/1" do 
+  describe "#list_connections/1" do
     setup do
       mock(fn
         %{method: :get, url: "https://api.workos.com/connections"} ->
@@ -123,15 +125,15 @@ defmodule WorkOS.SSOTest do
       :ok
     end
 
-    test "returns a 200 status" do 
+    test "returns a 200 status" do
       assert {:ok, "Success"} = SSO.list_connections
-    end 
+    end
   end
 
   describe "#get_connection/2 with an valid id" do
     setup do
       mock(fn
-        %{method: :get, url: "https://api.workos.com/conenctions/conn_12345"} ->
+        %{method: :get, url: "https://api.workos.com/connections/conn_12345"} ->
           %Tesla.Env{status: 200, body: "Success"}
       end)
 

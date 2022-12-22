@@ -94,7 +94,7 @@ defmodule WorkOS.SSO do
     access_token = %{
       access_token: access_token
     }
-    opts = Map.merge(opts, access_token)
+    opts = opts ++ access_token
     get(
       "/sso/profile",
       %{},
