@@ -4,7 +4,6 @@ defmodule WorkOS.SSOTest do
   alias WorkOS.SSO
   import Tesla.Mock
 
-
   def parse_uri(url) do
     uri = URI.parse(url)
     %URI{uri | query: URI.query_decoder(uri.query) |> Enum.to_list()}
@@ -126,7 +125,7 @@ defmodule WorkOS.SSOTest do
     end
 
     test "returns a 200 status" do
-      assert {:ok, "Success"} = SSO.list_connections
+      assert {:ok, "Success"} = SSO.list_connections()
     end
   end
 
