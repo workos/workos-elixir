@@ -16,23 +16,18 @@ defmodule WorkOS.DirectorySync do
   - params (map)
     - directory (string) the id of the directory to list groups for
     - user (string) the id of the user to list groups for
+    - limit (number - optional) Upper limit on the number of objects to return, between 1 and 100. The default value is 10
+    - before (string - optional) An object ID that defines your place in the list
+    - after (string - optional) An object ID that defines your place in the list
+    - order ("asc" or "desc" - optional) Supported values are "asc" and "desc" for ascending and descending order respectively
 
   ### Example
   WorkOS.DirectorySync.list_groups(%{directory: "directory_12345"})
   """
-  def list_groups(params, opts \\ [])
-
-  def list_groups(params, opts)
-      when is_map_key(params, :directory) or is_map_key(params, :user) do
-    query =
-      params
-      |> Map.take([:directory, :user])
-
+  def list_groups(params \\ %{}, opts \\ []) do
+    query = process_params(params, [:directory, :user, :limit, :before, :after, :order])
     get("/directory_groups", query, opts)
   end
-
-  def list_groups(_params, _opts),
-    do: raise(ArgumentError, message: "need either domain or user in params")
 
   @doc """
   Retrieve directory users.
@@ -41,23 +36,18 @@ defmodule WorkOS.DirectorySync do
   - params (map)
     - directory (string) the id of the directory to list users for
     - group (string) the id of the group to list users for
+    - limit (number - optional) Upper limit on the number of objects to return, between 1 and 100. The default value is 10
+    - before (string - optional) An object ID that defines your place in the list
+    - after (string - optional) An object ID that defines your place in the list
+    - order ("asc" or "desc" - optional) Supported values are "asc" and "desc" for ascending and descending order respectively
 
   ### Example
   WorkOS.DirectorySync.list_users(%{directory: "directory_12345"})
   """
-  def list_users(params, opts \\ [])
-
-  def list_users(params, opts)
-      when is_map_key(params, :directory) or is_map_key(params, :group) do
-    query =
-      params
-      |> Map.take([:directory, :user])
-
+  def list_users(params \\ %{}, opts \\ []) do
+    query = process_params(params, [:directory, :group, :limit, :before, :after, :order])
     get("/directory_users", query, opts)
   end
-
-  def list_users(_params, _opts),
-    do: raise(ArgumentError, message: "need either directory or group in params")
 
   @doc """
   Retrieve directories.
@@ -66,23 +56,21 @@ defmodule WorkOS.DirectorySync do
   - params (map)
     - domain (string) the id of the domain to list directories for
     - search (string) the keyword to search directories for
+    - limit (number - optional) Upper limit on the number of objects to return, between 1 and 100. The default value is 10
+    - before (string - optional) An object ID that defines your place in the list
+    - after (string - optional) An object ID that defines your place in the list
+    - order ("asc" or "desc" - optional) Supported values are "asc" and "desc" for ascending and descending order respectively
+    - organization_id (string) the id of the organization to list directories for
 
   ### Example
   WorkOS.DirectorySync.list_directories(%{domain: "workos.com"})
   """
-  def list_directories(params, opts \\ [])
-
-  def list_directories(params, opts)
-      when is_map_key(params, :domain) or is_map_key(params, :search) do
+  def list_directories(params \\ %{}, opts \\ []) do
     query =
-      params
-      |> Map.take([:domain, :search])
+      process_params(params, [:domain, :search, :limit, :before, :after, :order, :organization_id])
 
     get("/directories", query, opts)
   end
-
-  def list_directories(_params, _opts),
-    do: raise(ArgumentError, message: "need either domain or search in params")
 
   @doc """
   Retrieve the directory group with the given ID.
@@ -108,6 +96,19 @@ defmodule WorkOS.DirectorySync do
   """
   def get_group(group, opts \\ []) do
     get("/directory_groups/#{group}", %{}, opts)
+  end
+
+  @doc """
+  Retrieve the directory with the given ID.
+
+  ### Parameters
+  - directory (string) the id of the directory to retrieve
+
+  ### Example
+  WorkOS.DirectorySync.get_directory("directory_12345")
+  """
+  def get_directory(directory, opts \\ []) do
+    get("/directories/#{directory}", %{}, opts)
   end
 
   @doc """
