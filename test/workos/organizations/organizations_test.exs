@@ -5,7 +5,7 @@ defmodule WorkOS.OrganizationsTest do
 
   alias WorkOS.Organizations
 
-  describe "#list_organizations/1" do 
+  describe "#list_organizations/1" do
     setup do
       mock(fn
         %{method: :get, url: "https://api.workos.com/organizations"} ->
@@ -15,12 +15,12 @@ defmodule WorkOS.OrganizationsTest do
       :ok
     end
 
-    test "returns a 200 status" do 
-      assert {:ok, "Success"} = Organizations.list_organizations
-    end 
+    test "returns a 200 status" do
+      assert {:ok, "Success"} = Organizations.list_organizations()
+    end
   end
 
-  describe "#create_organization/1 with a name and domain" do 
+  describe "#create_organization/1 with a name and domain" do
     setup do
       mock(fn
         %{method: :post, url: "https://api.workos.com/organizations"} ->
@@ -30,13 +30,14 @@ defmodule WorkOS.OrganizationsTest do
       :ok
     end
 
-    test "returns a 200 status" do 
-      assert {:ok, "Success"} = Organizations.create_organization(%{
-        name: "Test Corp",
-        domains: ["workos.com"]
-      })
-    end 
-  end 
+    test "returns a 200 status" do
+      assert {:ok, "Success"} =
+               Organizations.create_organization(%{
+                 name: "Test Corp",
+                 domains: ["workos.com"]
+               })
+    end
+  end
 
   describe "#get_organization/2 with an valid id" do
     setup do
@@ -64,10 +65,11 @@ defmodule WorkOS.OrganizationsTest do
     end
 
     test "returns a 200 status" do
-      assert {:ok, "Success"} = Organizations.update_organization('org_12345', %{
-        name: "WorkOS",
-        domains: ["workos.com"],
-      })
+      assert {:ok, "Success"} =
+               Organizations.update_organization('org_12345', %{
+                 name: "WorkOS",
+                 domains: ["workos.com"]
+               })
     end
   end
 
@@ -82,10 +84,11 @@ defmodule WorkOS.OrganizationsTest do
     end
 
     test "returns a 404 status" do
-      assert {:error, "Not Found"} = Organizations.update_organization('invalid', %{
-        name: "WorkOS",
-        domains: ["workos.com"],
-      })
+      assert {:error, "Not Found"} =
+               Organizations.update_organization('invalid', %{
+                 name: "WorkOS",
+                 domains: ["workos.com"]
+               })
     end
   end
 

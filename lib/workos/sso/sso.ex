@@ -49,17 +49,15 @@ defmodule WorkOS.SSO do
   def get_authorization_url(params, opts \\ [])
 
   def get_authorization_url(%{provider: provider} = _params, _opts)
-    when provider not in @provider_values,
+      when provider not in @provider_values,
       do:
         raise(ArgumentError,
-          message:
-          "#{provider} is not a valid value. `provider` must be in #{@provider_values}"
+          message: "#{provider} is not a valid value. `provider` must be in #{@provider_values}"
         )
 
   def get_authorization_url(params, opts)
-    when is_map_key(params, :domain) or is_map_key(params, :provider) or
-      is_map_key(params, :connection) or is_map_key(params, :organization) do
-
+      when is_map_key(params, :domain) or is_map_key(params, :provider) or
+             is_map_key(params, :connection) or is_map_key(params, :organization) do
     if is_map_key(params, :domain) do
       Logger.warn("[DEPRECATION] `domain` is deprecated. Please use `organization` instead.")
     end
@@ -67,7 +65,17 @@ defmodule WorkOS.SSO do
     query =
       process_params(
         params,
-        [:domain, :provider, :connection, :organization, :client_id, :redirect_uri, :state, :domain_hint, :login_hint],
+        [
+          :domain,
+          :provider,
+          :connection,
+          :organization,
+          :client_id,
+          :redirect_uri,
+          :state,
+          :domain_hint,
+          :login_hint
+        ],
         %{
           client_id: WorkOS.client_id(opts),
           response_type: "code"
@@ -79,7 +87,10 @@ defmodule WorkOS.SSO do
   end
 
   def get_authorization_url(_params, _opts),
-    do: raise(ArgumentError, message: "Either connection, domain, provider, or organization required in params")
+    do:
+      raise(ArgumentError,
+        message: "Either connection, domain, provider, or organization required in params"
+      )
 
   @doc """
   Fetch the user profile details with an access token.
@@ -94,7 +105,9 @@ defmodule WorkOS.SSO do
     access_token = %{
       access_token: access_token
     }
+
     opts = opts ++ access_token
+
     get(
       "/sso/profile",
       %{},
@@ -125,49 +138,59 @@ defmodule WorkOS.SSO do
   end
 
   @doc """
-   List connections
+  List connections
 
-   ### Parameters
-   - params (map)
-     - connection_type (string - optional) Authentication service provider descriptor
-     - domain (string - optional) The domain of the connection to be retrieved
-     - organization_id (string - optional) The id of the organization of the connections to be retrieved
-     - limit (number - optional) Upper limit on the number of objects to return, between 1 and 100. The default value is 10
-     - before (string - optional) An object ID that defines your place in the list
-     - after (string - optional) An object ID that defines your place in the list
-     - order ("asc" or "desc" - optional) Supported values are "asc" and "desc" for ascending and descending order respectively
+  ### Parameters
+  - params (map)
+    - connection_type (string - optional) Authentication service provider descriptor
+    - domain (string - optional) The domain of the connection to be retrieved
+    - organization_id (string - optional) The id of the organization of the connections to be retrieved
+    - limit (number - optional) Upper limit on the number of objects to return, between 1 and 100. The default value is 10
+    - before (string - optional) An object ID that defines your place in the list
+    - after (string - optional) An object ID that defines your place in the list
+    - order ("asc" or "desc" - optional) Supported values are "asc" and "desc" for ascending and descending order respectively
 
-   ### Example
-   WorkOS.SSO.list_connections()
-   """
-   def list_connections(params \\ %{}, opts \\ []) do
-     query = process_params(params, [:connection_type, :domain, :organization_id, :limit, :before, :after, :order])
-     get("/connections", query, opts)
-   end
+  ### Example
+  WorkOS.SSO.list_connections()
+  """
+  def list_connections(params \\ %{}, opts \\ []) do
+    query =
+      process_params(params, [
+        :connection_type,
+        :domain,
+        :organization_id,
+        :limit,
+        :before,
+        :after,
+        :order
+      ])
 
- @doc """
-   Get a connection
+    get("/connections", query, opts)
+  end
 
-   ### Parameters
-   - connection (string) The ID of the connection to retrieve
+  @doc """
+  Get a connection
 
-   ### Example
-   WorkOS.SSO.get_connection(connection="conn_123")
-   """
-   def get_connection(connection, opts \\ []) do
-     get("/connections/#{connection}", %{}, opts)
-   end
+  ### Parameters
+  - connection (string) The ID of the connection to retrieve
 
-   @doc """
-   Delete a connection
+  ### Example
+  WorkOS.SSO.get_connection(connection="conn_123")
+  """
+  def get_connection(connection, opts \\ []) do
+    get("/connections/#{connection}", %{}, opts)
+  end
 
-   ### Parameters
-   - connection (string) the ID of the connection to delete
+  @doc """
+  Delete a connection
 
-   ### Example
-   WorkOS.SSO.delete_connection("conn_12345")
-   """
-   def delete_connection(connection, opts \\ []) do
-     delete("/connections/#{connection}", %{}, opts)
-   end
+  ### Parameters
+  - connection (string) the ID of the connection to delete
+
+  ### Example
+  WorkOS.SSO.delete_connection("conn_12345")
+  """
+  def delete_connection(connection, opts \\ []) do
+    delete("/connections/#{connection}", %{}, opts)
+  end
 end

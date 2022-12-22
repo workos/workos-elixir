@@ -1,5 +1,5 @@
-defmodule WorkOS.Organizations do 
-  import WorkOS.API 
+defmodule WorkOS.Organizations do
+  import WorkOS.API
 
   @moduledoc """
   The Organizations module provides resource methods for working with Organizations
@@ -23,14 +23,19 @@ defmodule WorkOS.Organizations do
   def create_organization(params, opts \\ [])
 
   def create_organization(params, opts)
-    when (is_map_key(params, :domains) or is_map_key(params, :allow_profiles_outside_organization)) and is_map_key(params, :name) do
-      body = process_params(params, [:name, :domains, :allow_profiles_outside_organization])
-      post("/organizations", body, opts)
+      when (is_map_key(params, :domains) or
+              is_map_key(params, :allow_profiles_outside_organization)) and
+             is_map_key(params, :name) do
+    body = process_params(params, [:name, :domains, :allow_profiles_outside_organization])
+    post("/organizations", body, opts)
   end
 
   def create_organization(_params, _opts),
-    do: raise(ArgumentError, message: "need both domains (unless external profiles set to true) and name in params")
-  
+    do:
+      raise(ArgumentError,
+        message: "need both domains (unless external profiles set to true) and name in params"
+      )
+
   @doc """
   Delete an organization
 
@@ -61,14 +66,16 @@ defmodule WorkOS.Organizations do
   })
   """
   def update_organization(organization, params, opts \\ [])
-    when (is_map_key(params, :domains) or is_map_key(params, :allow_profiles_outside_organization)) and is_map_key(params, :name) do
-      body = process_params(params, [:name, :domains, :allow_profiles_outside_organization])
-      put("/organizations/#{organization}", body, opts)
+      when (is_map_key(params, :domains) or
+              is_map_key(params, :allow_profiles_outside_organization)) and
+             is_map_key(params, :name) do
+    body = process_params(params, [:name, :domains, :allow_profiles_outside_organization])
+    put("/organizations/#{organization}", body, opts)
   end
 
   @doc """
   Get an organization
-  
+
   ### Parameters
   - organization_id (string) the id of the organization to update
 
@@ -89,7 +96,7 @@ defmodule WorkOS.Organizations do
     - before (string - optional) An object ID that defines your place in the list
     - after (string - optional) An object ID that defines your place in the list
     - order ("asc" or "desc" - optional) Supported values are "asc" and "desc" for ascending and descending order respectively
- 
+
   ### Example
   WorkOS.Organizations.list_organizations()
   """
