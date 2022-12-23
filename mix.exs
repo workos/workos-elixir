@@ -5,7 +5,7 @@ defmodule WorkOS.MixProject do
     [
       name: "WorkOS SDK for Elixir",
       app: :workos,
-      version: "0.1.3",
+      version: "0.2.0",
       elixir: "~> 1.11",
       start_permanent: Mix.env() == :prod,
       description: description(),
