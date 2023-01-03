@@ -52,7 +52,7 @@ defmodule WorkOS.Webhooks do
     end
   end
 
-  @sig_header_regex ~r/t=(?<ts>\d+).*v1=(?<sh>.*)/
+  @sig_header_regex ~r/t=(?<ts>\d+).+v1=(?<sh>.+)/
   defp get_timestamp_and_signature_hash(sig_header) do
     @sig_header_regex
     |> Regex.named_captures(sig_header)
@@ -60,11 +60,7 @@ defmodule WorkOS.Webhooks do
   end
 
   defp parse_captures(%{"ts" => timestamp, "sh" => signature_hash}) do
-    if String.length(signature_hash) > 0 do
-      {:ok, %{timestamp: timestamp, signature_hash: signature_hash}}
-    else
-      {:error, "Signature or timestamp missing"}
-    end
+    {:ok, %{timestamp: timestamp, signature_hash: signature_hash}}
   end
 
   defp parse_captures(_), do: {:error, "Signature or timestamp missing"}
