@@ -173,4 +173,25 @@ defmodule WorkOS.SSOTest do
       assert {:error, "Not Found"} = SSO.delete_connection('invalid')
     end
   end
+
+  describe "#get_profile/2" do
+    setup do
+      access_token = "test_access_token"
+
+      mock(fn
+        %{
+          method: :get,
+          url: "https://api.workos.com/sso/profile",
+          headers: [{"Authorization", "Bearer test_access_token"}]
+        } ->
+          %Tesla.Env{status: 200, body: "Success"}
+      end)
+
+      %{access_token: access_token}
+    end
+
+    test "returns a 200 status", %{access_token: access_token} do
+      assert {:ok, "Success"} = SSO.get_profile(access_token)
+    end
+  end
 end
