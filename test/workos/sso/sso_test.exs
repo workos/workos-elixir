@@ -177,12 +177,13 @@ defmodule WorkOS.SSOTest do
   describe "#get_profile/2" do
     setup do
       access_token = "test_access_token"
+      auth_header = "Bearer #{access_token}"
 
       mock(fn
         %{
           method: :get,
           url: "https://api.workos.com/sso/profile",
-          headers: [{"Authorization", "Bearer test_access_token"}]
+          headers: [{"Authorization", ^auth_header}]
         } ->
           %Tesla.Env{status: 200, body: "Success"}
       end)
