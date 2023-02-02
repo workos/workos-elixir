@@ -7,12 +7,7 @@ defmodule WorkOS.API do
   Generates the Tesla client used to make requests to WorkOS
   """
   def client(opts \\ []) do
-    auth =
-      if opts[:access_token] do
-        opts[:access_token]
-      else
-        WorkOS.api_key(opts)
-      end
+    auth = opts |> Keyword.get(:access_token, WorkOS.api_key(opts))
 
     middleware = [
       {Tesla.Middleware.BaseUrl, WorkOS.base_url()},
