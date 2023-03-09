@@ -13,7 +13,12 @@ defmodule WorkOS.SSOTest do
     setup do
       {:ok, url} =
         SSO.get_authorization_url(
-          %{domain: "test", provider: "GoogleOAuth", redirect_uri: "project", state: "nope"},
+          %{
+            organization: "test",
+            provider: "GoogleOAuth",
+            redirect_uri: "project",
+            state: "nope"
+          },
           client_id: "8vf9xg"
         )
 
@@ -30,7 +35,7 @@ defmodule WorkOS.SSOTest do
     setup do
       {:ok, url} =
         SSO.get_authorization_url(%{
-          domain: "test",
+          organization: "test",
           provider: "GoogleOAuth",
           redirect_uri: "project",
           state: "nope"
@@ -49,7 +54,7 @@ defmodule WorkOS.SSOTest do
 
     test "returns the expected query string", %{url: %URI{query: query}} do
       params = URI.query_decoder(query) |> Enum.to_list()
-      assert {"domain", "test"} in params
+      assert {"organization", "test"} in params
     end
   end
 
@@ -57,7 +62,7 @@ defmodule WorkOS.SSOTest do
     setup do
       {:ok, url} =
         SSO.get_authorization_url(%{
-          domain: "test",
+          organization: "test",
           provider: "GoogleOAuth",
           redirect_uri: "project",
           state: "nope"
@@ -76,7 +81,7 @@ defmodule WorkOS.SSOTest do
 
     test "returns the expected query string", %{url: %URI{query: query}} do
       params = URI.query_decoder(query) |> Enum.to_list()
-      assert {"domain", "test"} in params
+      assert {"organization", "test"} in params
     end
   end
 
