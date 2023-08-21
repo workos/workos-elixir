@@ -1,11 +1,14 @@
 defmodule WorkOS.MixProject do
   use Mix.Project
 
+  @version "0.3.0"
+  @source_url "https://github.com/workos/workos-elixir"
+
   def project do
     [
       name: "WorkOS SDK for Elixir",
       app: :workos,
-      version: "0.3.0",
+      version: @version,
       elixir: "~> 1.11",
       start_permanent: Mix.env() == :prod,
       description: description(),
@@ -13,7 +16,9 @@ defmodule WorkOS.MixProject do
       deps: deps(),
       source_url: "https://github.com/workos-inc/workos-elixir/",
       homepage_url: "https://workos.com",
-      docs: docs()
+      docs: docs(),
+      source_ref: "#{@version}",
+      source_url: @source_url
     ]
   end
 
@@ -60,11 +65,11 @@ defmodule WorkOS.MixProject do
       files: ["lib", "LICENSE*", "mix.exs", "README*"],
       licenses: ["MIT"],
       links: %{
-        "GitHub" => "https://github.com/workos-inc/workos-elixir",
-        "Online documentation" => "https://workos.com/docs",
+        "GitHub" => @source_url,
+        "Documentation" => "https://workos.com/docs",
         "Homepage" => "https://workos.com"
       },
-      maintainers: ["Conner Fritz"]
+      maintainers: ["Laura Beatris", "Blair Lunceford", "Jacobia Johnson"]
     ]
   end
 end
