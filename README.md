@@ -1,7 +1,5 @@
 # WorkOS Elixir Library
 
-> **Note:** this an experimental SDK and breaking changes may occur. We don't recommend using this in production since we can't guarantee its stability.
-
 The WorkOS library for Elixir provides convenient access to the WorkOS API from applications written in Elixir.
 
 ## Documentation
@@ -10,14 +8,20 @@ See the [API Reference](https://workos.com/docs/reference/client-libraries) for 
 
 ## Installation
 
-Add this package to the list of dependencies in your `mix.exs` file:
+The hex package can be found here: https://hex.pm/packages/workos
+
+To use WorkOS SDK with your projects, edit your mix.exs file and add it as a dependency. WorkOS SDK does not install a JSON library nor HTTP client by itself. It will default to trying to use Jason for JSON operations and Hackney for HTTP requests, but can be configured to use other ones. To use the default ones, do:
 
 ```ex
-def deps do
-  [{:workos, "~> 0.2.0"}]
+defp deps do
+  [
+    # ...
+    {:workos, "~> 1.0.0"},
+    {:jason, "~> 1.1"},
+    {:hackney, "~> 1.8"},
+  ]
 end
 ```
-The hex package can be found here: https://hex.pm/packages/workos
 
 ## Configuration
 
