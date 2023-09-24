@@ -9,13 +9,6 @@ defmodule WorkOS.Application do
   def start(_type, _opts) do
     http_client = Config.client()
 
-    maybe_http_client_spec =
-      if Code.ensure_loaded?(http_client) and function_exported?(http_client, :child_spec, 0) do
-        [http_client.child_spec()]
-      else
-        []
-      end
-
     if http_client == WorkOS.HackneyClient do
       unless Code.ensure_loaded?(:hackney) do
         raise """

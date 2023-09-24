@@ -4,57 +4,44 @@ defmodule WorkOS.API do
   """
 
   @doc """
-  Generates the Tesla client used to make requests to WorkOS
+  Generates the HTTP client used to make requests to WorkOS
   """
-  def client(opts \\ []) do
+  def client(http_client, opts \\ []) do
     auth = opts |> Keyword.get(:access_token, WorkOS.api_key(opts))
 
-    middleware = [
-      {Tesla.Middleware.BaseUrl, WorkOS.base_url()},
-      Tesla.Middleware.JSON,
-      {Tesla.Middleware.Headers,
-       [
-         {"Authorization", "Bearer " <> auth}
-       ]}
-    ]
-
-    Tesla.client(middleware, WorkOS.adapter())
+    http_client.new(opts: opts, auth: auth)
   end
 
   @doc """
   Performs a GET request
   """
-  def get(path, query \\ [], opts \\ []) do
-    client(opts)
-    |> Tesla.get(path, query: query)
-    |> handle_response
+  def get(http_client, url, query \\ [], opts \\ []) do
+    http_client.get(url, query, opts)
+    |> handle_response()
   end
 
   @doc """
   Performs a POST request
   """
-  def post(path, params \\ "", opts \\ []) do
-    client(opts)
-    |> Tesla.post(path, params)
-    |> handle_response
+  def post(http_client, url, body, opts \\ []) do
+    http_client.post(url, body, opts)
+    |> handle_response()
   end
 
   @doc """
   Performs a DELETE request
   """
-  def delete(path, params \\ "", opts \\ []) do
-    client(opts)
-    |> Tesla.delete(path, query: params)
-    |> handle_response
+  def delete(http_client, url, query \\ [], opts \\ []) do
+    http_client.delete(url, query, opts)
+    |> handle_response()
   end
 
   @doc """
   Performs a PUT request
   """
-  def put(path, params \\ "", opts \\ []) do
-    client(opts)
-    |> Tesla.put(path, params)
-    |> handle_response
+  def put(http_client, url, body, opts \\ []) do
+    http_client.put(url, body, opts)
+    |> handle_response()
   end
 
   @doc """

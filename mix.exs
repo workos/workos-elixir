@@ -24,7 +24,7 @@ defmodule WorkOS.MixProject do
 
   def application do
     [
-      mod: {Sentry.Application, []},
+      mod: {WorkOS.Application, []},
       extra_applications: [:logger],
       env: env()
     ]

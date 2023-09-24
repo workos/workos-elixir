@@ -1,5 +1,5 @@
 defmodule WorkOS.HackneyClient do
-  @behaviour WorkOS.HTTPClient
+  @behaviour WorkOS.HttpClient
 
   @moduledoc """
   The built-in HTTP client.
@@ -19,15 +19,6 @@ defmodule WorkOS.HackneyClient do
   """
 
   @hackney_pool_name :workos_pool
-
-  @impl true
-  def child_spec do
-    :hackney_pool.child_spec(
-      @hackney_pool_name,
-      timeout: WorkOS.Config.hackney_timeout(),
-      max_connections: WorkOS.Config.max_hackney_connections()
-    )
-  end
 
   @impl true
   def post(url, headers, body) do
