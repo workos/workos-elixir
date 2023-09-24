@@ -25,3 +25,6 @@ workos-*.tar
 
 # Temporary files for e.g. tests
 /tmp
+
+# Editor
+.DS_Store

@@ -16,11 +16,11 @@ defmodule WorkOS.Application do
         []
       end
 
-    if http_client == Sentry.HackneyClient do
+    if http_client == WorkOS.HackneyClient do
       unless Code.ensure_loaded?(:hackney) do
         raise """
-        cannot start the :sentry application because the HTTP client is set to \
-        Sentry.HackneyClient (which is the default), but the Hackney library is not loaded. \
+        cannot start the :workos application because the HTTP client is set to \
+        WorkOS.HackneyClient (which is the default), but the Hackney library is not loaded. \
         Add :hackney to your dependencies to fix this.
         """
       end
@@ -31,10 +31,7 @@ defmodule WorkOS.Application do
       end
     end
 
-    Config.warn_for_deprecated_env_vars!()
     validate_json_config!()
-    Config.validate_included_environments!()
-    Config.validate_environment_name!()
   end
 
   defp validate_json_config!() do
