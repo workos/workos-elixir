@@ -32,8 +32,8 @@ defmodule WorkOS.MixProject do
   defp deps do
     [
       {:tesla, "~> 1.4"},
-      {:hackney, "~> 1.18.0"},
-      {:jason, ">= 1.0.0"},
+      {:hackney, "~> 1.18.0", optional: true},
+      {:jason, ">= 1.0.0", optional: true},
       {:plug_crypto, "~> 1.0"},
       {:ex_doc, "~> 0.23", only: :dev, runtime: false},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false}
