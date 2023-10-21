@@ -1,6 +1,6 @@
-defmodule WorkOs.Client do
+defmodule WorkOS.Client do
   @moduledoc """
-  WorkOs API client.
+  WorkOS API client.
   """
 
   require Logger
@@ -27,9 +27,9 @@ defmodule WorkOs.Client do
   ]
 
   @doc """
-  Creates a new WorkOs client struct given a keyword list of config opts.
+  Creates a new WorkOS client struct given a keyword list of config opts.
   """
-  @spec new(WorkOs.config()) :: t()
+  @spec new(WorkOS.config()) :: t()
   def new(config) do
     config = Keyword.take(config, [:api_key, :base_url, :client])
     struct!(__MODULE__, Keyword.merge(@default_opts, config))
@@ -38,7 +38,7 @@ defmodule WorkOs.Client do
   @spec get(t(), Castable.impl(), String.t()) :: response(any())
   @spec get(t(), Castable.impl(), String.t(), Keyword.t()) :: response(any())
   def get(client, castable_module, path, opts \\ []) do
-    client_module = client.client || WorkOs.Client.TeslaClient
+    client_module = client.client || WorkOS.Client.TeslaClient
 
     opts =
       opts
@@ -53,7 +53,7 @@ defmodule WorkOs.Client do
   @spec post(t(), Castable.impl(), String.t(), map()) :: response(any())
   @spec post(t(), Castable.impl(), String.t(), map(), Keyword.t()) :: response(any())
   def post(client, castable_module, path, body \\ %{}, opts \\ []) do
-    client_module = client.client || WorkOs.Client.TeslaClient
+    client_module = client.client || WorkOS.Client.TeslaClient
 
     opts =
       opts
@@ -69,7 +69,7 @@ defmodule WorkOs.Client do
   @spec put(t(), Castable.impl(), String.t(), map()) :: response(any())
   @spec put(t(), Castable.impl(), String.t(), map(), Keyword.t()) :: response(any())
   def put(client, castable_module, path, body \\ %{}, opts \\ []) do
-    client_module = client.client || WorkOs.Client.TeslaClient
+    client_module = client.client || WorkOS.Client.TeslaClient
 
     opts =
       opts
@@ -85,7 +85,7 @@ defmodule WorkOs.Client do
   @spec delete(t(), Castable.impl(), String.t(), map()) :: response(any())
   @spec delete(t(), Castable.impl(), String.t(), map(), Keyword.t()) :: response(any())
   def delete(client, castable_module, path, body \\ %{}, opts \\ []) do
-    client_module = client.client || WorkOs.Client.TeslaClient
+    client_module = client.client || WorkOS.Client.TeslaClient
 
     opts =
       opts
