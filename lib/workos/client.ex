@@ -38,7 +38,7 @@ defmodule WorkOs.Client do
   @spec get(t(), Castable.impl(), String.t()) :: response(any())
   @spec get(t(), Castable.impl(), String.t(), Keyword.t()) :: response(any())
   def get(client, castable_module, path, opts \\ []) do
-    client_module = client.client || Resend.Client.TeslaClient
+    client_module = client.client || WorkOs.Client.TeslaClient
 
     opts =
       opts
@@ -50,6 +50,24 @@ defmodule WorkOs.Client do
   end
 
   defp handle_response(response, path, castable_module) do
-    [response, path, castable_module]
+    case response do
+      {:ok, %{body: "", status: status}} when status in 200..299 ->
+        {:ok, Castable.cast(castable_module, %{})}
+
+      {:ok, %{body: body, status: status}} when status in 200..299 ->
+        {:ok, Castable.cast(castable_module, body)}
+
+      {:ok, %{body: body}} when is_map(body) ->
+        Logger.error("#{inspect(__MODULE__)} error when calling #{path}: #{inspect(body)}")
+        {:error, Castable.cast(WorkOs.Error, body)}
+
+      {:ok, %{body: body}} when is_binary(body) ->
+        Logger.error("#{inspect(__MODULE__)} error when calling #{path}: #{body}")
+        {:error, body}
+
+      {:error, reason} ->
+        Logger.error("#{inspect(__MODULE__)} error when calling #{path}: #{inspect(reason)}")
+        {:error, :client_error}
+    end
   end
 end
