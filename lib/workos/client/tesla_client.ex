@@ -7,7 +7,7 @@ defmodule WorkOs.Client.TeslaClient do
   @doc """
   Sends a request to a WorkOs API endpoint, given list of request opts.
   """
-  @spec request(Resend.Client.t(), Keyword.t()) ::
+  @spec request(WorkOs.Client.t(), Keyword.t()) ::
           {:ok, %{body: map(), status: pos_integer()}} | {:error, any()}
   def request(client, opts) do
     opts = Keyword.take(opts, [:method, :url, :query, :headers, :body, :opts])
@@ -17,7 +17,7 @@ defmodule WorkOs.Client.TeslaClient do
   @doc """
   Returns a new `Tesla.Client`, configured for calling the WorkOs API.
   """
-  @spec new(Resend.Client.t()) :: Tesla.Client.t()
+  @spec new(WorkOs.Client.t()) :: Tesla.Client.t()
   def new(client) do
     Tesla.client([
       Tesla.Middleware.Logger,
