@@ -5,12 +5,12 @@ defmodule WorkOS.Client do
 
   require Logger
 
-  alias WorkOs.Castable
+  alias WorkOS.Castable
 
   @callback request(t(), Keyword.t()) ::
               {:ok, %{body: map(), status: pos_integer()}} | {:error, any()}
 
-  @type response(type) :: {:ok, type} | {:error, WorkOs.Error.t() | :client_error}
+  @type response(type) :: {:ok, type} | {:error, WorkOS.Error.t() | :client_error}
 
   @type t() :: %__MODULE__{
           api_key: String.t(),
@@ -107,7 +107,7 @@ defmodule WorkOS.Client do
 
       {:ok, %{body: body}} when is_map(body) ->
         Logger.error("#{inspect(__MODULE__)} error when calling #{path}: #{inspect(body)}")
-        {:error, Castable.cast(WorkOs.Error, body)}
+        {:error, Castable.cast(WorkOS.Error, body)}
 
       {:ok, %{body: body}} when is_binary(body) ->
         Logger.error("#{inspect(__MODULE__)} error when calling #{path}: #{body}")

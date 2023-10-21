@@ -2,12 +2,12 @@ defmodule WorkOS.Client.TeslaClient do
   @moduledoc """
   Tesla client for WorkOS. This is the default HTTP client used.
   """
-  @behaviour WorkOs.Client
+  @behaviour WorkOS.Client
 
   @doc """
   Sends a request to a WorkOs API endpoint, given list of request opts.
   """
-  @spec request(WorkOs.Client.t(), Keyword.t()) ::
+  @spec request(WorkOS.Client.t(), Keyword.t()) ::
           {:ok, %{body: map(), status: pos_integer()}} | {:error, any()}
   def request(client, opts) do
     opts = Keyword.take(opts, [:method, :url, :query, :headers, :body, :opts])
@@ -17,7 +17,7 @@ defmodule WorkOS.Client.TeslaClient do
   @doc """
   Returns a new `Tesla.Client`, configured for calling the WorkOs API.
   """
-  @spec new(WorkOs.Client.t()) :: Tesla.Client.t()
+  @spec new(WorkOS.Client.t()) :: Tesla.Client.t()
   def new(client) do
     Tesla.client([
       Tesla.Middleware.Logger,
