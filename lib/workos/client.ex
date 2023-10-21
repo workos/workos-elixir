@@ -5,6 +5,8 @@ defmodule WorkOs.Client do
 
   require Logger
 
+  alias WorkOs.Castable
+
   @callback request(t(), Keyword.t()) ::
               {:ok, %{body: map(), status: pos_integer()}} | {:error, any()}
 
@@ -31,5 +33,23 @@ defmodule WorkOs.Client do
   def new(config) do
     config = Keyword.take(config, [:api_key, :base_url, :client])
     struct!(__MODULE__, Keyword.merge(@default_opts, config))
+  end
+
+  @spec get(t(), Castable.impl(), String.t()) :: response(any())
+  @spec get(t(), Castable.impl(), String.t(), Keyword.t()) :: response(any())
+  def get(client, castable_module, path, opts \\ []) do
+    client_module = client.client || Resend.Client.TeslaClient
+
+    opts =
+      opts
+      |> Keyword.put(:method, :get)
+      |> Keyword.put(:url, path)
+
+    client_module.request(client, opts)
+    |> handle_response(path, castable_module)
+  end
+
+  defp handle_response(response, path, castable_module) do
+    [response, path, castable_module]
   end
 end

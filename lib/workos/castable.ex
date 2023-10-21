@@ -1,4 +1,4 @@
-defmodule WorkOS.Castable do
+defmodule WorkOs.Castable do
   @moduledoc false
 
   @type impl :: module() | {module(), module()} | :raw
