@@ -43,7 +43,7 @@ defmodule WorkOS do
   defining your own client module. See the `WorkOS.Client` module docs for more info.
   """
   @spec config() :: config()
-  def config() do
+  def config do
     config =
       Application.get_env(:workos, @config_module) ||
         raise """
