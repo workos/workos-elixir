@@ -1,9 +1,9 @@
 defmodule WorkOS do
   @moduledoc """
-  Documentation for `WorkOs`.
+  Documentation for `WorkOS`.
   """
 
-  @config_module WorkOs.Client
+  @config_module WorkOS.Client
 
   def host, do: Application.get_env(:workos, :host)
   def base_url, do: "https://" <> Application.get_env(:workos, :host)

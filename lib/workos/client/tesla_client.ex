@@ -1,6 +1,6 @@
-defmodule WorkOs.Client.TeslaClient do
+defmodule WorkOS.Client.TeslaClient do
   @moduledoc """
-  Tesla client for WorkOs. This is the default HTTP client used.
+  Tesla client for WorkOS. This is the default HTTP client used.
   """
   @behaviour WorkOs.Client
 
