@@ -49,6 +49,54 @@ defmodule WorkOs.Client do
     |> handle_response(path, castable_module)
   end
 
+  @spec post(t(), Castable.impl(), String.t()) :: response(any())
+  @spec post(t(), Castable.impl(), String.t(), map()) :: response(any())
+  @spec post(t(), Castable.impl(), String.t(), map(), Keyword.t()) :: response(any())
+  def post(client, castable_module, path, body \\ %{}, opts \\ []) do
+    client_module = client.client || WorkOs.Client.TeslaClient
+
+    opts =
+      opts
+      |> Keyword.put(:method, :post)
+      |> Keyword.put(:url, path)
+      |> Keyword.put(:body, body)
+
+    client_module.request(client, opts)
+    |> handle_response(path, castable_module)
+  end
+
+  @spec put(t(), Castable.impl(), String.t()) :: response(any())
+  @spec put(t(), Castable.impl(), String.t(), map()) :: response(any())
+  @spec put(t(), Castable.impl(), String.t(), map(), Keyword.t()) :: response(any())
+  def put(client, castable_module, path, body \\ %{}, opts \\ []) do
+    client_module = client.client || WorkOs.Client.TeslaClient
+
+    opts =
+      opts
+      |> Keyword.put(:method, :put)
+      |> Keyword.put(:url, path)
+      |> Keyword.put(:body, body)
+
+    client_module.request(client, opts)
+    |> handle_response(path, castable_module)
+  end
+
+  @spec delete(t(), Castable.impl(), String.t()) :: response(any())
+  @spec delete(t(), Castable.impl(), String.t(), map()) :: response(any())
+  @spec delete(t(), Castable.impl(), String.t(), map(), Keyword.t()) :: response(any())
+  def delete(client, castable_module, path, body \\ %{}, opts \\ []) do
+    client_module = client.client || WorkOs.Client.TeslaClient
+
+    opts =
+      opts
+      |> Keyword.put(:method, :delete)
+      |> Keyword.put(:url, path)
+      |> Keyword.put(:body, body)
+
+    client_module.request(client, opts)
+    |> handle_response(path, castable_module)
+  end
+
   defp handle_response(response, path, castable_module) do
     case response do
       {:ok, %{body: "", status: status}} when status in 200..299 ->
