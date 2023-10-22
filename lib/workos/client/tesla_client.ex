@@ -5,7 +5,7 @@ defmodule WorkOS.Client.TeslaClient do
   @behaviour WorkOS.Client
 
   @doc """
-  Sends a request to a WorkOs API endpoint, given list of request opts.
+  Sends a request to a WorkOS API endpoint, given list of request opts.
   """
   @spec request(WorkOS.Client.t(), Keyword.t()) ::
           {:ok, %{body: map(), status: pos_integer()}} | {:error, any()}
