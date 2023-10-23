@@ -1,4 +1,6 @@
 defmodule WorkOS.API do
+  @deprecated "This module is deprecated. Please use WorkOS.Client instead."
+
   @moduledoc """
   Provides core API communication and data processing functionality.
   """
