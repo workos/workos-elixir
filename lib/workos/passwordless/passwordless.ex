@@ -36,7 +36,7 @@ defmodule WorkOS.Passwordless do
   def create_session(params, opts)
       when is_map_key(params, :email) or is_map_key(params, :connection) do
     query =
-      process_params(params, [:email, :connection, :redirect_uri, :state, :type], %{
+      process_params(params, [:email, :connection, :redirect_uri, :state, :type, :expires_in], %{
         type: "MagicLink"
       })
 
