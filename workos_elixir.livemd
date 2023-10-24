@@ -1,0 +1,18 @@
+# WorkOS + Elixir
+
+```elixir
+Mix.install([
+  {:workos, "~> 1.0.0"},
+  {:kino, "~> 0.9.4"}
+])
+```
+
+## Create a client
+
+To start using WorkOS, create a `client` with the API key and client ID that you copy via the WorkOS Dashboard:
+
+```elixir
+client = WorkOS.client(api_key: System.fetch_env!("WORKOS_API_KEY"), client_id: System.fetch_env!("WORKOS_CLIENT_ID"))
+```
+
+Note that if you choose to configure WorkOS in your app config, passing a client struct is always optional.
