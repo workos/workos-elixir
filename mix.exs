@@ -16,7 +16,7 @@ defmodule WorkOS.MixProject do
       package: package(),
       docs: docs(),
       deps: deps(),
-      source_ref: "#{@version}",
+      source_ref: "#{@version}"
     ]
   end
 
@@ -79,21 +79,18 @@ defmodule WorkOS.MixProject do
     ]
   end
 
-  # TODO - Finish to list modules
   defp groups_for_modules() do
     [
       "Core API": [
-        WorkOS.SSO,
+        WorkOS.SSO
       ],
       "Response Structs": [
-        WorkOS.Profile
+        WorkOS.SSO.Connection,
+        WorkOS.SSO.Connection.Domain
       ],
       "API Client": [
         WorkOS.Client,
         WorkOS.Client.TeslaClient
-      ],
-      Utilities: [
-        WorkOS.Util
       ]
     ]
   end
