@@ -14,15 +14,18 @@ defmodule WorkOS.SSO do
   @spec list_connections(WorkOS.Client.t(), map()) ::
           WorkOS.Client.response(WorkOS.List.t(Connection.t()))
   def list_connections(client \\ WorkOS.client(), opts) do
-    WorkOS.Client.get(client, WorkOS.List.of(Connection), "/connections", %{
-      connection_type: opts[:connection_type],
-      domain: opts[:domain],
-      organization_id: opts[:organization_id],
-      limit: opts[:limit],
-      before: opts[:before],
-      after: opts[:after],
-      order: opts[:order]
-    })
+    WorkOS.Client.get(client, WorkOS.List.of(Connection), "/connections",
+      opts: [
+        query: %{
+          connection_type: opts[:connection_type],
+          organization_id: opts[:organization_id],
+          domain: opts[:domain],
+          limit: opts[:limit],
+          after: opts[:after],
+          order: opts[:order]
+        }
+      ]
+    )
   end
 
   @doc """
@@ -32,6 +35,19 @@ defmodule WorkOS.SSO do
   @spec delete_connection(WorkOS.Client.t(), String.t()) :: WorkOS.Client.response(Connection.t())
   def delete_connection(client \\ WorkOS.client(), connection_id) do
     WorkOS.Client.delete(client, Connection, "/connections/:id", %{},
+      opts: [
+        path_params: [id: connection_id]
+      ]
+    )
+  end
+
+  @doc """
+  Gets a connection given an ID.
+  """
+  @spec get_connection(String.t()) :: WorkOS.Client.response(Connection.t())
+  @spec get_connection(WorkOS.Client.t(), String.t()) :: WorkOS.Client.response(Connection.t())
+  def get_connection(client \\ WorkOS.client(), connection_id) do
+    WorkOS.Client.get(client, Connection, "/connections/:id",
       opts: [
         path_params: [id: connection_id]
       ]
