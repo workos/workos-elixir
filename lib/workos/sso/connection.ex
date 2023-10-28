@@ -7,15 +7,15 @@ defmodule WorkOS.SSO.Connection do
   alias WorkOS.Castable
   alias WorkOS.SSO.Connection.Domain
 
-  @behaviour Resend.Castable
+  @behaviour WorkOS.Castable
 
   @type t() :: %__MODULE__{
           id: String.t(),
           name: String.t(),
           # TODO - Add type for connection type
-          type: String.t() | nil,
+          type: String.t(),
           # TODO - Add type for connection state
-          state: String.t() | nil,
+          state: String.t(),
           domains: list(Record.t()) | nil,
           updated_at: DateTime.t(),
           created_at: DateTime.t(),
@@ -38,9 +38,10 @@ defmodule WorkOS.SSO.Connection do
   def cast(map) do
     %__MODULE__{
       id: map["id"],
-      type: map["type"],
       name: map["name"],
-      records: Castable.cast_list(Domain, map["domains"]),
+      type: map["type"],
+      state: map["state"],
+      domains: Castable.cast_list(Domain, map["domains"]),
       updated_at: Util.parse_iso8601(map["created_at"]),
       created_at: Util.parse_iso8601(map["created_at"]),
       organization_id: map["organization_id"]
