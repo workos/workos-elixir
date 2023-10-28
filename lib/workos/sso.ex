@@ -5,7 +5,10 @@ defmodule WorkOS.SSO do
   @see https://docs.workos.com/sso/overview
   """
 
+  require Logger
+
   alias WorkOS.SSO.Connection
+  alias WorkOS.Util
 
   @doc """
   Lists all connections.
@@ -52,5 +55,39 @@ defmodule WorkOS.SSO do
         path_params: [id: connection_id]
       ]
     )
+  end
+
+
+  @doc """
+  Generates an OAuth 2.0 authorization URL.
+  """
+  def get_authorization_url(client \\ WorkOS.client(), params)
+    when is_map_key(params, :domain) or is_map_key(params, :provider) or
+             is_map_key(params, :connection) or is_map_key(params, :organization) do
+    if is_map_key(params, :domain) do
+      Logger.warn("The `domain` parameter for `get_authorization_url` is deprecated. Please use `organization` instead.")
+    end
+
+    query = Util.map_params(
+      params,
+      [
+        :domain,
+        :provider,
+        :connection,
+        :organization,
+        :client_id,
+        :redirect_uri,
+        :state,
+        :domain_hint,
+        :login_hint
+      ],
+      %{
+        client_id: client.client_id,
+        response_type: "code"
+      }
+    )
+    |> URI.encode_query()
+
+    {:ok, "#{client.base_url()}/sso/authorize?#{query}}"}
   end
 end
