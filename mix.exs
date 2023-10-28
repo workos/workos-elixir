@@ -6,29 +6,56 @@ defmodule WorkOS.MixProject do
 
   def project do
     [
-      name: "WorkOS SDK for Elixir",
       app: :workos,
       version: @version,
+      name: "WorkOS SDK for Elixir",
       elixir: "~> 1.11",
+      elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       description: description(),
       package: package(),
-      deps: deps(),
-      source_url: "https://github.com/workos-inc/workos-elixir/",
-      homepage_url: "https://workos.com",
       docs: docs(),
+      deps: deps(),
       source_ref: "#{@version}",
-      source_url: @source_url
     ]
   end
 
+  defp description do
+    """
+    Official Elixir SDK for interacting with the WorkOS API.
+    """
+  end
+
+  defp package() do
+    [
+      description: description(),
+      licenses: ["MIT"],
+      maintainers: [
+        "Mark Tran",
+        "Laura Beatris",
+        "Blair Lunceford",
+        "Jacobia Johnson"
+      ],
+      links: %{
+        "GitHub" => @source_url,
+        "WorkOS" => "https://workos.com",
+        "Elixir Example" => "https://github.com/workos/elixir-example-applications"
+      }
+    ]
+  end
+
+  # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger],
-      env: env()
+      extra_applications: [:logger]
     ]
   end
 
+  # Specifies which paths to compile per environment.
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_), do: ["lib"]
+
+  # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
       {:tesla, "~> 1.4"},
@@ -40,36 +67,34 @@ defmodule WorkOS.MixProject do
     ]
   end
 
-  defp description do
-    """
-    WorkOS SDK for Elixir.
-    """
-  end
-
-  defp docs do
+  defp docs() do
     [
-      # The main page in the docs
+      extras: [
+        "README.md": [title: "Overview"]
+      ],
       main: "readme",
-      extras: ["README.md"]
+      source_url: @source_url,
+      source_ref: "v#{@version}",
+      groups_for_modules: groups_for_modules()
     ]
   end
 
-  defp env do
+  # TODO - Finish to list modules
+  defp groups_for_modules() do
     [
-      host: "api.workos.com"
-    ]
-  end
-
-  defp package do
-    [
-      files: ["lib", "LICENSE*", "mix.exs", "README*"],
-      licenses: ["MIT"],
-      links: %{
-        "GitHub" => @source_url,
-        "Documentation" => "https://workos.com/docs",
-        "Homepage" => "https://workos.com"
-      },
-      maintainers: ["Laura Beatris", "Blair Lunceford", "Jacobia Johnson"]
+      "Core API": [
+        WorkOS.SSO,
+      ],
+      "Response Structs": [
+        WorkOS.Profile
+      ],
+      "API Client": [
+        WorkOS.Client,
+        WorkOS.Client.TeslaClient
+      ],
+      Utilities: [
+        WorkOS.Util
+      ]
     ]
   end
 end
