@@ -7,6 +7,7 @@ defmodule WorkOS.SSO do
 
   require Logger
 
+  alias WorkOS.SSO.Profile
   alias WorkOS.SSO.Connection
   alias WorkOS.SSO.ProfileAndToken
 
@@ -120,5 +121,18 @@ defmodule WorkOS.SSO do
       grant_type: "authorization_code",
       code: opts["code"]
     })
+  end
+
+  @doc """
+  Gets a profile given an access token.
+  """
+  @spec get_profile(String.t()) :: WorkOS.Client.response(Profile.t())
+  @spec get_profile(WorkOS.Client.t(), String.t()) :: WorkOS.Client.response(Profile.t())
+  def get_profile(client \\ WorkOS.client(), access_token) do
+    WorkOS.Client.get(client, Connection, "/sso/profile",
+      opts: [
+        path_params: [id: access_token]
+      ]
+    )
   end
 end
