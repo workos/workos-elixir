@@ -22,7 +22,7 @@ defmodule WorkOS.SSO.Connection do
           organization_id: String.t()
         }
 
-  @enforce_keys [:id]
+  @enforce_keys [:id, :name, :type, :state, :updated_at, :created_at, :organization_id]
   defstruct [
     :id,
     :name,

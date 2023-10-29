@@ -8,6 +8,7 @@ defmodule WorkOS.SSO do
   require Logger
 
   alias WorkOS.SSO.Connection
+  alias WorkOS.SSO.ProfileAndToken
 
   @doc """
   Lists all connections.
@@ -61,7 +62,8 @@ defmodule WorkOS.SSO do
   """
   @spec get_authorization_url(map()) :: {:ok, String.t()} | {:error, String.t()}
   def get_authorization_url(params) do
-    if is_map_key(params, :connection) or is_map_key(params, :organization) or is_map_key(params, :redirect_uri) do
+    if is_map_key(params, :connection) or is_map_key(params, :organization) or
+         is_map_key(params, :redirect_uri) do
       if is_map_key(params, :domain) do
         Logger.warn(
           "The `domain` parameter for `get_authorization_url` is deprecated. Please use `organization` instead."
@@ -69,7 +71,7 @@ defmodule WorkOS.SSO do
       end
 
       defaults = %{
-        client_id: Keyword.take(WorkOS.config(), [:client_id]),
+        client_id: WorkOS.config() |> Keyword.take([:client_id]),
         response_type: "code"
       }
 
@@ -91,9 +93,32 @@ defmodule WorkOS.SSO do
         )
         |> URI.encode_query()
 
-      {:ok, "#{Keyword.take(WorkOS.config(), [:base_url])}/sso/authorize?#{query}"}
+      base_url = WorkOS.config() |> Keyword.take([:base_url])
+
+      {:ok, "#{base_url}/sso/authorize?#{query}"}
     else
       {:error, "Invalid params"}
     end
+  end
+
+  @doc """
+  Gets an access token along with the user `Profile`.
+
+  Parameter options:
+
+    * `:code` - The authorization value which was passed back as a query parameter in the callback to the Redirect URI. (required)
+
+  """
+  @spec get_profile_and_token(map()) :: WorkOS.Client.response(ProfileAndToken.t())
+  @spec get_profile_and_token(WorkOS.Client.t(), map()) ::
+          WorkOS.Client.response(ProfileAndToken.t())
+  def get_profile_and_token(client \\ WorkOS.client(), opts) do
+    WorkOS.Client.post(client, ProfileAndToken, "/sso/token", %{
+      # TODO - Maybe create a separate getter function for those values
+      client_id: WorkOS.config() |> Keyword.take([:client_id]),
+      client_secret: WorkOS.config() |> Keyword.take([:client_secret]),
+      grant_type: "authorization_code",
+      code: opts["code"]
+    })
   end
 end
