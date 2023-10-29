@@ -4,7 +4,7 @@ defmodule WorkOS.SSOTest do
   alias WorkOS.ClientMock
 
   describe "get_authorization_url" do
-    test "with no custom api hostname, generates an authorize url with the default api hostname" do
+    test "generates an authorize url with the default api hostname" do
 
     end
 
@@ -12,31 +12,31 @@ defmodule WorkOS.SSOTest do
 
     end
 
-    test "with a provider, generates an authorize url with the provider" do
+    test "generates an authorize url with a given provider" do
 
     end
 
-    test "with a connection, generates an authorize url with the connection" do
+    test "generates an authorize url with a given connection" do
 
     end
 
-    test "with a organization, generates an authorization URL with the organization generates an authorization URL with the organization" do
+    test "generates an authorization URL with a given organization" do
 
     end
 
-    test "with a custom api hostname, generates an authorize url with the custom api hostname" do
+    test "generates an authorize url with a given custom api hostname" do
 
     end
 
-    test "with state, generates an authorize url with the provided state" do
+    test "generates an authorize url with a given state" do
 
     end
 
-    test "with domain hint, generates an authorize url with the provided domain hint" do
+    test "generates an authorize url with a given domain hint" do
 
     end
 
-    test "with login hint, generates an authorize url with the provided login hint" do
+    test "generates an authorize url with a given login hint" do
 
     end
   end
