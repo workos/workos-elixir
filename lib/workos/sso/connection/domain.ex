@@ -3,7 +3,7 @@ defmodule WorkOS.SSO.Connection.Domain do
   WorkOS Domain Record struct.
   """
 
-  @behaviour Resend.Castable
+  @behaviour WorkOS.Castable
 
   @type t() :: %__MODULE__{
           id: String.t(),

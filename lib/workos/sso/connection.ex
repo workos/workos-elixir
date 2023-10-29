@@ -16,7 +16,7 @@ defmodule WorkOS.SSO.Connection do
           type: String.t(),
           # TODO - Add type for connection state
           state: String.t(),
-          domains: list(Record.t()) | nil,
+          domains: list(Domain.t()) | nil,
           updated_at: DateTime.t(),
           created_at: DateTime.t(),
           organization_id: String.t()
