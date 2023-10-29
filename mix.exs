@@ -64,7 +64,7 @@ defmodule WorkOS.MixProject do
       {:plug_crypto, "~> 1.0"},
       {:ex_doc, "~> 0.23", only: :dev, runtime: false},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.2", only: :dev, runtime: false},
+      {:dialyxir, "~> 1.2", only: :dev, runtime: false}
     ]
   end
 

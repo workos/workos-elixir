@@ -13,14 +13,4 @@ defmodule WorkOS.Util do
     {:ok, date_time, 0} = DateTime.from_iso8601(date_string)
     date_time
   end
-
-  @doc """
-  Maps given params keys with their defaults.
-  """
-  @spec map_params(map(), list(), map()) :: map()
-  def map_params(params, keys, defaults \\ %{}) do
-    defaults
-    |> Map.merge(params)
-    |> Map.take(keys ++ Map.keys(defaults))
-  end
 end
