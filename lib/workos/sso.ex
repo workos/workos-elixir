@@ -62,45 +62,44 @@ defmodule WorkOS.SSO do
   Generates an OAuth 2.0 authorization URL.
   """
   @spec get_authorization_url(map()) :: {:ok, String.t()} | {:error, String.t()}
-  def get_authorization_url(params) do
-    if is_map_key(params, :connection) or is_map_key(params, :organization) or
-         is_map_key(params, :redirect_uri) do
-      if is_map_key(params, :domain) do
-        Logger.warn(
-          "The `domain` parameter for `get_authorization_url` is deprecated. Please use `organization` instead."
-        )
-      end
-
-      defaults = %{
-        client_id: WorkOS.config() |> Keyword.take([:client_id]),
-        response_type: "code"
-      }
-
-      query =
-        defaults
-        |> Map.merge(params)
-        |> Map.take(
-          [
-            :domain,
-            :provider,
-            :connection,
-            :organization,
-            :client_id,
-            :redirect_uri,
-            :state,
-            :domain_hint,
-            :login_hint
-          ] ++ Map.keys(defaults)
-        )
-        |> URI.encode_query()
-
-      base_url = WorkOS.config() |> Keyword.take([:base_url])
-
-      {:ok, "#{base_url}/sso/authorize?#{query}"}
-    else
-      {:error, "Invalid params"}
+  def get_authorization_url(params)
+      when is_map_key(params, :connection) or is_map_key(params, :organization) or
+             is_map_key(params, :provider) or is_map_key(params, :domain) do
+    if is_map_key(params, :domain) do
+      Logger.warn(
+        "The `domain` parameter for `get_authorization_url` is deprecated. Please use `organization` instead."
+      )
     end
+
+    defaults = %{
+      client_id: WorkOS.config() |> Keyword.take([:client_id]),
+      response_type: "code"
+    }
+
+    query =
+      defaults
+      |> Map.merge(params)
+      |> Map.take(
+        [
+          :domain,
+          :provider,
+          :connection,
+          :organization,
+          :client_id,
+          :redirect_uri,
+          :state,
+          :domain_hint,
+          :login_hint
+        ] ++ Map.keys(defaults)
+      )
+      |> URI.encode_query()
+
+    base_url = WorkOS.config() |> Keyword.take([:base_url])
+
+    {:ok, "#{base_url}/sso/authorize?#{query}"}
   end
+
+  def get_authorization_url(_params), do: {:error, "Incomplete arguments. Need to specify either a 'connection', 'organization', 'domain', or 'provider'."}
 
   @doc """
   Gets an access token along with the user `Profile`.
