@@ -2,6 +2,7 @@
 
 * Elixir version (elixir -v):
 * Erlang/OTP version (erl):
+* Package version:
 
 ### Description
 
