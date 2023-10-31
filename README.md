@@ -14,7 +14,7 @@ Add this package to the list of dependencies in your `mix.exs` file:
 
 ```ex
 def deps do
-  [{:workos, "~> 0.2.0"}]
+  [{:workos, "~> 0.3.0"}]
 end
 ```
 The hex package can be found here: https://hex.pm/packages/workos
