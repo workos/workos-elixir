@@ -13,6 +13,16 @@ defmodule WorkOS.SSO do
 
   @doc """
   Lists all connections.
+
+  Parameter options:
+
+  * `:connection_type` - Filter Connections by their type.
+  * `:organization_id` - Filter Connections by their associated organization.
+  * `:domain` - Filter Connections by their associated domain.
+  * `:limit` - Maximum number of records to return. Accepts values between 1 and 100. Default is 10.
+  * `:after` - Pagination cursor to receive records after a provided event ID.
+  * `:before` - An object ID that defines your place in the list. When the ID is not present, you are at the end of the list.
+  * `:order` - Order the results by the creation time. Supported values are "asc" and "desc" for showing older and newer records first respectively.
   """
   @spec list_connections(map()) :: WorkOS.Client.response(WorkOS.List.t(Connection.t()))
   @spec list_connections(WorkOS.Client.t(), map()) ::
@@ -26,6 +36,7 @@ defmodule WorkOS.SSO do
           domain: opts[:domain],
           limit: opts[:limit],
           after: opts[:after],
+          before: opts[:before],
           order: opts[:order]
         }
       ]
@@ -60,6 +71,17 @@ defmodule WorkOS.SSO do
 
   @doc """
   Generates an OAuth 2.0 authorization URL.
+
+  Parameter options:
+
+  * `:organization` - The organization connection selector is used to initiate SSO for an Organization.
+  * `:connection` - The connection connection selector is used to initiate SSO for a Connection.
+  * `:redirect_uri` - A Redirect URI to return an authorized user to. (required)
+  * `:client_id` - This value can be obtained from the SSO Configuration page in the WorkOS dashboard.
+  * `:provider` - The provider connection selector is used to initiate SSO using an OAuth provider.
+  * `:state` - An optional parameter that can be used to encode arbitrary information to help restore application state between redirects.
+  * `:login_hint` - Can be used to pre-fill the username/email address field of the IdP sign-in page for the user, if you know their username ahead of time.
+  * `:domain_hint` - Can be used to pre-fill the domain field when initiating authentication with Microsoft OAuth, or with a GoogleSAML connection type.
   """
   @spec get_authorization_url(map()) :: {:ok, String.t()} | {:error, String.t()}
   def get_authorization_url(params)
@@ -81,15 +103,15 @@ defmodule WorkOS.SSO do
       |> Map.merge(params)
       |> Map.take(
         [
-          :domain,
-          :provider,
-          :connection,
-          :organization,
           :client_id,
           :redirect_uri,
+          :connection,
+          :organization,
+          :provider,
           :state,
+          :login_hint,
           :domain_hint,
-          :login_hint
+          :domain
         ] ++ Map.keys(defaults)
       )
       |> URI.encode_query()
@@ -99,7 +121,10 @@ defmodule WorkOS.SSO do
     {:ok, "#{base_url}/sso/authorize?#{query}"}
   end
 
-  def get_authorization_url(_params), do: {:error, "Incomplete arguments. Need to specify either a 'connection', 'organization', 'domain', or 'provider'."}
+  def get_authorization_url(_params),
+    do:
+      {:error,
+       "Incomplete arguments. Need to specify either a 'connection', 'organization', 'domain', or 'provider'."}
 
   @doc """
   Gets an access token along with the user `Profile`.

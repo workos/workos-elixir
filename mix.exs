@@ -89,7 +89,7 @@ defmodule WorkOS.MixProject do
         WorkOS.SSO.Connection,
         WorkOS.SSO.Connection.Domain,
         WorkOS.SSO.Profile,
-        WorkOS.SSO.ProfileAndToken,
+        WorkOS.SSO.ProfileAndToken
       ],
       "API Client": [
         WorkOS.Client,
