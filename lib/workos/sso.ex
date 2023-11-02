@@ -94,7 +94,7 @@ defmodule WorkOS.SSO do
     end
 
     defaults = %{
-      client_id: WorkOS.config() |> Keyword.take([:client_id]),
+      client_id: WorkOS.config() |> Keyword.get(:client_id, params[:client_id]),
       response_type: "code"
     }
 

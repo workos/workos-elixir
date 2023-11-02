@@ -5,9 +5,9 @@ defmodule WorkOS.SSOTest do
 
   describe "get_authorization_url" do
     test "generates an authorize url with the default api hostname" do
-      opts = [connection: 'mock-connection-id', client_id: 'example.com/sso/workos/callback', redirect_uri: 'example.com/sso/workos/callback']
+      opts = [connection: "mock-connection-id", redirect_uri: "example.com/sso/workos/callback"]
 
-      assert {:ok, success_url} = WorkOS.SSO.get_authorization_url(Map.new(opts))
+      assert {:ok, _success_url} = WorkOS.SSO.get_authorization_url(Map.new(opts))
     end
 
     test "with no domain or provider, throws an error for incomplete arguments" do
