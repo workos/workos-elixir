@@ -75,4 +75,7 @@ defmodule WorkOS do
 
     config
   end
+
+  @spec base_url() :: String.t()
+  def base_url, do: WorkOS.config() |> Keyword.get(:base_url)
 end

@@ -20,7 +20,7 @@ defmodule WorkOS.SSO.Connection.Domain do
   def cast(map) do
     %__MODULE__{
       id: map["id"],
-      domain: String.t()
+      domain: map["domain"]
     }
   end
 end

@@ -1,13 +1,18 @@
 defmodule WorkOS.SSOTest do
   use WorkOS.TestCase
 
-  alias WorkOS.ClientMock
+  def parse_uri(url) do
+    uri = URI.parse(url)
+    %URI{uri | query: URI.query_decoder(uri.query) |> Enum.to_list()}
+  end
 
   describe "get_authorization_url" do
-    test "generates an authorize url with the default api hostname" do
+    test "generates an authorize url with the default base url as host" do
       opts = [connection: "mock-connection-id", redirect_uri: "example.com/sso/workos/callback"]
 
-      assert {:ok, _success_url} = WorkOS.SSO.get_authorization_url(Map.new(opts))
+      assert {:ok, success_url} = WorkOS.SSO.get_authorization_url(Map.new(opts))
+
+      assert WorkOS.base_url =~ parse_uri(success_url).host
     end
 
     test "with no domain or provider, throws an error for incomplete arguments" do

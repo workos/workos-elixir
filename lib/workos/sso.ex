@@ -116,9 +116,7 @@ defmodule WorkOS.SSO do
       )
       |> URI.encode_query()
 
-    base_url = WorkOS.config() |> Keyword.get(:base_url)
-
-    {:ok, "#{base_url}/sso/authorize?#{query}"}
+    {:ok, "#{WorkOS.base_url}/sso/authorize?#{query}"}
   end
 
   def get_authorization_url(_params),
