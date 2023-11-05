@@ -76,6 +76,11 @@ defmodule WorkOS do
     config
   end
 
+  def default_base_url, do: "https://api.workos.com"
+
   @spec base_url() :: String.t()
-  def base_url, do: WorkOS.config() |> Keyword.get(:base_url)
+  def base_url do
+    WorkOS.config()
+    |> Keyword.get(:base_url, default_base_url())
+  end
 end

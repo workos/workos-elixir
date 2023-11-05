@@ -22,7 +22,7 @@ defmodule WorkOS.Client do
   defstruct [:api_key, :base_url, :client]
 
   @default_opts [
-    base_url: "https://api.workos.com",
+    base_url: WorkOS.default_base_url(),
     client: __MODULE__.TeslaClient
   ]
 

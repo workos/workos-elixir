@@ -1,5 +1,4 @@
 defmodule WorkOS.SSO.ProfileAndToken do
-  alias WorkOS.Castable
   alias WorkOS.SSO.Profile
 
   @behaviour WorkOS.Castable

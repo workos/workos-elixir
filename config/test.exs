@@ -9,8 +9,7 @@ case {workos_api_key, workos_client_id} do
 
     config :workos, WorkOS.Client,
       api_key: "sk_12345",
-      client_id: "project_12345",
-      base_url: "https://workos.test"
+      client_id: "project_12345"
 
   {api_key, client_id} ->
     config :workos, WorkOS.Client, api_key: api_key, client_id: client_id
