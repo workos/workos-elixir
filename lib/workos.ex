@@ -76,11 +76,36 @@ defmodule WorkOS do
     config
   end
 
+  @doc """
+  Defines the WorkOS base API URL
+  """
   def default_base_url, do: "https://api.workos.com"
 
+  @doc """
+  Retrieves the WorkOS base URL from application config.
+  """
   @spec base_url() :: String.t()
   def base_url do
     WorkOS.config()
     |> Keyword.get(:base_url, default_base_url())
+  end
+
+  @doc """
+  Retrieves the WorkOS client ID from application config.
+  """
+  @spec client_id() :: String.t()
+  def client_id do
+    WorkOS.config()
+    |> Keyword.get(:client_id)
+  end
+
+
+  @doc """
+  Retrieves the WorkOS client secret from application config.
+  """
+  @spec client_secret() :: String.t()
+  def client_secret do
+    WorkOS.config()
+    |> Keyword.get(:client_secret)
   end
 end

@@ -137,9 +137,8 @@ defmodule WorkOS.SSO do
           WorkOS.Client.response(ProfileAndToken.t())
   def get_profile_and_token(client \\ WorkOS.client(), opts) do
     WorkOS.Client.post(client, ProfileAndToken, "/sso/token", %{
-      # TODO - Maybe create a separate getter function for those values
-      client_id: WorkOS.config() |> Keyword.take([:client_id]),
-      client_secret: WorkOS.config() |> Keyword.take([:client_secret]),
+      client_id: WorkOS.client_id(),
+      client_secret: WorkOS.client_secret(),
       grant_type: "authorization_code",
       code: opts["code"]
     })
