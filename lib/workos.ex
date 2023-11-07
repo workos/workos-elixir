@@ -99,7 +99,6 @@ defmodule WorkOS do
     |> Keyword.get(:client_id)
   end
 
-
   @doc """
   Retrieves the WorkOS client secret from application config.
   """

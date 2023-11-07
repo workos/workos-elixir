@@ -116,7 +116,7 @@ defmodule WorkOS.SSO do
       )
       |> URI.encode_query()
 
-    {:ok, "#{WorkOS.base_url}/sso/authorize?#{query}"}
+    {:ok, "#{WorkOS.base_url()}/sso/authorize?#{query}"}
   end
 
   def get_authorization_url(_params),
@@ -140,7 +140,7 @@ defmodule WorkOS.SSO do
       client_id: WorkOS.client_id(),
       client_secret: WorkOS.client_secret(),
       grant_type: "authorization_code",
-      code: opts["code"]
+      code: opts[:code]
     })
   end
 

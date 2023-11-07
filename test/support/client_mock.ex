@@ -17,28 +17,31 @@ defmodule WorkOS.ClientMock do
         assert body[to_string(field)] == value
       end
 
-      # access_token: '01DMEK0J53CVMC32CK5SE0KZ8Q',
-      #             profile: {
-      #               id: 'prof_123',
-      #               idp_id: '123',
-      #               organization_id: 'org_123',
-      #               connection_id: 'conn_123',
-      #               connection_type: 'OktaSAML',
-      #               email: 'foo@test.com',
-      #               first_name: 'foo',
-      #               last_name: 'bar',
-      #               groups: ['Admins', 'Developers'],
-      #               raw_attributes: {
-      #                 email: 'foo@test.com',
-      #                 first_name: 'foo',
-      #                 last_name: 'bar',
-      #                 groups: ['Admins', 'Developers'],
-      #               },
-      #             },
-      #           },
+      groups =
+        case Map.get(context, :with_group_attribute, []) do
+          true -> ["Admins", "Developers"]
+          _ -> []
+        end
 
       success_body = %{
-        "access_token" => context.access_token
+        "access_token" => "01DMEK0J53CVMC32CK5SE0KZ8Q",
+        "profile" => %{
+          "id" => "prof_123",
+          "idp_i" => "123",
+          "organization_id" => "org_123",
+          "connection_id" => "conn_123",
+          "connection_type" => "OktaSAML",
+          "email" => "foo@test.com",
+          "first_name" => "foo",
+          "last_name" => "bar",
+          "groups" => groups,
+          "raw_attributes" => %{
+            "email" => "foo@test.com",
+            "first_name" => "foo",
+            "last_name" => "bar",
+            "groups" => groups
+          }
+        }
       }
 
       {status, body} = Keyword.get(opts, :respond_with, {200, success_body})

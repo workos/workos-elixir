@@ -14,7 +14,7 @@ defmodule WorkOS.SSOTest do
     test "generates an authorize url with the default `base_url`" do
       opts = [connection: "mock-connection-id", redirect_uri: "example.com/sso/workos/callback"]
 
-      assert {:ok, success_url} = WorkOS.SSO.get_authorization_url(opts |> Map.new())
+      assert {:ok, success_url} = opts |> Map.new() |> WorkOS.SSO.get_authorization_url()
 
       assert WorkOS.base_url() =~ parse_uri(success_url).host
     end
@@ -22,13 +22,13 @@ defmodule WorkOS.SSOTest do
     test "with no `domain` or `provider`, returns error for incomplete arguments" do
       opts = [redirect_uri: "example.com/sso/workos/callback"]
 
-      assert {:error, _error_message} = WorkOS.SSO.get_authorization_url(opts |> Map.new())
+      assert {:error, _error_message} = opts |> Map.new() |> WorkOS.SSO.get_authorization_url()
     end
 
     test "generates an authorize url with a `provider`" do
       opts = [provider: "MicrosoftOAuth", redirect_uri: "example.com/sso/workos/callback"]
 
-      assert {:ok, success_url} = WorkOS.SSO.get_authorization_url(opts |> Map.new())
+      assert {:ok, success_url} = opts |> Map.new() |> WorkOS.SSO.get_authorization_url()
 
       assert {"provider", "MicrosoftOAuth"} in parse_uri(success_url).query
     end
@@ -36,7 +36,7 @@ defmodule WorkOS.SSOTest do
     test "generates an authorize url with a `connection`" do
       opts = [connection: "mock-connection-id", redirect_uri: "example.com/sso/workos/callback"]
 
-      assert {:ok, success_url} = WorkOS.SSO.get_authorization_url(opts |> Map.new())
+      assert {:ok, success_url} = opts |> Map.new() |> WorkOS.SSO.get_authorization_url()
 
       assert {"connection", "mock-connection-id"} in parse_uri(success_url).query
     end
@@ -44,7 +44,7 @@ defmodule WorkOS.SSOTest do
     test "generates an authorization url with a `organization`" do
       opts = [organization: "mock-organization", redirect_uri: "example.com/sso/workos/callback"]
 
-      assert {:ok, success_url} = WorkOS.SSO.get_authorization_url(opts |> Map.new())
+      assert {:ok, success_url} = opts |> Map.new() |> WorkOS.SSO.get_authorization_url()
 
       assert {"organization", "mock-organization"} in parse_uri(success_url).query
     end
@@ -52,13 +52,15 @@ defmodule WorkOS.SSOTest do
     test "generates an authorization url with a custom `base_url` from app config" do
       initial_config = Application.get_env(:workos, WorkOS.Client)
 
-      Application.put_env(:workos, WorkOS.Client,
+      Application.put_env(
+        :workos,
+        WorkOS.Client,
         Keyword.put(initial_config, :base_url, "https://custom-base-url.com")
       )
 
       opts = [provider: "GoogleOAuth"]
 
-      assert {:ok, success_url} = WorkOS.SSO.get_authorization_url(opts |> Map.new())
+      assert {:ok, success_url} = opts |> Map.new() |> WorkOS.SSO.get_authorization_url()
 
       assert "custom-base-url.com" == parse_uri(success_url).host
 
@@ -68,7 +70,7 @@ defmodule WorkOS.SSOTest do
     test "generates an authorization url with a `state`" do
       opts = [provider: "GoogleOAuth", state: "mock-state"]
 
-      assert {:ok, success_url} = WorkOS.SSO.get_authorization_url(opts |> Map.new())
+      assert {:ok, success_url} = opts |> Map.new() |> WorkOS.SSO.get_authorization_url()
 
       assert {"state", "mock-state"} in parse_uri(success_url).query
     end
@@ -76,7 +78,7 @@ defmodule WorkOS.SSOTest do
     test "generates an authorization url with a given `domain_hint`" do
       opts = [organization: "mock-organization", domain_hint: "mock-domain-hint"]
 
-      assert {:ok, success_url} = WorkOS.SSO.get_authorization_url(opts |> Map.new())
+      assert {:ok, success_url} = opts |> Map.new() |> WorkOS.SSO.get_authorization_url()
 
       assert {"domain_hint", "mock-domain-hint"} in parse_uri(success_url).query
     end
@@ -84,22 +86,38 @@ defmodule WorkOS.SSOTest do
     test "generates an authorization url with a given `login_hint`" do
       opts = [organization: "mock-organization", login_hint: "mock-login-hint"]
 
-      assert {:ok, success_url} = WorkOS.SSO.get_authorization_url(opts |> Map.new())
+      assert {:ok, success_url} = opts |> Map.new() |> WorkOS.SSO.get_authorization_url()
 
       assert {"login_hint", "mock-login-hint"} in parse_uri(success_url).query
     end
   end
 
   describe "get_profile_and_token" do
-    test "with all information provided, sends a request to the WorkOS API for a profile", context do
+    test "with all information provided, sends a request to the WorkOS API for a profile",
+         context do
       opts = [code: "authorization_code"]
 
-      ClientMock.get_profile_and_token(context, assert_fields: opts)
+      context |> ClientMock.get_profile_and_token(assert_fields: opts)
 
-      assert {:ok, %WorkOS.SSO.ProfileAndToken{}} = WorkOS.SSO.get_profile_and_token(Map.new(opts))
+      assert {:ok, %WorkOS.SSO.ProfileAndToken{access_token: access_token, profile: profile}} =
+               WorkOS.SSO.get_profile_and_token(Map.new(opts))
+
+      refute is_nil(access_token)
+      refute is_nil(profile)
     end
 
-    test "without a groups attribute, sends a request to the WorkOS API for a profile" do
+    test "without a groups attribute, sends a request to the WorkOS API for a profile", context do
+      opts = [code: "authorization_code"]
+
+      context
+      |> Map.put(:with_group_attribute, false)
+      |> ClientMock.get_profile_and_token(assert_fields: opts)
+
+      {:ok, %WorkOS.SSO.ProfileAndToken{access_token: access_token, profile: profile}} =
+        WorkOS.SSO.get_profile_and_token(Map.new(opts))
+
+      refute is_nil(access_token)
+      refute is_nil(profile)
     end
   end
 

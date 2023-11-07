@@ -1,5 +1,4 @@
 defmodule WorkOS.SSO.Profile do
-
   @behaviour WorkOS.Castable
 
   @type t() :: %__MODULE__{
