@@ -12,9 +12,7 @@ defmodule WorkOS.SSO.Connection do
   @type t() :: %__MODULE__{
           id: String.t(),
           name: String.t(),
-          # TODO - Add type for connection type
           type: String.t(),
-          # TODO - Add type for connection state
           state: String.t(),
           domains: list(Domain.t()) | nil,
           updated_at: DateTime.t(),

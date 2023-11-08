@@ -122,7 +122,15 @@ defmodule WorkOS.SSOTest do
   end
 
   describe "get_profile" do
-    test "calls the `/sso/profile` endpoint with the provided access token" do
+    test "calls the `/sso/profile` endpoint with the provided access token", context do
+      opts = [access_token: "access_token"]
+
+      context |> ClientMock.get_profile(assert_fields: opts)
+
+      assert {:ok, %WorkOS.SSO.Profile{id: id}} =
+               WorkOS.SSO.get_profile(opts |> Keyword.get(:access_token))
+
+      refute is_nil(id)
     end
   end
 

@@ -48,4 +48,35 @@ defmodule WorkOS.ClientMock do
       %Tesla.Env{status: status, body: body}
     end)
   end
+
+  def get_profile(context, opts \\ []) do
+    Tesla.Mock.mock(fn request ->
+      access_token = Keyword.get(opts, :assert_fields, []) |> Keyword.get(:access_token)
+
+      assert request.method == :get
+      assert request.url == "#{WorkOS.base_url()}/sso/profile"
+
+      assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
+               {"Authorization", "Bearer #{access_token}"}
+
+      success_body = %{
+        "id" => "prof_123",
+        "idp_i" => "123",
+        "organization_id" => "org_123",
+        "connection_id" => "conn_123",
+        "connection_type" => "OktaSAML",
+        "email" => "foo@test.com",
+        "first_name" => "foo",
+        "last_name" => "bar",
+        "raw_attributes" => %{
+          "email" => "foo@test.com",
+          "first_name" => "foo",
+          "last_name" => "bar"
+        }
+      }
+
+      {status, body} = Keyword.get(opts, :respond_with, {200, success_body})
+      %Tesla.Env{status: status, body: body}
+    end)
+  end
 end

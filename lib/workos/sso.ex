@@ -150,9 +150,9 @@ defmodule WorkOS.SSO do
   @spec get_profile(String.t()) :: WorkOS.Client.response(Profile.t())
   @spec get_profile(WorkOS.Client.t(), String.t()) :: WorkOS.Client.response(Profile.t())
   def get_profile(client \\ WorkOS.client(), access_token) do
-    WorkOS.Client.get(client, Connection, "/sso/profile",
+    WorkOS.Client.get(client, Profile, "/sso/profile",
       opts: [
-        path_params: [id: access_token]
+        access_token: access_token
       ]
     )
   end

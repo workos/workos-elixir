@@ -6,7 +6,6 @@ defmodule WorkOS.SSO.Profile do
           idp_id: String.t(),
           organization_id: String.t() | nil,
           connection_id: String.t(),
-          # TODO - Add type for connection type
           connection_type: String.t(),
           email: String.t(),
           first_name: String.t() | nil,
