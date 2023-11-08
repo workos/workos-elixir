@@ -51,8 +51,8 @@ defmodule WorkOS.SSO do
   @doc """
   Deletes a connection.
   """
-  @spec delete_connection(String.t()) :: WorkOS.Client.response(Connection.t())
-  @spec delete_connection(WorkOS.Client.t(), String.t()) :: WorkOS.Client.response(Connection.t())
+  @spec delete_connection(String.t()) :: WorkOS.Client.response(nil)
+  @spec delete_connection(WorkOS.Client.t(), String.t()) :: WorkOS.Client.response(nil)
   def delete_connection(client \\ WorkOS.client(), connection_id) do
     WorkOS.Client.delete(client, Connection, "/connections/:id", %{},
       opts: [
