@@ -138,4 +138,20 @@ defmodule WorkOS.SSO.ClientMock do
       %Tesla.Env{status: status, body: body}
     end)
   end
+
+  def delete_connection(context, opts \\ []) do
+    Tesla.Mock.mock(fn request ->
+      %{client_secret: client_secret} = context
+
+      connection_id = opts |> Keyword.get(:assert_fields) |> Keyword.get(:connection_id)
+      assert request.method == :delete
+      assert request.url == "#{WorkOS.base_url()}/connections/#{connection_id}"
+
+      assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
+               {"Authorization", "Bearer #{client_secret}"}
+
+      {status} = Keyword.get(opts, :respond_with, {204})
+      %Tesla.Env{status: status}
+    end)
+  end
 end

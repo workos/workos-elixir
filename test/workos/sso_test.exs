@@ -159,9 +159,14 @@ defmodule WorkOS.SSOTest do
     end
   end
 
+  @tag :single
   describe "delete_connection" do
     test "sends a request to delete a connection", context do
       opts = [connection_id: "conn_123"]
+
+      context |> ClientMock.delete_connection(assert_fields: opts)
+
+      assert {:ok, _body} = WorkOS.SSO.delete_connection(opts |> Keyword.get(:connection_id))
     end
   end
 end

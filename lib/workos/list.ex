@@ -19,7 +19,7 @@ defmodule WorkOS.List do
   def cast({implementation, map}) do
     %__MODULE__{
       data: Castable.cast_list(implementation, map["data"]),
-      list_metadata: map["list_metadata"],
+      list_metadata: map["list_metadata"]
     }
   end
 
