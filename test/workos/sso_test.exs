@@ -1,7 +1,7 @@
 defmodule WorkOS.SSOTest do
   use WorkOS.TestCase
 
-  alias WorkOS.ClientMock
+  alias WorkOS.SSO.ClientMock
 
   setup :setup_env
 
@@ -160,7 +160,8 @@ defmodule WorkOS.SSOTest do
   end
 
   describe "delete_connection" do
-    test "sends a request to delete a connection" do
+    test "sends a request to delete a connection", context do
+      opts = [connection_id: "conn_123"]
     end
   end
 end
