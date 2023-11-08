@@ -135,7 +135,15 @@ defmodule WorkOS.SSOTest do
   end
 
   describe "get_connection" do
-    test "requests a connection" do
+    test "requests a connection", context do
+      opts = [connection_id: "conn_123"]
+
+      context |> ClientMock.get_connection(assert_fields: opts)
+
+      assert {:ok, %WorkOS.SSO.Connection{id: id}} =
+               WorkOS.SSO.get_connection(opts |> Keyword.get(:connection_id))
+
+      refute is_nil(id)
     end
   end
 
