@@ -1,4 +1,6 @@
 defmodule WorkOS.SSO.ClientMock do
+  @moduledoc false
+
   use ExUnit.Case
 
   def get_profile_and_token(context, opts \\ []) do

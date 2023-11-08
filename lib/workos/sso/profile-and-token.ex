@@ -1,4 +1,8 @@
 defmodule WorkOS.SSO.ProfileAndToken do
+  @moduledoc """
+  WorkOS Profile and Token struct.
+  """
+
   alias WorkOS.SSO.Profile
 
   @behaviour WorkOS.Castable

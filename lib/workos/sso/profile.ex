@@ -1,4 +1,8 @@
 defmodule WorkOS.SSO.Profile do
+  @moduledoc """
+  WorkOS Profile struct.
+  """
+
   @behaviour WorkOS.Castable
 
   @type t() :: %__MODULE__{
