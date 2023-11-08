@@ -17,7 +17,7 @@ defmodule WorkOS.Client.TeslaClient do
   end
 
   @doc """
-  Returns a new `Tesla.Client`, configured for calling the WorkOs API.
+  Returns a new `Tesla.Client`, configured for calling the WorkOS API.
   """
   @spec new(WorkOS.Client.t(), String.t()) :: Tesla.Client.t()
   def new(client, access_token) do
