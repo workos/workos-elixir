@@ -106,4 +106,36 @@ defmodule WorkOS.ClientMock do
       %Tesla.Env{status: status, body: body}
     end)
   end
+
+  def list_connections(context, opts \\ []) do
+    Tesla.Mock.mock(fn request ->
+      %{client_secret: client_secret} = context
+
+      organization_id = opts |> Keyword.get(:assert_fields) |> Keyword.get(:organization_id)
+      assert request.method == :get
+      assert request.url == "#{WorkOS.base_url()}/connections"
+
+      assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
+               {"Authorization", "Bearer #{client_secret}"}
+
+      success_body = %{
+        "data" => [
+          %{
+            "id" => "conn_123",
+            "organization_id" => organization_id,
+            "name" => "Connection",
+            "connection_type" => "OktaSAML",
+            "state" => "active",
+            "domains" => [],
+            "created_at" => "2023-07-17T20:07:20.055Z",
+            "updated_at" => "2023-07-17T20:07:20.055Z"
+          }
+        ],
+        "list_metadata" => %{}
+      }
+
+      {status, body} = Keyword.get(opts, :respond_with, {200, success_body})
+      %Tesla.Env{status: status, body: body}
+    end)
+  end
 end

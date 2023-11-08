@@ -147,8 +147,15 @@ defmodule WorkOS.SSOTest do
     end
   end
 
-  describe "list_connection" do
-    test "requests a list of connections" do
+  @tag :single
+  describe "list_connections" do
+    test "requests a list of connections", context do
+      opts = [organization_id: "org_1234"]
+
+      context |> ClientMock.list_connections(assert_fields: opts)
+
+      assert {:ok, %WorkOS.List{data: [%WorkOS.SSO.Connection{}], list_metadata: %{}}} =
+               WorkOS.SSO.list_connections(opts |> Enum.into(%{}))
     end
   end
 

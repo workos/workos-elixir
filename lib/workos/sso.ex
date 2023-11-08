@@ -43,6 +43,11 @@ defmodule WorkOS.SSO do
     )
   end
 
+  @spec list_connections() :: WorkOS.Client.response(WorkOS.List.t(Connection.t()))
+  def list_connections() do
+    list_connections(WorkOS.client(), %{})
+  end
+
   @doc """
   Deletes a connection.
   """
