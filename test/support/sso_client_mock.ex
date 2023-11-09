@@ -152,8 +152,8 @@ defmodule WorkOS.SSO.ClientMock do
       assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
                {"Authorization", "Bearer #{api_key}"}
 
-      {status} = Keyword.get(opts, :respond_with, {204})
-      %Tesla.Env{status: status}
+      {status, body} = Keyword.get(opts, :respond_with, {204, %{}})
+      %Tesla.Env{status: status, body: body}
     end)
   end
 end

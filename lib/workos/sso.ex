@@ -7,6 +7,7 @@ defmodule WorkOS.SSO do
 
   require Logger
 
+  alias WorkOS.Empty
   alias WorkOS.SSO.Profile
   alias WorkOS.SSO.Connection
   alias WorkOS.SSO.ProfileAndToken
@@ -25,10 +26,11 @@ defmodule WorkOS.SSO do
     * `:order` - Order the results by the creation time. Supported values are "asc" and "desc" for showing older and newer records first respectively.
 
   """
-  @spec list_connections(map()) :: WorkOS.Client.response(WorkOS.List.t(Connection.t()))
+  @spec list_connections(map()) ::
+          WorkOS.Client.response(WorkOS.List.t(Connection.t()))
   @spec list_connections(WorkOS.Client.t(), map()) ::
           WorkOS.Client.response(WorkOS.List.t(Connection.t()))
-  def list_connections(client \\ WorkOS.client(), opts \\ %{}) do
+  def list_connections(client \\ WorkOS.client(), opts) when is_map(opts) do
     WorkOS.Client.get(client, WorkOS.List.of(Connection), "/connections",
       opts: [
         query: %{
@@ -50,7 +52,7 @@ defmodule WorkOS.SSO do
   @spec delete_connection(String.t()) :: WorkOS.Client.response(nil)
   @spec delete_connection(WorkOS.Client.t(), String.t()) :: WorkOS.Client.response(nil)
   def delete_connection(client \\ WorkOS.client(), connection_id) do
-    WorkOS.Client.delete(client, Connection, "/connections/:id", %{},
+    WorkOS.Client.delete(client, Empty, "/connections/:id", %{},
       opts: [
         path_params: [id: connection_id]
       ]

@@ -182,7 +182,8 @@ defmodule WorkOS.SSOTest do
 
       context |> ClientMock.delete_connection(assert_fields: opts)
 
-      assert {:ok, _body} = WorkOS.SSO.delete_connection(opts |> Keyword.get(:connection_id))
+      assert {:ok, %WorkOS.Empty{}} =
+               WorkOS.SSO.delete_connection(opts |> Keyword.get(:connection_id))
     end
   end
 end
