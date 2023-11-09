@@ -28,7 +28,7 @@ defmodule WorkOS.SSO do
   @spec list_connections(map()) :: WorkOS.Client.response(WorkOS.List.t(Connection.t()))
   @spec list_connections(WorkOS.Client.t(), map()) ::
           WorkOS.Client.response(WorkOS.List.t(Connection.t()))
-  def list_connections(client \\ WorkOS.client(), opts) do
+  def list_connections(client \\ WorkOS.client(), opts \\ %{}) do
     WorkOS.Client.get(client, WorkOS.List.of(Connection), "/connections",
       opts: [
         query: %{
@@ -42,11 +42,6 @@ defmodule WorkOS.SSO do
         }
       ]
     )
-  end
-
-  @spec list_connections() :: WorkOS.Client.response(WorkOS.List.t(Connection.t()))
-  def list_connections() do
-    list_connections(WorkOS.client(), %{})
   end
 
   @doc """
