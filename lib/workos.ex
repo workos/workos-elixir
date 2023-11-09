@@ -86,8 +86,13 @@ defmodule WorkOS do
   """
   @spec base_url() :: String.t()
   def base_url do
-    WorkOS.config()
-    |> Keyword.get(:base_url, default_base_url())
+    case Application.get_env(:workos, @config_module) do
+      config when is_list(config) ->
+        Keyword.get(config, :base_url, default_base_url())
+
+      _ ->
+        default_base_url()
+    end
   end
 
   @doc """
@@ -95,8 +100,13 @@ defmodule WorkOS do
   """
   @spec client_id() :: String.t()
   def client_id do
-    WorkOS.config()
-    |> Keyword.get(:client_id)
+    case Application.get_env(:workos, @config_module) do
+      config when is_list(config) ->
+        Keyword.get(config, :client_id, nil)
+
+      _ ->
+        nil
+    end
   end
 
   @doc """

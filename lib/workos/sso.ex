@@ -100,8 +100,12 @@ defmodule WorkOS.SSO do
       )
     end
 
+    client_id =
+      params[:client_id] || WorkOS.client_id() ||
+        raise "Missing required `client_id` parameter."
+
     defaults = %{
-      client_id: WorkOS.config() |> Keyword.get(:client_id, params[:client_id]),
+      client_id: client_id,
       response_type: "code"
     }
 

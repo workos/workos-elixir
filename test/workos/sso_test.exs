@@ -121,6 +121,7 @@ defmodule WorkOS.SSOTest do
     end
   end
 
+  @tag :single
   describe "get_profile" do
     test "calls the `/sso/profile` endpoint with the provided access token", context do
       opts = [access_token: "access_token"]
@@ -147,7 +148,6 @@ defmodule WorkOS.SSOTest do
     end
   end
 
-  @tag :single
   describe "list_connections" do
     test "requests a list of connections", context do
       opts = [organization_id: "org_1234"]
@@ -159,7 +159,6 @@ defmodule WorkOS.SSOTest do
     end
   end
 
-  @tag :single
   describe "delete_connection" do
     test "sends a request to delete a connection", context do
       opts = [connection_id: "conn_123"]
