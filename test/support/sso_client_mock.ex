@@ -5,13 +5,13 @@ defmodule WorkOS.SSO.ClientMock do
 
   def get_profile_and_token(context, opts \\ []) do
     Tesla.Mock.mock(fn request ->
-      %{client_secret: client_secret} = context
+      %{api_key: api_key} = context
 
       assert request.method == :post
       assert request.url == "#{WorkOS.base_url()}/sso/token"
 
       assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
-               {"Authorization", "Bearer #{client_secret}"}
+               {"Authorization", "Bearer #{api_key}"}
 
       body = Jason.decode!(request.body)
 
@@ -84,14 +84,14 @@ defmodule WorkOS.SSO.ClientMock do
 
   def get_connection(context, opts \\ []) do
     Tesla.Mock.mock(fn request ->
-      %{client_secret: client_secret} = context
+      %{api_key: api_key} = context
 
       connection_id = opts |> Keyword.get(:assert_fields) |> Keyword.get(:connection_id)
       assert request.method == :get
       assert request.url == "#{WorkOS.base_url()}/connections/#{connection_id}"
 
       assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
-               {"Authorization", "Bearer #{client_secret}"}
+               {"Authorization", "Bearer #{api_key}"}
 
       success_body = %{
         "id" => connection_id,
@@ -111,14 +111,14 @@ defmodule WorkOS.SSO.ClientMock do
 
   def list_connections(context, opts \\ []) do
     Tesla.Mock.mock(fn request ->
-      %{client_secret: client_secret} = context
+      %{api_key: api_key} = context
 
       organization_id = opts |> Keyword.get(:assert_fields) |> Keyword.get(:organization_id)
       assert request.method == :get
       assert request.url == "#{WorkOS.base_url()}/connections"
 
       assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
-               {"Authorization", "Bearer #{client_secret}"}
+               {"Authorization", "Bearer #{api_key}"}
 
       success_body = %{
         "data" => [
@@ -143,14 +143,14 @@ defmodule WorkOS.SSO.ClientMock do
 
   def delete_connection(context, opts \\ []) do
     Tesla.Mock.mock(fn request ->
-      %{client_secret: client_secret} = context
+      %{api_key: api_key} = context
 
       connection_id = opts |> Keyword.get(:assert_fields) |> Keyword.get(:connection_id)
       assert request.method == :delete
       assert request.url == "#{WorkOS.base_url()}/connections/#{connection_id}"
 
       assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
-               {"Authorization", "Bearer #{client_secret}"}
+               {"Authorization", "Bearer #{api_key}"}
 
       {status} = Keyword.get(opts, :respond_with, {204})
       %Tesla.Env{status: status}

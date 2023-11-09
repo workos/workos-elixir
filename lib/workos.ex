@@ -32,7 +32,8 @@ defmodule WorkOS do
 
   ```ex
   config :workos, WorkOS.Client
-    api_key: "test_123",
+    api_key: "sk_123",
+    client_id: "project_123",
     base_url: "https://api.workos.com",
     client: WorkOs.Client.TeslaClient
   ```
@@ -51,7 +52,7 @@ defmodule WorkOS do
 
         Configure your WorkOS API key in one of your config files, for example:
 
-            config :workos, #{inspect(@config_module)}, api_key: "example_123", client_id: "example_123"
+            config :workos, #{inspect(@config_module)}, api_key: "sk_123", client_id: "project_123"
         """
 
     validate_config!(config)
@@ -99,7 +100,7 @@ defmodule WorkOS do
   Retrieves the WorkOS client ID from application config.
   """
   @spec client_id() :: String.t()
-  def client_id do
+  def client_id() do
     case Application.get_env(:workos, @config_module) do
       config when is_list(config) ->
         Keyword.get(config, :client_id, nil)
@@ -109,12 +110,22 @@ defmodule WorkOS do
     end
   end
 
+  @spec client_id(WorkOS.Client.t()) :: String.t()
+  def client_id(client) do
+    Map.get(client, :client_id)
+  end
+
   @doc """
-  Retrieves the WorkOS client secret from application config.
+  Retrieves the WorkOS API key from application config.
   """
-  @spec client_secret() :: String.t()
-  def client_secret do
+  @spec api_key() :: String.t()
+  def api_key() do
     WorkOS.config()
-    |> Keyword.get(:client_secret)
+    |> Keyword.get(:api_key)
+  end
+
+  @spec api_key(WorkOS.Client.t()) :: String.t()
+  def api_key(client) do
+    Map.get(client, :api_key)
   end
 end

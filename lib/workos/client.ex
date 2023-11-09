@@ -14,12 +14,13 @@ defmodule WorkOS.Client do
 
   @type t() :: %__MODULE__{
           api_key: String.t(),
+          client_id: String.t(),
           base_url: String.t() | nil,
           client: module() | nil
         }
 
-  @enforce_keys [:api_key, :base_url, :client]
-  defstruct [:api_key, :base_url, :client]
+  @enforce_keys [:api_key, :client_id, :base_url, :client]
+  defstruct [:api_key, :client_id, :base_url, :client]
 
   @default_opts [
     base_url: WorkOS.default_base_url(),
@@ -31,7 +32,7 @@ defmodule WorkOS.Client do
   """
   @spec new(WorkOS.config()) :: t()
   def new(config) do
-    config = Keyword.take(config, [:api_key, :base_url, :client])
+    config = Keyword.take(config, [:api_key, :client_id, :base_url, :client])
     struct!(__MODULE__, Keyword.merge(@default_opts, config))
   end
 
@@ -54,6 +55,8 @@ defmodule WorkOS.Client do
   @spec post(t(), Castable.impl(), String.t(), map(), Keyword.t()) :: response(any())
   def post(client, castable_module, path, body \\ %{}, opts \\ []) do
     client_module = client.client || WorkOS.Client.TeslaClient
+
+    IO.inspect(client_module, label: "client_module within client.ex")
 
     opts =
       opts
