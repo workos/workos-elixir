@@ -19,8 +19,14 @@ defmodule WorkOS.SSOTest do
       assert WorkOS.base_url() =~ parse_uri(success_url).host
     end
 
-    test "with no `domain` or `provider`, returns error for incomplete arguments" do
+    test "with no `domain`, `provider`, `connection` or `organization`, returns error for incomplete arguments" do
       opts = [redirect_uri: "example.com/sso/workos/callback"]
+
+      assert {:error, _error_message} = opts |> Map.new() |> WorkOS.SSO.get_authorization_url()
+    end
+
+    test "with no `redirect_uri`, returns error for incomplete arguments" do
+      opts = [provider: "GoogleOAuth"]
 
       assert {:error, _error_message} = opts |> Map.new() |> WorkOS.SSO.get_authorization_url()
     end
@@ -58,7 +64,7 @@ defmodule WorkOS.SSOTest do
         Keyword.put(initial_config, :base_url, "https://custom-base-url.com")
       )
 
-      opts = [provider: "GoogleOAuth"]
+      opts = [provider: "GoogleOAuth", redirect_uri: "example.com/sso/workos/callback"]
 
       assert {:ok, success_url} = opts |> Map.new() |> WorkOS.SSO.get_authorization_url()
 
@@ -68,7 +74,11 @@ defmodule WorkOS.SSOTest do
     end
 
     test "generates an authorization url with a `state`" do
-      opts = [provider: "GoogleOAuth", state: "mock-state"]
+      opts = [
+        provider: "GoogleOAuth",
+        state: "mock-state",
+        redirect_uri: "example.com/sso/workos/callback"
+      ]
 
       assert {:ok, success_url} = opts |> Map.new() |> WorkOS.SSO.get_authorization_url()
 
@@ -76,7 +86,11 @@ defmodule WorkOS.SSOTest do
     end
 
     test "generates an authorization url with a given `domain_hint`" do
-      opts = [organization: "mock-organization", domain_hint: "mock-domain-hint"]
+      opts = [
+        organization: "mock-organization",
+        domain_hint: "mock-domain-hint",
+        redirect_uri: "example.com/sso/workos/callback"
+      ]
 
       assert {:ok, success_url} = opts |> Map.new() |> WorkOS.SSO.get_authorization_url()
 
@@ -84,7 +98,11 @@ defmodule WorkOS.SSOTest do
     end
 
     test "generates an authorization url with a given `login_hint`" do
-      opts = [organization: "mock-organization", login_hint: "mock-login-hint"]
+      opts = [
+        organization: "mock-organization",
+        login_hint: "mock-login-hint",
+        redirect_uri: "example.com/sso/workos/callback"
+      ]
 
       assert {:ok, success_url} = opts |> Map.new() |> WorkOS.SSO.get_authorization_url()
 
@@ -121,7 +139,6 @@ defmodule WorkOS.SSOTest do
     end
   end
 
-  @tag :single
   describe "get_profile" do
     test "calls the `/sso/profile` endpoint with the provided access token", context do
       opts = [access_token: "access_token"]

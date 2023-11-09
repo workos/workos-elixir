@@ -92,8 +92,9 @@ defmodule WorkOS.SSO do
   """
   @spec get_authorization_url(map()) :: {:ok, String.t()} | {:error, String.t()}
   def get_authorization_url(params)
-      when is_map_key(params, :connection) or is_map_key(params, :organization) or
-             is_map_key(params, :provider) or is_map_key(params, :domain) do
+      when is_map_key(params, :redirect_uri) and
+             (is_map_key(params, :connection) or is_map_key(params, :organization) or
+                is_map_key(params, :provider) or is_map_key(params, :domain)) do
     if is_map_key(params, :domain) do
       Logger.warn(
         "The `domain` parameter for `get_authorization_url` is deprecated. Please use `organization` instead."
