@@ -83,7 +83,8 @@ defmodule WorkOS.MixProject do
   defp groups_for_modules() do
     [
       "Core API": [
-        WorkOS.SSO
+        WorkOS.SSO,
+        WorkOS.Organizations
       ],
       "Response Structs": [
         WorkOS.SSO.Connection,
