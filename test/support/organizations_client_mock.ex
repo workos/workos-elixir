@@ -105,5 +105,77 @@ defmodule WorkOS.Organizations.ClientMock do
     end)
   end
 
-  # TODO - Implement create_organization and update_organization mocks
+  def create_organization(context, opts \\ []) do
+    Tesla.Mock.mock(fn request ->
+      %{api_key: api_key} = context
+
+      assert request.method == :post
+      assert request.url == "#{WorkOS.base_url()}/organizations"
+
+      assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
+               {"Authorization", "Bearer #{api_key}"}
+
+      body = Jason.decode!(request.body)
+
+      for {field, value} <- Keyword.get(opts, :assert_fields, []) do
+        assert body[to_string(field)] == value
+      end
+
+      success_body = %{
+        "id" => "org_01EHT88Z8J8795GZNQ4ZP1J81T",
+        "object" => "organization",
+        "name" => body[:name],
+        "allow_profiles_outside_organization" => false,
+        "domains" => [
+          %{
+            "domain" => "example.com",
+            "object" => "organization_domain",
+            "id" => "org_domain_01EHT88Z8WZEFWYPM6EC9BX2R8"
+          }
+        ],
+        "created_at" => "2023-07-17T20:07:20.055Z",
+        "updated_at" => "2023-07-17T20:07:20.055Z"
+      }
+
+      {status, body} = Keyword.get(opts, :respond_with, {200, success_body})
+      %Tesla.Env{status: status, body: body}
+    end)
+  end
+
+  def update_organization(context, opts \\ []) do
+    Tesla.Mock.mock(fn request ->
+      %{api_key: api_key} = context
+
+      assert request.method == :put
+      assert request.url == "#{WorkOS.base_url()}/organizations/#{opts[:organization_id]}"
+
+      assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
+               {"Authorization", "Bearer #{api_key}"}
+
+      body = Jason.decode!(request.body)
+
+      for {field, value} <- Keyword.get(opts, :assert_fields, []) do
+        assert body[to_string(field)] == value
+      end
+
+      success_body = %{
+        "id" => "org_01EHT88Z8J8795GZNQ4ZP1J81T",
+        "object" => "organization",
+        "name" => body[:name],
+        "allow_profiles_outside_organization" => false,
+        "domains" => [
+          %{
+            "domain" => "example.com",
+            "object" => "organization_domain",
+            "id" => "org_domain_01EHT88Z8WZEFWYPM6EC9BX2R8"
+          }
+        ],
+        "created_at" => "2023-07-17T20:07:20.055Z",
+        "updated_at" => "2023-07-17T20:07:20.055Z"
+      }
+
+      {status, body} = Keyword.get(opts, :respond_with, {200, success_body})
+      %Tesla.Env{status: status, body: body}
+    end)
+  end
 end
