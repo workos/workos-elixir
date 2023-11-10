@@ -1,5 +1,5 @@
 defmodule WorkOS.Organizations.ClientMock do
-   @moduledoc false
+  @moduledoc false
 
-   use ExUnit.Case
+  use ExUnit.Case
 end

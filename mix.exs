@@ -91,6 +91,8 @@ defmodule WorkOS.MixProject do
         WorkOS.SSO.Connection.Domain,
         WorkOS.SSO.Profile,
         WorkOS.SSO.ProfileAndToken,
+        WorkOS.Organizations.Organization,
+        WorkOS.Organizations.Organization.Domain,
         WorkOS.Empty,
         WorkOS.Error,
         WorkOS.List
