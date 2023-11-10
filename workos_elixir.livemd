@@ -16,3 +16,105 @@ client = WorkOS.client(api_key: System.fetch_env!("WORKOS_API_KEY"), client_id: 
 ```
 
 Note that if you choose to configure WorkOS in your app config, passing a client struct is always optional.
+
+## API
+
+We've created some inputs below to be used along the API calls. Feel free to replace these as needed!
+
+### Single Sign-On
+
+#### Get Authorization URL
+
+Generate an OAuth 2.0 authorization URL.
+
+```elixir
+provider = Kino.Input.text("Provider", default: "GoogleOAuth") |> Kino.render()
+
+redirect_uri =
+  Kino.Input.text("RedirectUri", default: "example.com/sso/workos/callback") |> Kino.render()
+
+client_id = Kino.Input.text("ClientID", default: "project_12345") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, email} =
+  WorkOS.SSO.get_authorization_url(%{
+    provider: Kino.Input.read(provider),
+    redirect_uri: Kino.Input.read(redirect_uri),
+    client_id: Kino.Input.read(client_id)
+  })
+```
+
+#### Get a Profile and Token
+
+Get an access token along with the user [Profile](https://workos.com/docs/reference/sso/profile) using the `code` passed to your [Redirect URI](https://workos.com/docs/reference/sso/redirect-uri).
+
+```elixir
+code = Kino.Input.text("Code") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.SSO.ProfileAndToken{access_token: access_token, profile: profile}} =
+  WorkOS.SSO.get_profile_and_token(client, %{
+    code: Kino.Input.read(code)
+  })
+```
+
+#### Get a User Profile
+
+Exchange an access token for a user’s [Profile](https://workos.com/docs/reference/sso/profile).
+
+```elixir
+access_token = Kino.Input.text("Access Token") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.SSO.Profile{id: id}} =
+  WorkOS.SSO.get_profile(client, %{
+    access_token: Kino.Input.read(access_token)
+  })
+```
+
+#### Get a Connection
+
+Get the details of an existing [Connection](https://workos.com/docs/reference/sso/connection).
+
+```elixir
+connection_id = Kino.Input.text("Connection ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.SSO.Connection{id: id}} =
+  WorkOS.SSO.get_connection(client, Kino.Input.read(connection_id))
+```
+
+#### List Connections
+
+Get a list of all of your existing connections matching the criteria specified.
+
+```elixir
+{:ok, %WorkOS.List{}} =
+  WorkOS.SSO.list_connections(client, %{})
+```
+
+#### Delete a Connection
+
+Delete an existing connection.
+
+```elixir
+connection_id = Kino.Input.text("Connection ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.Empty{}} = WorkOS.SSO.delete_connection(client, Kino.Input.read(connection_id))
+```
