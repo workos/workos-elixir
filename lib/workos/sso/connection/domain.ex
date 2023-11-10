@@ -7,12 +7,14 @@ defmodule WorkOS.SSO.Connection.Domain do
 
   @type t() :: %__MODULE__{
           id: String.t(),
+          object: String.t(),
           domain: String.t()
         }
 
   @enforce_keys [:id]
   defstruct [
     :id,
+    :object,
     :domain
   ]
 
@@ -20,6 +22,7 @@ defmodule WorkOS.SSO.Connection.Domain do
   def cast(map) do
     %__MODULE__{
       id: map["id"],
+      object: map["object"],
       domain: map["domain"]
     }
   end
