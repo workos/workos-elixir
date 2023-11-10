@@ -74,8 +74,8 @@ access_token = Kino.Input.text("Access Token") |> Kino.render()
 Kino.nothing()
 ```
 
-```elixir 
-{:ok, %WorkOS.SSO.Profile{id: id}} = 
+```elixir
+{:ok, %WorkOS.SSO.Profile{id: id}} =
   WorkOS.SSO.get_profile(client, %{
     access_token: Kino.Input.read(access_token)
   })
@@ -91,8 +91,8 @@ connection_id = Kino.Input.text("Connection ID") |> Kino.render()
 Kino.nothing()
 ```
 
-```elixir 
-{:ok, %WorkOS.SSO.Connection{id: id}} = 
+```elixir
+{:ok, %WorkOS.SSO.Connection{id: id}} =
   WorkOS.SSO.get_connection(client, Kino.Input.read(connection_id))
 ```
 
@@ -100,9 +100,9 @@ Kino.nothing()
 
 Get a list of all of your existing connections matching the criteria specified.
 
-```elixir 
-{:ok, %WorkOS.List{data: [%WorkOS.SSO.Connection{}], list_metadata: %{}}} =
-               WorkOS.SSO.list_connections(client)
+```elixir
+{:ok, %WorkOS.List{}} =
+  WorkOS.SSO.list_connections(client, %{})
 ```
 
 #### Delete a Connection
@@ -115,6 +115,6 @@ connection_id = Kino.Input.text("Connection ID") |> Kino.render()
 Kino.nothing()
 ```
 
-```elixir 
-{:ok, _body} = WorkOS.SSO.delete_connection(client, Kino.Input.read(connection_id))
+```elixir
+{:ok, %WorkOS.Empty{}} = WorkOS.SSO.delete_connection(client, Kino.Input.read(connection_id))
 ```

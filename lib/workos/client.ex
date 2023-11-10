@@ -56,8 +56,6 @@ defmodule WorkOS.Client do
   def post(client, castable_module, path, body \\ %{}, opts \\ []) do
     client_module = client.client || WorkOS.Client.TeslaClient
 
-    IO.inspect(client_module, label: "client_module within client.ex")
-
     opts =
       opts
       |> Keyword.put(:method, :post)
