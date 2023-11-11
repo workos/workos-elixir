@@ -102,7 +102,7 @@ Get a list of all of your existing connections matching the criteria specified.
 
 ```elixir
 {:ok, %WorkOS.List{}} =
-  WorkOS.SSO.list_connections(client, %{})
+  WorkOS.SSO.list_connections(client)
 ```
 
 #### Delete a Connection

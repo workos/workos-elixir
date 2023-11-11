@@ -5,7 +5,7 @@ defmodule WorkOS.Organizations.Organization do
 
   alias WorkOS.Util
   alias WorkOS.Castable
-  alias WorkOS.SSO.Organizations.Organization.Domain
+  alias WorkOS.Organizations.Organization.Domain
 
   @behaviour WorkOS.Castable
 

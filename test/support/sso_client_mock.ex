@@ -113,7 +113,6 @@ defmodule WorkOS.SSO.ClientMock do
     Tesla.Mock.mock(fn request ->
       %{api_key: api_key} = context
 
-      organization_id = opts |> Keyword.get(:assert_fields) |> Keyword.get(:organization_id)
       assert request.method == :get
       assert request.url == "#{WorkOS.base_url()}/connections"
 
@@ -124,7 +123,7 @@ defmodule WorkOS.SSO.ClientMock do
         "data" => [
           %{
             "id" => "conn_123",
-            "organization_id" => organization_id,
+            "organization_id" => "org_123",
             "name" => "Connection",
             "connection_type" => "OktaSAML",
             "state" => "active",

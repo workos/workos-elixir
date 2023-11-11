@@ -60,11 +60,11 @@ defmodule WorkOS do
 
   @spec validate_config!(WorkOS.config()) :: WorkOS.config() | no_return()
   defp validate_config!(config) do
-      Keyword.get(config, :api_key) ||
-        raise WorkOS.ApiKeyMissingError
+    Keyword.get(config, :api_key) ||
+      raise WorkOS.ApiKeyMissingError
 
-      Keyword.get(config, :client_id) ||
-        raise WorkOS.ClientIdMissingError
+    Keyword.get(config, :client_id) ||
+      raise WorkOS.ClientIdMissingError
 
     config
   end

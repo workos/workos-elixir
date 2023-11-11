@@ -26,12 +26,28 @@ defmodule WorkOS.SSO do
     * `:order` - Order the results by the creation time. Supported values are "asc" and "desc" for showing older and newer records first respectively.
 
   """
-  @spec list_connections(map()) ::
-          WorkOS.Client.response(WorkOS.List.t(Connection.t()))
   @spec list_connections(WorkOS.Client.t(), map()) ::
           WorkOS.Client.response(WorkOS.List.t(Connection.t()))
-  def list_connections(client \\ WorkOS.client(), opts) when is_map(opts) do
+  def list_connections(client, opts) do
     WorkOS.Client.get(client, WorkOS.List.of(Connection), "/connections",
+      opts: [
+        query: %{
+          connection_type: opts[:connection_type],
+          organization_id: opts[:organization_id],
+          domain: opts[:domain],
+          limit: opts[:limit],
+          after: opts[:after],
+          before: opts[:before],
+          order: opts[:order]
+        }
+      ]
+    )
+  end
+
+  @spec list_connections(map()) ::
+          WorkOS.Client.response(WorkOS.List.t(Connection.t()))
+  def list_connections(opts \\ %{}) do
+    WorkOS.Client.get(WorkOS.client(), WorkOS.List.of(Connection), "/connections",
       opts: [
         query: %{
           connection_type: opts[:connection_type],

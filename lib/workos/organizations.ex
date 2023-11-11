@@ -22,12 +22,26 @@ defmodule WorkOS.Organizations do
     * `:order` - Order the results by the creation time. Supported values are "asc" and "desc" for showing older and newer records first respectively.
 
   """
-  @spec list_organizations(map()) ::
-          WorkOS.Client.response(WorkOS.List.t(Organization.t()))
   @spec list_organizations(WorkOS.Client.t(), map()) ::
           WorkOS.Client.response(WorkOS.List.t(Organization.t()))
-  def list_organizations(client \\ WorkOS.client(), opts) when is_map(opts) do
+  def list_organizations(client, opts) do
     WorkOS.Client.get(client, WorkOS.List.of(Organization), "/organizations",
+      opts: [
+        query: %{
+          domains: opts[:domains],
+          limit: opts[:limit],
+          after: opts[:after],
+          before: opts[:before],
+          order: opts[:order]
+        }
+      ]
+    )
+  end
+
+  @spec list_organizations(map()) ::
+          WorkOS.Client.response(WorkOS.List.t(Organization.t()))
+  def list_organizations(opts \\ %{}) do
+    WorkOS.Client.get(WorkOS.client(), WorkOS.List.of(Organization), "/organizations",
       opts: [
         query: %{
           domains: opts[:domains],
