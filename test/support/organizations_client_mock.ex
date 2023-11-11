@@ -115,9 +115,12 @@ defmodule WorkOS.Organizations.ClientMock do
       assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
                {"Authorization", "Bearer #{api_key}"}
 
+      assert Enum.find(request.headers, fn {header, _} -> header == "Idempotency-Key" end) != nil
+
       body = Jason.decode!(request.body)
 
-      for {field, value} <- Keyword.get(opts, :assert_fields, []) do
+      for {field, value} <-
+            Keyword.get(opts, :assert_fields, []) |> Keyword.delete(:idempotency_key) do
         assert body[to_string(field)] == value
       end
 
@@ -146,15 +149,16 @@ defmodule WorkOS.Organizations.ClientMock do
     Tesla.Mock.mock(fn request ->
       %{api_key: api_key} = context
 
+      organization_id = opts |> Keyword.get(:assert_fields) |> Keyword.get(:organization)
       assert request.method == :put
-      assert request.url == "#{WorkOS.base_url()}/organizations/#{opts[:organization_id]}"
+      assert request.url == "#{WorkOS.base_url()}/organizations/#{organization_id}"
 
       assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
                {"Authorization", "Bearer #{api_key}"}
 
       body = Jason.decode!(request.body)
 
-      for {field, value} <- Keyword.get(opts, :assert_fields, []) do
+      for {field, value} <- Keyword.get(opts, :assert_fields, []) |> Keyword.delete(:organization) do
         assert body[to_string(field)] == value
       end
 

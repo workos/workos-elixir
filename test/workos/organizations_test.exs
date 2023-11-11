@@ -32,18 +32,71 @@ defmodule WorkOS.OrganizationsTest do
   end
 
   describe "delete_organization" do
-    # TODO - Implement tests
+    test "sends a request to delete an organization", context do
+      opts = [organization_id: "org_01EHT88Z8J8795GZNQ4ZP1J81T"]
+
+      context |> ClientMock.delete_organization(assert_fields: opts)
+
+      assert {:ok, %WorkOS.Empty{}} =
+               WorkOS.Organizations.delete_organization(opts |> Keyword.get(:organization_id))
+    end
   end
 
   describe "get_organization" do
-    # TODO - Implement tests
+    test "requests an organization", context do
+      opts = [organization_id: "org_01EHT88Z8J8795GZNQ4ZP1J81T"]
+
+      context |> ClientMock.get_organization(assert_fields: opts)
+
+      assert {:ok, %WorkOS.Organizations.Organization{id: id}} =
+               WorkOS.Organizations.get_organization(opts |> Keyword.get(:organization_id))
+
+      refute is_nil(id)
+    end
   end
 
   describe "create_organization" do
-    # TODO - Implement tests
+    test "with an idempotency key, includes an idempotency key with request", context do
+      opts = [
+        domains: ["example.com"],
+        name: "Test Organization",
+        idempotency_key: "the-idempotency-key"
+      ]
+
+      context |> ClientMock.create_organization(assert_fields: opts)
+
+      assert {:ok, %WorkOS.Organizations.Organization{id: id}} =
+               WorkOS.Organizations.create_organization(opts |> Enum.into(%{}))
+
+      refute is_nil(id)
+    end
+
+    test "with a valid payload, creates an organization", context do
+      opts = [domains: ["example.com"], name: "Test Organization"]
+
+      context |> ClientMock.create_organization(assert_fields: opts)
+
+      assert {:ok, %WorkOS.Organizations.Organization{id: id}} =
+               WorkOS.Organizations.create_organization(opts |> Enum.into(%{}))
+
+      refute is_nil(id)
+    end
   end
 
   describe "update_organization" do
-    # TODO - Implement tests
+    test "with a valid payload, updates an organization", context do
+      opts = [
+        organization: "org_01EHT88Z8J8795GZNQ4ZP1J81T",
+        domains: ["example.com"],
+        name: "Test Organization 2"
+      ]
+
+      context |> ClientMock.update_organization(assert_fields: opts)
+
+      assert {:ok, %WorkOS.Organizations.Organization{id: id}} =
+               WorkOS.Organizations.update_organization(opts |> Enum.into(%{}))
+
+      refute is_nil(id)
+    end
   end
 end
