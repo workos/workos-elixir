@@ -5,8 +5,6 @@ defmodule WorkOS.Organizations do
   @see https://workos.com/docs/reference/organization
   """
 
-  require Logger
-
   alias WorkOS.Empty
   alias WorkOS.Organizations.Organization
 
