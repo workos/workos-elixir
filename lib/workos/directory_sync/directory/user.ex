@@ -52,8 +52,7 @@ defmodule WorkOS.DirectorySync.Directory.User do
     :job_title,
     :state,
     :updated_at,
-    :created_at,
-    :type
+    :created_at
   ]
 
   @impl true

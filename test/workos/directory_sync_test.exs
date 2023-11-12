@@ -52,4 +52,20 @@ defmodule WorkOS.DirectorySyncTest do
       refute is_nil(id)
     end
   end
+
+  describe "list_users" do
+    test "requests directory users with options", context do
+      opts = [directory: "directory_123"]
+
+      context |> ClientMock.list_users(assert_fields: opts)
+
+      assert {:ok,
+              %WorkOS.List{
+                data: [%WorkOS.DirectorySync.Directory.User{custom_attributes: custom_attributes}],
+                list_metadata: %{}
+              }} = WorkOS.DirectorySync.list_users(opts |> Enum.into(%{}))
+
+      assert %{"custom" => true} = custom_attributes
+    end
+  end
 end
