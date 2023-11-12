@@ -18,8 +18,8 @@ defmodule WorkOS.DirectorySync.Directory.User do
           last_name: String.t(),
           job_title: String.t() | nil,
           state: String.t(),
-          updated_at: DateTime.t(),
-          created_at: DateTime.t()
+          updated_at: String.t(),
+          created_at: String.t()
         }
 
   @enforce_keys [

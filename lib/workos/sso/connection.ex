@@ -14,9 +14,9 @@ defmodule WorkOS.SSO.Connection do
           connection_type: String.t(),
           state: String.t(),
           domains: list(Domain.t()) | nil,
-          organization_id: String.t(),
           updated_at: String.t(),
           created_at: String.t(),
+          organization_id: String.t()
         }
 
   @enforce_keys [:id, :name, :connection_type, :state, :updated_at, :created_at, :organization_id]

@@ -12,8 +12,8 @@ defmodule WorkOS.DirectorySync.Directory.Group do
           directory_id: String.t(),
           organization_id: String.t() | nil,
           raw_attributes: %{String.t() => any()},
-          updated_at: DateTime.t(),
-          created_at: DateTime.t()
+          updated_at: String.t(),
+          created_at: String.t()
         }
 
   @enforce_keys [
