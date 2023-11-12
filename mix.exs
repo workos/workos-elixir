@@ -88,6 +88,7 @@ defmodule WorkOS.MixProject do
         WorkOS.Portal,
         WorkOS.Webhooks,
         WorkOS.DirectorySync
+        WorkOS.Passwordless,
       ],
       "Response Structs": [
         WorkOS.SSO.Connection,
@@ -101,8 +102,8 @@ defmodule WorkOS.MixProject do
         WorkOS.DirectorySync.Directory,
         WorkOS.DirectorySync.Directory.Group,
         WorkOS.DirectorySync.Directory.User,
+        WorkOS.Passwordless.Session,
         WorkOS.Empty,
-
         WorkOS.Error,
         WorkOS.List
       "API Client": [
