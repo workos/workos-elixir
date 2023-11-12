@@ -9,7 +9,7 @@ defmodule WorkOS.Events.Event do
           id: String.t(),
           event: String.t(),
           data: map(),
-          created_at: String.t(),
+          created_at: String.t()
         }
 
   @enforce_keys [:id, :event, :created_at]
@@ -17,7 +17,7 @@ defmodule WorkOS.Events.Event do
     :id,
     :event,
     :data,
-    :created_at,
+    :created_at
   ]
 
   @impl true
@@ -26,7 +26,7 @@ defmodule WorkOS.Events.Event do
       id: map["id"],
       data: map["data"],
       event: map["event"],
-      created_at: map["created_at"],
+      created_at: map["created_at"]
     }
   end
 end
