@@ -28,4 +28,15 @@ defmodule WorkOS.DirectorySyncTest do
                WorkOS.DirectorySync.list_directories(opts |> Enum.into(%{}))
     end
   end
+
+  describe "delete_directory" do
+    test "sends a request to delete a directory", context do
+      opts = [directory_id: "conn_123"]
+
+      context |> ClientMock.delete_directory(assert_fields: opts)
+
+      assert {:ok, %WorkOS.Empty{}} =
+               WorkOS.DirectorySync.delete_directory(opts |> Keyword.get(:directory_id))
+    end
+  end
 end

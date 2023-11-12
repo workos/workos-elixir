@@ -67,4 +67,20 @@ defmodule WorkOS.DirectorySync.ClientMock do
       %Tesla.Env{status: status, body: body}
     end)
   end
+
+  def delete_directory(context, opts \\ []) do
+    Tesla.Mock.mock(fn request ->
+      %{api_key: api_key} = context
+
+      directory_id = opts |> Keyword.get(:assert_fields) |> Keyword.get(:directory_id)
+      assert request.method == :delete
+      assert request.url == "#{WorkOS.base_url()}/directories/#{directory_id}"
+
+      assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
+               {"Authorization", "Bearer #{api_key}"}
+
+      {status, body} = Keyword.get(opts, :respond_with, {204, %{}})
+      %Tesla.Env{status: status, body: body}
+    end)
+  end
 end

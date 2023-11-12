@@ -5,6 +5,7 @@ defmodule WorkOS.DirectorySync do
   @see https://workos.com/docs/reference/directory-sync
   """
 
+  alias WorkOS.Empty
   alias WorkOS.DirectorySync.Directory
 
   @doc """
@@ -67,6 +68,19 @@ defmodule WorkOS.DirectorySync do
           after: opts[:after],
           order: opts[:order]
         }
+      ]
+    )
+  end
+
+  @doc """
+  Deletes a directory.
+  """
+  @spec delete_directory(String.t()) :: WorkOS.Client.response(nil)
+  @spec delete_directory(WorkOS.Client.t(), String.t()) :: WorkOS.Client.response(nil)
+  def delete_directory(client \\ WorkOS.client(), directory_id) do
+    WorkOS.Client.delete(client, Empty, "/directories/:id", %{},
+      opts: [
+        path_params: [id: directory_id]
       ]
     )
   end
