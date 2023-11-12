@@ -3,8 +3,6 @@ defmodule WorkOS.DirectorySync.Directory.User do
   WorkOS Directory User struct.
   """
 
-  alias WorkOS.Util
-
   @behaviour WorkOS.Castable
 
   @type t() :: %__MODULE__{
@@ -70,8 +68,8 @@ defmodule WorkOS.DirectorySync.Directory.User do
       last_name: map["last_name"],
       job_title: map["job_title"],
       state: map["state"],
-      updated_at: Util.parse_iso8601(map["created_at"]),
-      created_at: Util.parse_iso8601(map["created_at"])
+      updated_at: map["created_at"],
+      created_at: map["created_at"]
     }
   end
 end

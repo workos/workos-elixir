@@ -42,6 +42,19 @@ defmodule WorkOS.DirectorySync.ClientMock do
     "updated_at" => "2023-07-17T20:07:20.055Z"
   }
 
+  @directory_group_response %{
+    "id" => "dir_grp_123",
+    "idp_id" => "123",
+    "directory_id" => "dir_123",
+    "organization_id" => "org_123",
+    "name" => "Foo Group",
+    "raw_attributes" => %{
+      "foo" => "bar"
+    },
+    "created_at" => "2023-07-17T20:07:20.055Z",
+    "updated_at" => "2023-07-17T20:07:20.055Z"
+  }
+
   def get_directory(context, opts \\ []) do
     Tesla.Mock.mock(fn request ->
       %{api_key: api_key} = context
@@ -175,21 +188,7 @@ defmodule WorkOS.DirectorySync.ClientMock do
       assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
                {"Authorization", "Bearer #{api_key}"}
 
-      # Refactor directory group response based on struct
-      success_body = %{
-        "id" => directory_group_id,
-        "organization_id" => "org_123",
-        "name" => "Foo",
-        "domain" => "foo-corp.com",
-        "object" => "directory",
-        "state" => "linked",
-        "external_key" => "9asBRBV",
-        "type" => "okta scim v1.1",
-        "created_at" => "2023-07-17T20:07:20.055Z",
-        "updated_at" => "2023-07-17T20:07:20.055Z"
-      }
-
-      {status, body} = Keyword.get(opts, :respond_with, {200, success_body})
+      {status, body} = Keyword.get(opts, :respond_with, {200, @directory_group_response})
       %Tesla.Env{status: status, body: body}
     end)
   end
@@ -204,21 +203,9 @@ defmodule WorkOS.DirectorySync.ClientMock do
       assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
                {"Authorization", "Bearer #{api_key}"}
 
-      # Refactor directory group response based on struct
       success_body = %{
         "data" => [
-          %{
-            "id" => "directory_123",
-            "organization_id" => "org_123",
-            "name" => "Foo",
-            "domain" => "foo-corp.com",
-            "object" => "directory",
-            "state" => "linked",
-            "external_key" => "9asBRBV",
-            "type" => "okta scim v1.1",
-            "created_at" => "2023-07-17T20:07:20.055Z",
-            "updated_at" => "2023-07-17T20:07:20.055Z"
-          }
+          @directory_group_response
         ],
         "list_metadata" => %{
           "before" => "before-id",

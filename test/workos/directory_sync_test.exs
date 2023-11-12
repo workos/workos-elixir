@@ -68,4 +68,43 @@ defmodule WorkOS.DirectorySyncTest do
       assert %{"custom" => true} = custom_attributes
     end
   end
+
+  describe "get_group" do
+    test "requests a directory group", context do
+      opts = [directory_group_id: "dir_grp_123"]
+
+      context |> ClientMock.get_group(assert_fields: opts)
+
+      assert {:ok, %WorkOS.DirectorySync.Directory.Group{id: id}} =
+               WorkOS.DirectorySync.get_group(opts |> Keyword.get(:directory_group_id))
+
+      refute is_nil(id)
+    end
+  end
+
+  describe "list_groups" do
+    test "requests directory groups with `directory` option", context do
+      opts = [directory: "directory_123"]
+
+      context |> ClientMock.list_groups(assert_fields: opts)
+
+      assert {:ok,
+              %WorkOS.List{
+                data: [%WorkOS.DirectorySync.Directory.Group{}],
+                list_metadata: %{}
+              }} = WorkOS.DirectorySync.list_groups(opts |> Enum.into(%{}))
+    end
+
+    test "requests directory groups with `user` option", context do
+      opts = [user: "directory_usr_123"]
+
+      context |> ClientMock.list_groups(assert_fields: opts)
+
+      assert {:ok,
+              %WorkOS.List{
+                data: [%WorkOS.DirectorySync.Directory.Group{}],
+                list_metadata: %{}
+              }} = WorkOS.DirectorySync.list_groups(opts |> Enum.into(%{}))
+    end
+  end
 end

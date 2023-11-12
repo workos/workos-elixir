@@ -39,7 +39,7 @@ defmodule WorkOS.SSO.Connection do
       connection_type: map["connection_type"],
       state: map["state"],
       domains: Castable.cast_list(Domain, map["domains"]),
-      updated_at: map["updated_at"],
+      updated_at: map["created_at"],
       created_at: map["created_at"],
       organization_id: map["organization_id"]
     }

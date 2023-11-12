@@ -149,7 +149,7 @@ defmodule WorkOS.DirectorySync do
   Gets a directory group given an ID.
   """
   def get_group(client \\ WorkOS.client(), directory_group_id) do
-    WorkOS.Client.get(client, User, "/directory_groups/:id",
+    WorkOS.Client.get(client, Group, "/directory_groups/:id",
       opts: [
         path_params: [id: directory_group_id]
       ]

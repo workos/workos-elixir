@@ -3,8 +3,6 @@ defmodule WorkOS.DirectorySync.Directory.Group do
   WorkOS Directory Group struct.
   """
 
-  alias WorkOS.Util
-
   @behaviour WorkOS.Castable
 
   @type t() :: %__MODULE__{
@@ -47,8 +45,8 @@ defmodule WorkOS.DirectorySync.Directory.Group do
       directory_id: map["directory_id"],
       organization_id: map["organization_id"],
       raw_attributes: map["raw_attributes"],
-      updated_at: Util.parse_iso8601(map["created_at"]),
-      created_at: Util.parse_iso8601(map["created_at"])
+      updated_at: map["created_at"],
+      created_at: map["created_at"]
     }
   end
 end
