@@ -86,6 +86,7 @@ defmodule WorkOS.MixProject do
         WorkOS.SSO,
         WorkOS.Organizations,
         WorkOS.Portal,
+        WorkOS.Webhooks,
       ],
       "Response Structs": [
         WorkOS.SSO.Connection,
