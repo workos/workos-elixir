@@ -103,6 +103,7 @@ defmodule WorkOS.MixProject do
         WorkOS.DirectorySync.Directory.Group,
         WorkOS.DirectorySync.Directory.User,
         WorkOS.Passwordless.Session,
+        WorkOS.Passwordless.Session.Send,
         WorkOS.Empty,
         WorkOS.Error,
         WorkOS.List

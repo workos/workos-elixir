@@ -3,8 +3,6 @@ defmodule WorkOS.Passwordless.Session do
   WorkOS Passwordless session struct.
   """
 
-  alias WorkOS.Util
-
   @behaviour WorkOS.Castable
 
   @type t() :: %__MODULE__{
@@ -12,7 +10,7 @@ defmodule WorkOS.Passwordless.Session do
           email: String.t(),
           link: String.t(),
           object: String.t(),
-          expires_at: DateTime.t(),
+          expires_at: String.t()
         }
 
   @enforce_keys [:id, :email, :link, :object, :expires_at]
@@ -21,7 +19,7 @@ defmodule WorkOS.Passwordless.Session do
     :email,
     :link,
     :object,
-    :expires_at,
+    :expires_at
   ]
 
   @impl true
@@ -31,7 +29,7 @@ defmodule WorkOS.Passwordless.Session do
       email: map["email"],
       link: map["link"],
       object: map["object"],
-      expires_at: Util.parse_iso8601(map["expires_at"]),
+      expires_at: map["expires_at"]
     }
   end
 end
