@@ -41,7 +41,17 @@ defmodule WorkOS.Portal do
           WorkOS.Client.response(String.t())
   def generate_link(client, opts)
       when is_map_key(opts, :organization) and is_map_key(opts, :intent) do
-    IO.inspect(client)
+    WorkOS.Client.post(
+      client,
+      String,
+      "/portal/generate_link",
+      %{
+        organization: opts[:organization],
+        intent: opts[:intent],
+        return_url: opts[:return_url],
+        success_url: opts[:success_url]
+      }
+    )
   end
 
   def generate_link(_client, _opts),
