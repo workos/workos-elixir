@@ -96,6 +96,7 @@ defmodule WorkOS.MixProject do
         WorkOS.Organizations.Organization,
         WorkOS.Organizations.Organization.Domain,
         WorkOS.Portal.Link,
+        WorkOS.Webhooks.Event,
         WorkOS.Empty,
         WorkOS.Error,
         WorkOS.List

@@ -1,7 +1,6 @@
 defmodule WorkOS.Webhooks do
   @moduledoc """
-  Provide convenience methods for working with WorkOS webhooks.
-  Creates a WorkOS Webhook Event from the webhook's payload if signature is valid.
+  Manage timestamp and signature validation of Webhooks in WorkOS.
 
   See https://workos.com/docs/webhooks
   """
