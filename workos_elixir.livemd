@@ -195,3 +195,24 @@ Kino.nothing()
     organization: Kino.Input.read(organization)
   })
 ```
+
+### Admin Portal
+
+#### Generate a Portal Link
+
+Generate a Portal Link scoped to an Organization.
+
+```elixir
+organization = Kino.Input.text("Organization") |> Kino.render()
+intent = Kino.Input.text("Intent") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.Portal.Link{link: link}} =
+  WorkOS.Portal.generate_link(client, %{
+    organization: Kino.Input.read(organization),
+    intent: Kino.Input.read(intent),
+  })
+```
