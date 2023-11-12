@@ -12,8 +12,9 @@ defmodule WorkOS.Passwordless do
   Creates a Passwordless Session for a Magic Link Connection
 
   Parameter options:
+
+    * `:type` - The type of Passwordless Session to create. Currently, the only supported value is `MagicLink`. (required)
     * `:email` - The email of the user to authenticate. (required)
-    * `:type` - The type of Passwordless Session to create. (required)
     * `:redirect_uri` - Optional parameter that a developer can choose to include in their authorization URL.
     * `:expires_in` - The number of seconds the Passwordless Session should live before expiring.
     * `:state` - Optional parameter that a developer can choose to include in their authorization URL.
@@ -41,9 +42,11 @@ defmodule WorkOS.Passwordless do
   @doc """
   Emails a user the Magic Link confirmation URL, given a Passwordless session ID.
   """
+  @spec send_session(String.t()) ::
+          WorkOS.Client.response(Send)
   @spec send_session(WorkOS.Client.t(), String.t()) ::
           WorkOS.Client.response(Send)
-  def send_session(client, session_id) do
+  def send_session(client \\ WorkOS.client(), session_id) do
     WorkOS.Client.post(
       client,
       Send,

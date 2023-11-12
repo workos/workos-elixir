@@ -7,20 +7,20 @@ defmodule WorkOS.Passwordless.Session.Send do
 
   @type t() :: %__MODULE__{
           message: String.t() | nil,
-          success: Boolean.t(),
+          success: Boolean.t()
         }
 
   @enforce_keys [:success]
   defstruct [
     :message,
-    :success,
+    :success
   ]
 
   @impl true
   def cast(map) do
     %__MODULE__{
       message: map["message"],
-      success: map["success"],
+      success: map["success"]
     }
   end
 end
