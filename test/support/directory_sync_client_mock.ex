@@ -31,4 +31,40 @@ defmodule WorkOS.DirectorySync.ClientMock do
       %Tesla.Env{status: status, body: body}
     end)
   end
+
+  def list_directories(context, opts \\ []) do
+    Tesla.Mock.mock(fn request ->
+      %{api_key: api_key} = context
+
+      assert request.method == :get
+      assert request.url == "#{WorkOS.base_url()}/directories"
+
+      assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
+               {"Authorization", "Bearer #{api_key}"}
+
+      success_body = %{
+        "data" => [
+          %{
+            "id" => "directory_123",
+            "organization_id" => "org_123",
+            "name" => "Foo",
+            "domain" => "foo-corp.com",
+            "object" => "directory",
+            "state" => "linked",
+            "external_key" => "9asBRBV",
+            "type" => "okta scim v1.1",
+            "created_at" => "2023-07-17T20:07:20.055Z",
+            "updated_at" => "2023-07-17T20:07:20.055Z"
+          }
+        ],
+        "list_metadata" => %{
+          "before" => "before-id",
+          "after" => "after-id"
+        }
+      }
+
+      {status, body} = Keyword.get(opts, :respond_with, {200, success_body})
+      %Tesla.Env{status: status, body: body}
+    end)
+  end
 end

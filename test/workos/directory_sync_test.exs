@@ -17,4 +17,15 @@ defmodule WorkOS.DirectorySyncTest do
       refute is_nil(id)
     end
   end
+
+  describe "list_directories" do
+    test "requests directories with options", context do
+      opts = [organization_id: "org_1234"]
+
+      context |> ClientMock.list_directories(assert_fields: opts)
+
+      assert {:ok, %WorkOS.List{data: [%WorkOS.DirectorySync.Directory{}], list_metadata: %{}}} =
+               WorkOS.DirectorySync.list_directories(opts |> Enum.into(%{}))
+    end
+  end
 end
