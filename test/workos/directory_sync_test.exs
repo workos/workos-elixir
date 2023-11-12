@@ -39,4 +39,17 @@ defmodule WorkOS.DirectorySyncTest do
                WorkOS.DirectorySync.delete_directory(opts |> Keyword.get(:directory_id))
     end
   end
+
+  describe "get_user" do
+    test "requests a directory user", context do
+      opts = [directory_user_id: "dir_usr_123"]
+
+      context |> ClientMock.get_user(assert_fields: opts)
+
+      assert {:ok, %WorkOS.DirectorySync.Directory.User{id: id}} =
+               WorkOS.DirectorySync.get_user(opts |> Keyword.get(:directory_user_id))
+
+      refute is_nil(id)
+    end
+  end
 end

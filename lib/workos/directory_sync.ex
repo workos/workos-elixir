@@ -7,6 +7,8 @@ defmodule WorkOS.DirectorySync do
 
   alias WorkOS.Empty
   alias WorkOS.DirectorySync.Directory
+  alias WorkOS.DirectorySync.Directory.User
+  alias WorkOS.DirectorySync.Directory.Group
 
   @doc """
   Gets a directory given an ID.
@@ -81,6 +83,123 @@ defmodule WorkOS.DirectorySync do
     WorkOS.Client.delete(client, Empty, "/directories/:id", %{},
       opts: [
         path_params: [id: directory_id]
+      ]
+    )
+  end
+
+  @doc """
+  Gets a directory user given an ID.
+  """
+  def get_user(client \\ WorkOS.client(), directory_user_id) do
+    WorkOS.Client.get(client, User, "/directory_users/:id",
+      opts: [
+        path_params: [id: directory_user_id]
+      ]
+    )
+  end
+
+  @doc """
+  Lists all directory users.
+
+  Parameter options:
+
+    * `:directory` - Unique identifier of the WorkOS Directory.
+    * `:group` - Unique identifier of the WorkOS Directory Group.
+    * `:limit` - Maximum number of records to return. Accepts values between 1 and 100. Default is 10.
+    * `:before` - An object ID that defines your place in the list. When the ID is not present, you are at the end of the list.
+    * `:after` - Pagination cursor to receive records after a provided event ID.
+    * `:order` - Order the results by the creation time. Supported values are "asc" and "desc" for showing older and newer records first respectively.
+
+  """
+  @spec list_users(WorkOS.Client.t(), map()) ::
+          WorkOS.Client.response(WorkOS.List.t(User.t()))
+  def list_users(client, opts) do
+    WorkOS.Client.get(client, WorkOS.List.of(User), "/directory_users",
+      opts: [
+        query: %{
+          directory: opts[:directory],
+          group: opts[:group],
+          limit: opts[:limit],
+          before: opts[:before],
+          after: opts[:after],
+          order: opts[:order]
+        }
+      ]
+    )
+  end
+
+  @spec list_users(map()) ::
+          WorkOS.Client.response(WorkOS.List.t(User.t()))
+  def list_users(opts \\ %{}) do
+    WorkOS.Client.get(WorkOS.client(), WorkOS.List.of(User), "/directory_users",
+      opts: [
+        query: %{
+          directory: opts[:directory],
+          group: opts[:group],
+          limit: opts[:limit],
+          before: opts[:before],
+          after: opts[:after],
+          order: opts[:order]
+        }
+      ]
+    )
+  end
+
+  @doc """
+  Gets a directory group given an ID.
+  """
+  def get_group(client \\ WorkOS.client(), directory_group_id) do
+    WorkOS.Client.get(client, User, "/directory_groups/:id",
+      opts: [
+        path_params: [id: directory_group_id]
+      ]
+    )
+  end
+
+  @doc """
+  Lists all directory groups.
+
+  Parameter options:
+
+    * `:directory` - Unique identifier of the WorkOS Directory.
+    * `:user` - Unique identifier of the WorkOS Directory User.
+    * `:limit` - Maximum number of records to return. Accepts values between 1 and 100. Default is 10.
+    * `:before` - An object ID that defines your place in the list. When the ID is not present, you are at the end of the list.
+    * `:after` - Pagination cursor to receive records after a provided event ID.
+    * `:order` - Order the results by the creation time. Supported values are "asc" and "desc" for showing older and newer records first respectively.
+
+  """
+  @spec list_groups(WorkOS.Client.t(), map()) ::
+          WorkOS.Client.response(WorkOS.List.t(Group.t()))
+  def list_groups(client, opts) do
+    WorkOS.Client.get(client, WorkOS.List.of(Group), "/directory_groups",
+      opts: [
+        query: %{
+          directory: opts[:directory],
+          user: opts[:user],
+          limit: opts[:limit],
+          before: opts[:before],
+          after: opts[:after],
+          order: opts[:order]
+        }
+      ]
+    )
+  end
+
+  @spec list_groups(map()) ::
+          WorkOS.Client.response(WorkOS.List.t(Group.t()))
+  def list_groups(opts \\ %{}) do
+    WorkOS.Client.get(WorkOS.client(), WorkOS.List.of(Group), "/directory_groups",
+      opts: [
+        query: %{
+          domain: opts[:domain],
+          organization_id: opts[:organization_id],
+          search: opts[:search],
+          limit: opts[:limit],
+          before: opts[:before],
+          after: opts[:after],
+          order: opts[:order]
+        }
       ]
     )
   end

@@ -83,4 +83,138 @@ defmodule WorkOS.DirectorySync.ClientMock do
       %Tesla.Env{status: status, body: body}
     end)
   end
+
+  def get_user(context, opts \\ []) do
+    Tesla.Mock.mock(fn request ->
+      %{api_key: api_key} = context
+
+      directory_user_id = opts |> Keyword.get(:assert_fields) |> Keyword.get(:directory_user_id)
+      assert request.method == :get
+      assert request.url == "#{WorkOS.base_url()}/directory_users/#{directory_user_id}"
+
+      assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
+               {"Authorization", "Bearer #{api_key}"}
+
+      # Refactor directory user response based on struct
+      success_body = %{
+        "id" => directory_user_id,
+        "organization_id" => "org_123",
+        "name" => "Foo",
+        "domain" => "foo-corp.com",
+        "object" => "directory",
+        "state" => "linked",
+        "external_key" => "9asBRBV",
+        "type" => "okta scim v1.1",
+        "created_at" => "2023-07-17T20:07:20.055Z",
+        "updated_at" => "2023-07-17T20:07:20.055Z"
+      }
+
+      {status, body} = Keyword.get(opts, :respond_with, {200, success_body})
+      %Tesla.Env{status: status, body: body}
+    end)
+  end
+
+  def list_users(context, opts \\ []) do
+    Tesla.Mock.mock(fn request ->
+      %{api_key: api_key} = context
+
+      assert request.method == :get
+      assert request.url == "#{WorkOS.base_url()}/directory_users"
+
+      assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
+               {"Authorization", "Bearer #{api_key}"}
+
+      # Refactor directory user response based on struct
+      success_body = %{
+        "data" => [
+          %{
+            "id" => "directory_123",
+            "organization_id" => "org_123",
+            "name" => "Foo",
+            "domain" => "foo-corp.com",
+            "object" => "directory",
+            "state" => "linked",
+            "external_key" => "9asBRBV",
+            "type" => "okta scim v1.1",
+            "created_at" => "2023-07-17T20:07:20.055Z",
+            "updated_at" => "2023-07-17T20:07:20.055Z"
+          }
+        ],
+        "list_metadata" => %{
+          "before" => "before-id",
+          "after" => "after-id"
+        }
+      }
+
+      {status, body} = Keyword.get(opts, :respond_with, {200, success_body})
+      %Tesla.Env{status: status, body: body}
+    end)
+  end
+
+  def get_group(context, opts \\ []) do
+    Tesla.Mock.mock(fn request ->
+      %{api_key: api_key} = context
+
+      directory_group_id = opts |> Keyword.get(:assert_fields) |> Keyword.get(:directory_group_id)
+      assert request.method == :get
+      assert request.url == "#{WorkOS.base_url()}/directory_groups/#{directory_group_id}"
+
+      assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
+               {"Authorization", "Bearer #{api_key}"}
+
+      # Refactor directory group response based on struct
+      success_body = %{
+        "id" => directory_group_id,
+        "organization_id" => "org_123",
+        "name" => "Foo",
+        "domain" => "foo-corp.com",
+        "object" => "directory",
+        "state" => "linked",
+        "external_key" => "9asBRBV",
+        "type" => "okta scim v1.1",
+        "created_at" => "2023-07-17T20:07:20.055Z",
+        "updated_at" => "2023-07-17T20:07:20.055Z"
+      }
+
+      {status, body} = Keyword.get(opts, :respond_with, {200, success_body})
+      %Tesla.Env{status: status, body: body}
+    end)
+  end
+
+  def list_groups(context, opts \\ []) do
+    Tesla.Mock.mock(fn request ->
+      %{api_key: api_key} = context
+
+      assert request.method == :get
+      assert request.url == "#{WorkOS.base_url()}/directory_groups"
+
+      assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
+               {"Authorization", "Bearer #{api_key}"}
+
+      # Refactor directory group response based on struct
+      success_body = %{
+        "data" => [
+          %{
+            "id" => "directory_123",
+            "organization_id" => "org_123",
+            "name" => "Foo",
+            "domain" => "foo-corp.com",
+            "object" => "directory",
+            "state" => "linked",
+            "external_key" => "9asBRBV",
+            "type" => "okta scim v1.1",
+            "created_at" => "2023-07-17T20:07:20.055Z",
+            "updated_at" => "2023-07-17T20:07:20.055Z"
+          }
+        ],
+        "list_metadata" => %{
+          "before" => "before-id",
+          "after" => "after-id"
+        }
+      }
+
+      {status, body} = Keyword.get(opts, :respond_with, {200, success_body})
+      %Tesla.Env{status: status, body: body}
+    end)
+  end
 end
