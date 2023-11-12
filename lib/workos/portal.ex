@@ -5,6 +5,8 @@ defmodule WorkOS.Portal do
   @see https://workos.com/docs/reference/admin-portal
   """
 
+  alias WorkOS.Portal.Link
+
   @generate_portal_link_intent [
     "audit_logs",
     "domain_verification",
@@ -43,7 +45,7 @@ defmodule WorkOS.Portal do
       when is_map_key(opts, :organization) and is_map_key(opts, :intent) do
     WorkOS.Client.post(
       client,
-      String,
+      Link,
       "/portal/generate_link",
       %{
         organization: opts[:organization],
