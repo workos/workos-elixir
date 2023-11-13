@@ -87,7 +87,7 @@ defmodule WorkOS.MixProject do
         WorkOS.Organizations,
         WorkOS.Portal,
         WorkOS.Webhooks,
-        WorkOS.DirectorySync
+        WorkOS.DirectorySync,
         WorkOS.Passwordless,
       ],
       "Response Structs": [
@@ -107,6 +107,7 @@ defmodule WorkOS.MixProject do
         WorkOS.Empty,
         WorkOS.Error,
         WorkOS.List
+      ],
       "API Client": [
         WorkOS.Client,
         WorkOS.Client.TeslaClient
