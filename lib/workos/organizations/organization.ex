@@ -3,7 +3,6 @@ defmodule WorkOS.Organizations.Organization do
   WorkOS Organization struct.
   """
 
-  alias WorkOS.Util
   alias WorkOS.Castable
   alias WorkOS.Organizations.Organization.Domain
 
@@ -15,8 +14,8 @@ defmodule WorkOS.Organizations.Organization do
           name: String.t(),
           allow_profiles_outside_organization: Boolean.t(),
           domains: list(Domain.t()) | nil,
-          updated_at: DateTime.t(),
-          created_at: DateTime.t()
+          updated_at: String.t(),
+          created_at: String.t()
         }
 
   @enforce_keys [
@@ -46,8 +45,8 @@ defmodule WorkOS.Organizations.Organization do
       name: map["name"],
       domains: Castable.cast_list(Domain, map["domains"]),
       allow_profiles_outside_organization: map["allow_profiles_outside_organization"],
-      updated_at: Util.parse_iso8601(map["created_at"]),
-      created_at: Util.parse_iso8601(map["created_at"])
+      updated_at: map["updated_at"],
+      created_at: map["created_at"]
     }
   end
 end
