@@ -8,6 +8,7 @@ defmodule WorkOS.DirectorySync.Directory.Group do
   @type t() :: %__MODULE__{
           id: String.t(),
           name: String.t(),
+          object: String.t(),
           idp_id: String.t(),
           directory_id: String.t(),
           organization_id: String.t() | nil,
@@ -19,6 +20,7 @@ defmodule WorkOS.DirectorySync.Directory.Group do
   @enforce_keys [
     :id,
     :name,
+    :object,
     :idp_id,
     :directory_id,
     :raw_attributes,
@@ -28,6 +30,7 @@ defmodule WorkOS.DirectorySync.Directory.Group do
   defstruct [
     :id,
     :name,
+    :object,
     :idp_id,
     :directory_id,
     :updated_at,
@@ -41,6 +44,7 @@ defmodule WorkOS.DirectorySync.Directory.Group do
     %__MODULE__{
       id: map["id"],
       name: map["name"],
+      object: map["object"],
       idp_id: map["idp_id"],
       directory_id: map["directory_id"],
       organization_id: map["organization_id"],

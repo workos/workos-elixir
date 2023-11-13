@@ -5,6 +5,7 @@ defmodule WorkOS.DirectorySync.ClientMock do
 
   @directory_group_response %{
     "id" => "dir_grp_123",
+    "object" => "directory_group",
     "idp_id" => "123",
     "directory_id" => "dir_123",
     "organization_id" => "org_123",
@@ -18,6 +19,7 @@ defmodule WorkOS.DirectorySync.ClientMock do
 
   @directory_user_response %{
     "id" => "user_123",
+    "object" => "directory_user",
     "custom_attributes" => %{
       "custom" => true
     },
@@ -38,19 +40,6 @@ defmodule WorkOS.DirectorySync.ClientMock do
     "raw_attributes" => %{},
     "state" => "active",
     "username" => "jonsnow",
-    "created_at" => "2023-07-17T20:07:20.055Z",
-    "updated_at" => "2023-07-17T20:07:20.055Z"
-  }
-
-  @directory_group_response %{
-    "id" => "dir_grp_123",
-    "idp_id" => "123",
-    "directory_id" => "dir_123",
-    "organization_id" => "org_123",
-    "name" => "Foo Group",
-    "raw_attributes" => %{
-      "foo" => "bar"
-    },
     "created_at" => "2023-07-17T20:07:20.055Z",
     "updated_at" => "2023-07-17T20:07:20.055Z"
   }

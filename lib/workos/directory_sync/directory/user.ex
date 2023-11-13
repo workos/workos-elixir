@@ -7,6 +7,7 @@ defmodule WorkOS.DirectorySync.Directory.User do
 
   @type t() :: %__MODULE__{
           id: String.t(),
+          object: String.t(),
           directory_id: String.t(),
           organization_id: String.t() | nil,
           raw_attributes: %{String.t() => any()},
@@ -24,6 +25,7 @@ defmodule WorkOS.DirectorySync.Directory.User do
 
   @enforce_keys [
     :id,
+    :object,
     :directory_id,
     :raw_attributes,
     :custom_attributes,
@@ -38,6 +40,7 @@ defmodule WorkOS.DirectorySync.Directory.User do
   ]
   defstruct [
     :id,
+    :object,
     :directory_id,
     :organization_id,
     :raw_attributes,
@@ -57,6 +60,7 @@ defmodule WorkOS.DirectorySync.Directory.User do
   def cast(map) do
     %__MODULE__{
       id: map["id"],
+      object: map["object"],
       organization_id: map["organization_id"],
       raw_attributes: map["raw_attributes"],
       custom_attributes: map["custom_attributes"],
