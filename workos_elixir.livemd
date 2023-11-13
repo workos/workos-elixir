@@ -355,3 +355,11 @@ Kino.nothing()
 {:ok, %WorkOS.Passwordless.Session.Send{}} =
   WorkOS.Passwordless.send_session(client, Kino.Input.read(session_id))
 ```
+
+### Events
+
+#### List Events
+
+```elixir
+{:ok, %WorkOS.List{}} = WorkOS.Events.list_events(client, %{})
+```
