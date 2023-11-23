@@ -216,3 +216,107 @@ Kino.nothing()
     intent: Kino.Input.read(intent),
   })
 ```
+
+### Directory Sync
+
+#### Get a Directory
+
+Get the details of an existing directory.
+
+```elixir
+directory_id = Kino.Input.text("Directory ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.DirectorySync.Directory{id: id}} =
+  WorkOS.DirectorySync.get_directory(client, Kino.Input.read(directory_id))
+```
+
+#### List Directories
+
+Get a list of all of your existing directories matching the criteria specified.
+
+```elixir
+{:ok, %WorkOS.List{}} =
+  WorkOS.DirectorySync.list_directories(client)
+```
+
+#### Delete a Directory
+
+Delete an existing directory.
+
+```elixir
+directory_id = Kino.Input.text("Directory ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.Empty{}} = WorkOS.DirectorySync.delete_directory(client, Kino.Input.read(directory_id))
+```
+
+#### Get a Directory User
+
+Get the details of an existing Directory User.
+
+```elixir
+directory_user_id = Kino.Input.text("Directory User ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.DirectorySync.Directory.User{id: id}} =
+  WorkOS.DirectorySync.get_user(client, Kino.Input.read(directory_user_id))
+```
+
+#### List Directory Users
+
+Get a list of all of existing Directory Users matching the criteria specified.
+
+```elixir
+directory_id = Kino.Input.text("Directory ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.List{}} =
+  WorkOS.DirectorySync.list_users(client, %{
+    directory: Kino.Input.read(directory_id),
+  })
+```
+
+#### Get a Directory Group
+
+Get the details of an existing Directory Group.
+
+```elixir
+directory_group_id = Kino.Input.text("Directory Group ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.DirectorySync.Directory.Group{id: id}} =
+  WorkOS.DirectorySync.get_group(client, Kino.Input.read(directory_group_id))
+```
+
+#### List Directory Groups
+
+Get a list of all of existing directory groups matching the criteria specified.
+
+```elixir
+directory_id = Kino.Input.text("Directory ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.List{}} =
+  WorkOS.DirectorySync.list_groups(client, %{
+    directory: Kino.Input.read(directory_id),
+  })
+```
