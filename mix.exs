@@ -89,6 +89,7 @@ defmodule WorkOS.MixProject do
         WorkOS.Webhooks,
         WorkOS.DirectorySync,
         WorkOS.Passwordless,
+        WorkOS.Events,
       ],
       "Response Structs": [
         WorkOS.SSO.Connection,
@@ -104,6 +105,7 @@ defmodule WorkOS.MixProject do
         WorkOS.DirectorySync.Directory.User,
         WorkOS.Passwordless.Session,
         WorkOS.Passwordless.Session.Send,
+        WorkOS.Events.Event,
         WorkOS.Empty,
         WorkOS.Error,
         WorkOS.List
