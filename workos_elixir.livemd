@@ -102,7 +102,7 @@ Get a list of all of your existing connections matching the criteria specified.
 
 ```elixir
 {:ok, %WorkOS.List{}} =
-  WorkOS.SSO.list_connections(client, %{})
+  WorkOS.SSO.list_connections(client)
 ```
 
 #### Delete a Connection
@@ -117,4 +117,81 @@ Kino.nothing()
 
 ```elixir
 {:ok, %WorkOS.Empty{}} = WorkOS.SSO.delete_connection(client, Kino.Input.read(connection_id))
+```
+
+### Organizations
+
+#### List Organizations
+
+Get a list of all of your existing organizations matching the criteria specified.
+
+```elixir
+{:ok, %WorkOS.List{}} =
+  WorkOS.Organizations.list_organizations(client)
+```
+
+#### Delete an Organization
+
+Deletes an organization in the current environment.
+
+```elixir
+organization_id = Kino.Input.text("Organization ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.Empty{}} = WorkOS.Organizations.delete_organization(client, Kino.Input.read(organization_id))
+```
+
+#### Get an Organization
+
+Get the details of an existing organization.
+
+```elixir
+organization_id = Kino.Input.text("Organization ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.Organizations.Organization{id: id}} =
+  WorkOS.SSO.get_organization(client, Kino.Input.read(organization_id))
+```
+
+#### Create an Organization
+
+Creates a new organization in the current environment.
+
+```elixir
+name = Kino.Input.text("Name") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.Organizations.Organization{id: id, name: name}} =
+  WorkOS.Organizations.create_organization(client, %{
+    name: Kino.Input.read(name),
+    allow_profiles_outside_organization: false
+  })
+```
+
+#### Update an Organization
+
+Updates an organization in the current environment.
+
+```elixir
+name = Kino.Input.text("Name") |> Kino.render()
+organization = Kino.Input.text("Organization ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.Organizations.Organization{id: id, name: name}} =
+  WorkOS.Organizations.update_organization(client, %{
+    name: Kino.Input.read(name),
+    organization: Kino.Input.read(organization)
+  })
 ```

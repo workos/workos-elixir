@@ -174,6 +174,13 @@ defmodule WorkOS.SSOTest do
       assert {:ok, %WorkOS.List{data: [%WorkOS.SSO.Connection{}], list_metadata: %{}}} =
                WorkOS.SSO.list_connections(opts |> Enum.into(%{}))
     end
+
+    test "without any options, returns connections and metadata", context do
+      context |> ClientMock.list_connections()
+
+      assert {:ok, %WorkOS.List{data: [%WorkOS.SSO.Connection{}], list_metadata: %{}}} =
+               WorkOS.SSO.list_connections()
+    end
   end
 
   describe "delete_connection" do

@@ -3,7 +3,6 @@ defmodule WorkOS.SSO.Connection do
   WorkOS Connection struct.
   """
 
-  alias WorkOS.Util
   alias WorkOS.Castable
   alias WorkOS.SSO.Connection.Domain
 
@@ -15,9 +14,9 @@ defmodule WorkOS.SSO.Connection do
           connection_type: String.t(),
           state: String.t(),
           domains: list(Domain.t()) | nil,
-          updated_at: DateTime.t(),
-          created_at: DateTime.t(),
-          organization_id: String.t()
+          organization_id: String.t(),
+          updated_at: String.t(),
+          created_at: String.t(),
         }
 
   @enforce_keys [:id, :name, :connection_type, :state, :updated_at, :created_at, :organization_id]
@@ -40,8 +39,8 @@ defmodule WorkOS.SSO.Connection do
       connection_type: map["connection_type"],
       state: map["state"],
       domains: Castable.cast_list(Domain, map["domains"]),
-      updated_at: Util.parse_iso8601(map["created_at"]),
-      created_at: Util.parse_iso8601(map["created_at"]),
+      updated_at: map["updated_at"],
+      created_at: map["created_at"],
       organization_id: map["organization_id"]
     }
   end
