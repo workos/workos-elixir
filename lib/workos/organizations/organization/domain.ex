@@ -1,6 +1,6 @@
-defmodule WorkOS.SSO.Connection.Domain do
+defmodule WorkOS.Organizations.Organization.Domain do
   @moduledoc """
-  WorkOS Domain Record struct.
+  WorkOS Organization Domain struct.
   """
 
   @behaviour WorkOS.Castable
@@ -11,7 +11,7 @@ defmodule WorkOS.SSO.Connection.Domain do
           domain: String.t()
         }
 
-  @enforce_keys [:id]
+  @enforce_keys [:id, :object, :domain]
   defstruct [
     :id,
     :object,

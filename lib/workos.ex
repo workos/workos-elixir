@@ -60,19 +60,11 @@ defmodule WorkOS do
 
   @spec validate_config!(WorkOS.config()) :: WorkOS.config() | no_return()
   defp validate_config!(config) do
-    api_key =
-      Keyword.get(config, :api_key) ||
-        raise "Missing required config key for #{@config_module}: :api_key"
+    Keyword.get(config, :api_key) ||
+      raise WorkOS.ApiKeyMissingError
 
-    String.starts_with?(api_key, "sk_") ||
-      raise "WorkOS API key should start with 'sk_', please check your configuration"
-
-    client_id =
-      Keyword.get(config, :client_id) ||
-        raise "Missing required config key for #{@config_module}: :client_id"
-
-    String.starts_with?(client_id, "project_") ||
-      raise "WorkOS Client ID should start with 'project_', please check your configuration"
+    Keyword.get(config, :client_id) ||
+      raise WorkOS.ClientIdMissingError
 
     config
   end
