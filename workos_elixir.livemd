@@ -320,3 +320,38 @@ Kino.nothing()
     directory: Kino.Input.read(directory_id),
   })
 ```
+
+### Magic Link
+
+#### Create Passwordless Session
+
+Create a Passwordless Session for a Magic Link Connection.
+
+```elixir
+email = Kino.Input.text("Email") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.Passwordless.Session{id: id, name: name}} =
+  WorkOS.Passwordless.create_session(client, %{
+    type: "MagicLink",
+    email: Kino.Input.read(email)
+  })
+```
+
+#### Email a Magic Link
+
+Email a user the Magic Link confirmation URL.
+
+```elixir
+session_id = Kino.Input.text("Passwordless Session ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.Passwordless.Session.Send{}} =
+  WorkOS.Passwordless.send_session(client, Kino.Input.read(session_id))
+```
