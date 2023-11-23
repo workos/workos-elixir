@@ -84,7 +84,8 @@ defmodule WorkOS.MixProject do
     [
       "Core API": [
         WorkOS.SSO,
-        WorkOS.Organizations
+        WorkOS.Organizations,
+        WorkOS.Portal,
       ],
       "Response Structs": [
         WorkOS.SSO.Connection,
@@ -93,6 +94,7 @@ defmodule WorkOS.MixProject do
         WorkOS.SSO.ProfileAndToken,
         WorkOS.Organizations.Organization,
         WorkOS.Organizations.Organization.Domain,
+        WorkOS.Portal.Link,
         WorkOS.Empty,
         WorkOS.Error,
         WorkOS.List
