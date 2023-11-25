@@ -90,6 +90,7 @@ defmodule WorkOS.MixProject do
         WorkOS.DirectorySync,
         WorkOS.Passwordless,
         WorkOS.Events,
+        WorkOS.AuditLogs
       ],
       "Response Structs": [
         WorkOS.SSO.Connection,
@@ -106,6 +107,7 @@ defmodule WorkOS.MixProject do
         WorkOS.Passwordless.Session,
         WorkOS.Passwordless.Session.Send,
         WorkOS.Events.Event,
+        WorkOS.AuditLogs.Export,
         WorkOS.Empty,
         WorkOS.Error,
         WorkOS.List

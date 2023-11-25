@@ -363,3 +363,79 @@ Kino.nothing()
 ```elixir
 {:ok, %WorkOS.List{}} = WorkOS.Events.list_events(client, %{})
 ```
+
+### Audit Logs
+
+#### Create Event
+
+Emits an Audit Log Event.
+
+```elixir
+organization_id = Kino.Input.text("Organization ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.Empty{}} = WorkOS.Events.create_event(client, %{
+  organization_id: organization_id,
+  event: %{
+    "action" => "document.updated",
+    "occurred_at" => "2022-09-08T19:46:03.435Z",
+    "actor" => %{
+      "id" => "user_1",
+      "name" => "Jon Smith",
+      "type" => "user"
+    },
+    "targets" => [
+      %{
+        "id" => "document_39127",
+        "type" => "document"
+      }
+    ],
+    "context" => %{
+      "location" => "192.0.0.8",
+      "user_agent" => "Firefox"
+    },
+    "metadata" => %{
+      "successful" => true
+    }
+  }   
+})
+```
+
+#### Create Export 
+
+Create an Audit Log Export.
+
+```elixir
+organization_id = Kino.Input.text("Organization ID") |> Kino.render()
+range_start = Kino.Input.text("Range Start") |> Kino.render()
+range_end = Kino.Input.text("Range End") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.AuditLogs.Export{id: id}} =
+  WorkOS.AuditLogs.create_export(client, %{
+    organization_id: Kino.Input.read(organization_id),
+    range_start: Kino.Input.read(range_start),
+    range_end: Kino.Input.read(range_end),
+  })
+```
+
+#### Get Export 
+
+Get an Audit Log Export.
+
+```elixir
+audit_log_export_id = Kino.Input.text("Audit Log Export ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.AuditLogs.Export{id: id}} =
+  WorkOS.AuditLogs.get_export(client, audit_log_export_id)
+```

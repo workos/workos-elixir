@@ -31,7 +31,7 @@ defmodule WorkOS.PasswordlessTest do
       assert {:ok, %WorkOS.Passwordless.Session.Send{success: success}} =
                WorkOS.Passwordless.send_session(opts |> Keyword.get(:session_id))
 
-      assert success = true
+      assert success == true
     end
   end
 end
