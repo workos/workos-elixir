@@ -53,7 +53,9 @@ defmodule WorkOS.AuditLogs do
   @spec create_export(map()) :: WorkOS.Client.response(Export.t())
   @spec create_export(WorkOS.Client.t(), map()) ::
           WorkOS.Client.response(Export.t())
-  def create_export(client \\ WorkOS.client(), opts) do
+  def create_export(client \\ WorkOS.client(), opts)
+      when is_map_key(opts, :organization_id) and is_map_key(opts, :range_start) and
+             is_map_key(opts, :range_end) do
     WorkOS.Client.post(client, Export, "/audit_logs/exports", %{
       organization_id: opts[:organization_id],
       range_start: opts[:range_start],
