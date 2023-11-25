@@ -109,7 +109,7 @@ defmodule WorkOS.SSO do
              (is_map_key(params, :connection) or is_map_key(params, :organization) or
                 is_map_key(params, :provider) or is_map_key(params, :domain)) do
     if is_map_key(params, :domain) do
-      Logger.warn(
+      Logger.warning(
         "The `domain` parameter for `get_authorization_url` is deprecated. Please use `organization` instead."
       )
     end

@@ -5,7 +5,37 @@ defmodule WorkOS.AuditLogs do
   @see https://workos.com/docs/reference/audit-logs
   """
 
+  alias WorkOS.Empty
   alias WorkOS.AuditLogs.Export
+
+  @doc """
+  Creates an Audit Log Event.
+
+  Parameter options:
+
+    * `:organization_id` - The unique ID of the Organization. (required)
+    * `:event` - The Audit Log Event to be created. (required)
+    * `:idempotency_key` - A unique string as the value. Each subsequent request matching this unique string will return the same response.
+
+  """
+  @spec create_event(map()) :: WorkOS.Client.response(Empty.t())
+  @spec create_event(WorkOS.Client.t(), map()) ::
+          WorkOS.Client.response(Empty.t())
+  def create_event(client \\ WorkOS.client(), opts)
+      when is_map_key(opts, :organization_id) and is_map_key(opts, :event) do
+    WorkOS.Client.post(
+      client,
+      Empty,
+      "/audit_logs/events",
+      %{
+        organization_id: opts[:organization_id],
+        event: opts[:event]
+      },
+      headers: [
+        {"Idempotency-Key", opts[:idempotency_key]}
+      ]
+    )
+  end
 
   @doc """
   Creates an Audit Log Export.
