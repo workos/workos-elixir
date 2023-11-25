@@ -23,4 +23,17 @@ defmodule WorkOS.AuditLogsTest do
                opts |> Map.new() |> WorkOS.AuditLogs.create_export()
     end
   end
+
+  describe "get_export" do
+    test "requests an audit log export", context do
+      opts = [audit_log_export_id: "audit_log_export_1234"]
+
+      context |> ClientMock.get_export(assert_fields: opts)
+
+      assert {:ok, %WorkOS.AuditLogs.Export{id: id}} =
+               WorkOS.AuditLogs.get_export(opts |> Keyword.get(:audit_log_export_id))
+
+      refute is_nil(id)
+    end
+  end
 end

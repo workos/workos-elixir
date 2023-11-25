@@ -32,4 +32,31 @@ defmodule WorkOS.AuditLogs.ClientMock do
       %Tesla.Env{status: status, body: body}
     end)
   end
+
+  def get_export(context, opts \\ []) do
+    Tesla.Mock.mock(fn request ->
+      %{api_key: api_key} = context
+
+      audit_log_export_id =
+        opts |> Keyword.get(:assert_fields) |> Keyword.get(:audit_log_export_id)
+
+      assert request.method == :get
+      assert request.url == "#{WorkOS.base_url()}/audit_logs/exports/#{audit_log_export_id}"
+
+      assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
+               {"Authorization", "Bearer #{api_key}"}
+
+      success_body = %{
+        "id" => audit_log_export_id,
+        "object" => "audit_logo_export",
+        "state" => "pending",
+        "url" => nil,
+        "created_at" => "2023-07-17T20:07:20.055Z",
+        "updated_at" => "2023-07-17T20:07:20.055Z"
+      }
+
+      {status, body} = Keyword.get(opts, :respond_with, {200, success_body})
+      %Tesla.Env{status: status, body: body}
+    end)
+  end
 end

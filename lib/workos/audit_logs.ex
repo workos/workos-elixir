@@ -33,4 +33,17 @@ defmodule WorkOS.AuditLogs do
       targets: opts[:targets]
     })
   end
+
+  @doc """
+  Gets an Audit Log Export given an ID.
+  """
+  @spec get_export(String.t()) :: WorkOS.Client.response(Export.t())
+  @spec get_export(WorkOS.Client.t(), String.t()) :: WorkOS.Client.response(Export.t())
+  def get_export(client \\ WorkOS.client(), audit_log_export_id) do
+    WorkOS.Client.get(client, Export, "/audit_logs/exports/:id",
+      opts: [
+        path_params: [id: audit_log_export_id]
+      ]
+    )
+  end
 end
