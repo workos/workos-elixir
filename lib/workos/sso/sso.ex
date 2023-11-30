@@ -2,7 +2,7 @@ defmodule WorkOS.SSO do
   import WorkOS.API
   require Logger
 
-  @provider_values ["GoogleOAuth", "MicrosoftOAuth"]
+  @provider_values ["GoogleOAuth", "MicrosoftOAuth", "authkit"]
 
   @moduledoc """
   The SSO module provides convenience methods for working with the WorkOS
