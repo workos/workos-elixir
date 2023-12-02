@@ -110,6 +110,7 @@ defmodule WorkOS.MixProject do
         WorkOS.Events.Event,
         WorkOS.AuditLogs.Export,
         WorkOS.UserManagement.Invitation,
+        WorkOS.UserManagement.User,
         WorkOS.Empty,
         WorkOS.Error,
         WorkOS.List
