@@ -91,7 +91,7 @@ defmodule WorkOS.MixProject do
         WorkOS.Passwordless,
         WorkOS.Events,
         WorkOS.AuditLogs,
-        WorkOS.UserManagement,
+        WorkOS.UserManagement
       ],
       "Response Structs": [
         WorkOS.SSO.Connection,
@@ -109,6 +109,7 @@ defmodule WorkOS.MixProject do
         WorkOS.Passwordless.Session.Send,
         WorkOS.Events.Event,
         WorkOS.AuditLogs.Export,
+        WorkOS.UserManagement.Invitation,
         WorkOS.Empty,
         WorkOS.Error,
         WorkOS.List
