@@ -88,6 +88,43 @@ defmodule WorkOS.UserManagementTest do
     end
   end
 
+  describe "enroll_auth_factor" do
+    test "with a valid payload, enrolls auth factor", context do
+      opts = [
+        type: "totp",
+        user_id: "user_01H5JQDV7R7ATEYZDEG0W5PRYS",
+      ]
+
+      context |> ClientMock.enroll_auth_factor(assert_fields: opts)
+
+      assert {:ok, %WorkOS.UserManagement.MultiFactor.EnrollAuthFactor{challenge: challenge, factor: factor}} =
+               WorkOS.UserManagement.enroll_auth_factor(
+                 opts |> Keyword.get(:user_id),
+                 opts |> Enum.into(%{})
+               )
+
+      refute is_nil(challenge["id"])
+      refute is_nil(factor["id"])
+    end
+  end
+
+  describe "list_auth_factors" do
+    test "without any options, returns auth factors and metadata", context do
+      opts = [
+        user_id: "user_01H5JQDV7R7ATEYZDEG0W5PRYS",
+      ]
+
+      context
+      |> ClientMock.list_auth_factors(assert_fields: opts)
+
+      assert {:ok,
+              %WorkOS.List{
+                data: [%WorkOS.UserManagement.MultiFactor.AuthenticationFactor{}],
+                list_metadata: %{}
+              }} = WorkOS.UserManagement.list_auth_factors(opts |> Keyword.get(:user_id))
+    end
+  end
+
   describe "send_verification_email" do
     test "with a valid payload, revokes an invitation", context do
       opts = [user_id: "user_01H5JQDV7R7ATEYZDEG0W5PRYS"]

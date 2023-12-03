@@ -12,6 +12,11 @@ defmodule WorkOS.UserManagement do
   alias WorkOS.UserManagement.ResetPassword
   alias WorkOS.UserManagement.EmailVerification.VerifyEmail
   alias WorkOS.UserManagement.EmailVerification.SendVerificationEmail
+  alias WorkOS.UserManagement.MultiFactor.AuthenticationFactor
+  alias WorkOS.UserManagement.MultiFactor.EnrollAuthFactor
+
+  @provider_types ["authkit", "GoogleOAuth", "MicrosoftOAuth"]
+  @factor_types ["totp"]
 
   @doc """
   Gets a user.
@@ -137,6 +142,57 @@ defmodule WorkOS.UserManagement do
   @spec delete_user(WorkOS.Client.t(), String.t()) :: WorkOS.Client.response(nil)
   def delete_user(client \\ WorkOS.client(), user_id) do
     WorkOS.Client.delete(client, Empty, "/user_management/users/:id", %{},
+      opts: [
+        path_params: [id: user_id]
+      ]
+    )
+  end
+
+  @doc """
+  Enrolls a user in a new Factor.
+
+  Parameter options:
+
+    * `:type` - The type of the factor to enroll. Only option available is `totp`. (required)
+    * `:totp_issuer` - For `totp` factors. Typically your application or company name, this helps users distinguish between factors in authenticator apps.
+    * `:totp_user` - For `totp` factors. Used as the account name in authenticator apps. Defaults to the user's email.
+
+  """
+  @spec enroll_auth_factor(String.t(), map()) :: WorkOS.Client.response(EnrollAuthFactor.t())
+  @spec enroll_auth_factor(WorkOS.Client.t(), String.t(), map()) ::
+          WorkOS.Client.response(EnrollAuthFactor.t())
+  def enroll_auth_factor(client \\ WorkOS.client(), user_id, opts) when is_map_key(opts, :type) do
+    if opts[:type] not in @factor_types do
+      raise(ArgumentError,
+        message: "#{opts[:type]} is not a valid value. `type` must be in #{@factor_types}"
+      )
+    end
+
+    WorkOS.Client.post(
+      client,
+      EnrollAuthFactor,
+      "/user_management/users/:id/auth_factors",
+      %{
+        type: opts[:type],
+        totp_issuer: opts[:totp_issuer],
+        totp_user: opts[:totp_user]
+      },
+      opts: [
+        path_params: [id: user_id]
+      ]
+    )
+  end
+
+  @doc """
+  Lists all auth factors of a user.
+  """
+  @spec list_auth_factors(WorkOS.Client.t(), String.t()) ::
+          WorkOS.Client.response(WorkOS.List.t(AuthenticationFactor.t()))
+  def list_auth_factors(client \\ WorkOS.client(), user_id) do
+    WorkOS.Client.get(
+      client,
+      WorkOS.List.of(AuthenticationFactor),
+      "/user_management/users/:id/auth_factors",
       opts: [
         path_params: [id: user_id]
       ]
