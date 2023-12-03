@@ -9,6 +9,7 @@ defmodule WorkOS.UserManagement do
   alias WorkOS.UserManagement.User
   alias WorkOS.UserManagement.Invitation
   alias WorkOS.UserManagement.OrganizationMembership
+  alias WorkOS.UserManagement.ResetPassword
 
   @doc """
   Gets a user.
@@ -137,6 +138,54 @@ defmodule WorkOS.UserManagement do
       opts: [
         path_params: [id: user_id]
       ]
+    )
+  end
+
+  @doc """
+  Sends a password reset email to a user.
+
+  Parameter options:
+
+    * `:email` - The email of the user that wishes to reset their password. (required)
+    * `:password_reset_url` - The password to set for the user. (required)
+
+  """
+  @spec send_password_reset_email(map()) :: WorkOS.Client.response(OrganizationMembership.t())
+  @spec send_password_reset_email(WorkOS.Client.t(), map()) ::
+          WorkOS.Client.response(OrganizationMembership.t())
+  def send_password_reset_email(client \\ WorkOS.client(), opts)
+      when is_map_key(opts, :email) and is_map_key(opts, :password_reset_url) do
+    case WorkOS.Client.post(client, User, "/user_management/password_reset/send", %{
+           email: opts[:email],
+           password_reset_url: opts[:password_reset_url]
+         }) do
+      {:ok, _} -> :ok
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  @doc """
+  Resets password.
+
+  Parameter options:
+
+    * `:token` - The reset token emailed to the user. (required)
+    * `:new_password` - The new password to be set for the user. (required)
+
+  """
+  @spec reset_password(map()) :: WorkOS.Client.response(ResetPassword.t())
+  @spec reset_password(WorkOS.Client.t(), map()) ::
+          WorkOS.Client.response(ResetPassword.t())
+  def reset_password(client \\ WorkOS.client(), opts)
+      when is_map_key(opts, :token) and is_map_key(opts, :new_password) do
+    WorkOS.Client.post(
+      client,
+      ResetPassword,
+      "/user_management/password_reset/confirm",
+      %{
+        token: opts[:token],
+        new_password: opts[:new_password]
+      }
     )
   end
 

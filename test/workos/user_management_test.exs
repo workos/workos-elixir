@@ -88,6 +88,37 @@ defmodule WorkOS.UserManagementTest do
     end
   end
 
+  describe "send_password_reset_email" do
+    test "with a valid payload, sends password reset email", context do
+      opts = [
+        email: "test@example.com",
+        password_reset_url: "https://reset-password-test.com"
+      ]
+
+      context |> ClientMock.send_password_reset_email(assert_fields: opts)
+
+      assert :ok =
+               WorkOS.UserManagement.send_password_reset_email(opts |> Enum.into(%{}))
+    end
+  end
+
+  @tag :single
+  describe "reset_password" do
+    test "with a valid payload, resets password", context do
+      opts = [
+        token: ~c"test",
+        new_password: ~c"test"
+      ]
+
+      context |> ClientMock.reset_password(assert_fields: opts)
+
+      assert {:ok, %WorkOS.UserManagement.ResetPassword{user: user}} =
+               WorkOS.UserManagement.reset_password(opts |> Enum.into(%{}))
+
+      refute is_nil(user["id"])
+    end
+  end
+
   describe "get_organization_membership" do
     test "requests an organization membership", context do
       opts = [organization_membership_id: "om_01H5JQDV7R7ATEYZDEG0W5PRYS"]

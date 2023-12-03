@@ -112,6 +112,7 @@ defmodule WorkOS.MixProject do
         WorkOS.UserManagement.Invitation,
         WorkOS.UserManagement.User,
         WorkOS.UserManagement.OrganizationMembership,
+        WorkOS.UserManagement.ResetPassword,
         WorkOS.Empty,
         WorkOS.Error,
         WorkOS.List

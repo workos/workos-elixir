@@ -144,6 +144,58 @@ defmodule WorkOS.UserManagement.ClientMock do
     end)
   end
 
+  def send_password_reset_email(context, opts \\ []) do
+    Tesla.Mock.mock(fn request ->
+      %{api_key: api_key} = context
+
+      assert request.method == :post
+      assert request.url == "#{WorkOS.base_url()}/user_management/password_reset/send"
+
+      assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
+               {"Authorization", "Bearer #{api_key}"}
+
+      body = Jason.decode!(request.body)
+
+      for {field, value} <-
+            Keyword.get(opts, :assert_fields, []) do
+        assert body[to_string(field)] == value
+      end
+
+      success_body = %{
+        user: @user_mock
+      }
+
+      {status, body} = Keyword.get(opts, :respond_with, {200, success_body})
+      %Tesla.Env{status: status, body: body}
+    end)
+  end
+
+  def reset_password(context, opts \\ []) do
+    Tesla.Mock.mock(fn request ->
+      %{api_key: api_key} = context
+
+      assert request.method == :post
+      assert request.url == "#{WorkOS.base_url()}/user_management/password_reset/confirm"
+
+      assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
+               {"Authorization", "Bearer #{api_key}"}
+
+      body = Jason.decode!(request.body)
+
+      for {field, value} <-
+            Keyword.get(opts, :assert_fields, []) do
+        assert body[to_string(field)] == value
+      end
+
+      success_body = %{
+        "user" => @user_mock
+      }
+
+      {status, body} = Keyword.get(opts, :respond_with, {200, success_body})
+      %Tesla.Env{status: status, body: body}
+    end)
+  end
+
   def get_organization_membership(context, opts \\ []) do
     Tesla.Mock.mock(fn request ->
       %{api_key: api_key} = context
