@@ -427,7 +427,7 @@ defmodule WorkOS.UserManagement do
   def send_magic_auth_code(client \\ WorkOS.client(), email) do
     case WorkOS.Client.post(
            client,
-           EnrollAuthFactor,
+           Empty,
            "/user_management/magic_auth/send",
            %{
              email: email
@@ -546,7 +546,7 @@ defmodule WorkOS.UserManagement do
           WorkOS.Client.response(OrganizationMembership.t())
   def send_password_reset_email(client \\ WorkOS.client(), opts)
       when is_map_key(opts, :email) and is_map_key(opts, :password_reset_url) do
-    case WorkOS.Client.post(client, User, "/user_management/password_reset/send", %{
+    case WorkOS.Client.post(client, Empty, "/user_management/password_reset/send", %{
            email: opts[:email],
            password_reset_url: opts[:password_reset_url]
          }) do
