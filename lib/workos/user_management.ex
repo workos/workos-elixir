@@ -6,6 +6,7 @@ defmodule WorkOS.UserManagement do
   """
 
   alias WorkOS.Empty
+  alias WorkOS.UserManagement.User
   alias WorkOS.UserManagement.Authentication
   alias WorkOS.UserManagement.EmailVerification.SendVerificationEmail
   alias WorkOS.UserManagement.EmailVerification.VerifyEmail
@@ -18,6 +19,63 @@ defmodule WorkOS.UserManagement do
 
   @provider_types ["authkit", "GoogleOAuth", "MicrosoftOAuth"]
   @factor_types ["totp"]
+
+  @doc """
+  Generates an OAuth 2.0 authorization URL.
+
+  Parameter options:
+
+    * `:organization` - The organization connection selector is used to initiate SSO for an Organization.
+    * `:connection` - The connection connection selector is used to initiate SSO for a Connection.
+    * `:redirect_uri` - A Redirect URI to return an authorized user to. (required)
+    * `:client_id` - This value can be obtained from the SSO Configuration page in the WorkOS dashboard.
+    * `:provider` - The provider connection selector is used to initiate SSO using an OAuth provider.
+    * `:state` - An optional parameter that can be used to encode arbitrary information to help restore application state between redirects.
+    * `:login_hint` - Can be used to pre-fill the username/email address field of the IdP sign-in page for the user, if you know their username ahead of time.
+    * `:domain_hint` - Can be used to pre-fill the domain field when initiating authentication with Microsoft OAuth, or with a GoogleSAML connection type.
+
+  """
+  @spec get_authorization_url(map()) :: {:ok, String.t()} | {:error, String.t()}
+  def get_authorization_url(params)
+      when is_map_key(params, :redirect_uri) and
+             (is_map_key(params, :connection) or is_map_key(params, :organization) or
+                is_map_key(params, :provider)) do
+    if is_map_key(params, :provider) and params[:provider] not in @provider_types do
+      raise(ArgumentError,
+        message:
+          "#{params[:provider]} is not a valid value. `provider` must be in #{@provider_types}"
+      )
+    end
+
+    client_id =
+      params[:client_id] || WorkOS.client_id() ||
+        raise "Missing required `client_id` parameter."
+
+    defaults = %{
+      client_id: client_id,
+      response_type: "code"
+    }
+
+    query =
+      defaults
+      |> Map.merge(params)
+      |> Map.take(
+        [
+          :client_id,
+          :redirect_uri,
+          :connection,
+          :organization,
+          :provider,
+          :state,
+          :login_hint,
+          :domain_hint,
+          :domain
+        ] ++ Map.keys(defaults)
+      )
+      |> URI.encode_query()
+
+    {:ok, "#{WorkOS.base_url()}/sso/authorize?#{query}"}
+  end
 
   @doc """
   Gets a user.

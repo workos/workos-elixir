@@ -5,6 +5,107 @@ defmodule WorkOS.UserManagementTest do
 
   setup :setup_env
 
+  def parse_uri(url) do
+    uri = URI.parse(url)
+    %URI{uri | query: URI.query_decoder(uri.query) |> Enum.to_list()}
+  end
+
+  describe "get_authorization_url" do
+    test "generates an authorize url with the default `base_url`" do
+      opts = [connection: "mock-connection-id", redirect_uri: "example.com/sso/workos/callback"]
+
+      assert {:ok, success_url} =
+               opts |> Map.new() |> WorkOS.UserManagement.get_authorization_url()
+
+      assert WorkOS.base_url() =~ parse_uri(success_url).host
+    end
+
+    test "generates an authorize url with a `provider`" do
+      opts = [provider: "MicrosoftOAuth", redirect_uri: "example.com/sso/workos/callback"]
+
+      assert {:ok, success_url} =
+               opts |> Map.new() |> WorkOS.UserManagement.get_authorization_url()
+
+      assert {"provider", "MicrosoftOAuth"} in parse_uri(success_url).query
+    end
+
+    test "generates an authorize url with a `connection`" do
+      opts = [connection: "mock-connection-id", redirect_uri: "example.com/sso/workos/callback"]
+
+      assert {:ok, success_url} =
+               opts |> Map.new() |> WorkOS.UserManagement.get_authorization_url()
+
+      assert {"connection", "mock-connection-id"} in parse_uri(success_url).query
+    end
+
+    test "generates an authorization url with a `organization`" do
+      opts = [organization: "mock-organization", redirect_uri: "example.com/sso/workos/callback"]
+
+      assert {:ok, success_url} =
+               opts |> Map.new() |> WorkOS.UserManagement.get_authorization_url()
+
+      assert {"organization", "mock-organization"} in parse_uri(success_url).query
+    end
+
+    test "generates an authorization url with a custom `base_url` from app config" do
+      initial_config = Application.get_env(:workos, WorkOS.Client)
+
+      Application.put_env(
+        :workos,
+        WorkOS.Client,
+        Keyword.put(initial_config, :base_url, "https://custom-base-url.com")
+      )
+
+      opts = [provider: "GoogleOAuth", redirect_uri: "example.com/sso/workos/callback"]
+
+      assert {:ok, success_url} =
+               opts |> Map.new() |> WorkOS.UserManagement.get_authorization_url()
+
+      assert "custom-base-url.com" == parse_uri(success_url).host
+
+      Application.put_env(:workos, WorkOS.Client, initial_config)
+    end
+
+    test "generates an authorization url with a `state`" do
+      opts = [
+        provider: "GoogleOAuth",
+        state: "mock-state",
+        redirect_uri: "example.com/sso/workos/callback"
+      ]
+
+      assert {:ok, success_url} =
+               opts |> Map.new() |> WorkOS.UserManagement.get_authorization_url()
+
+      assert {"state", "mock-state"} in parse_uri(success_url).query
+    end
+
+    test "generates an authorization url with a given `domain_hint`" do
+      opts = [
+        organization: "mock-organization",
+        domain_hint: "mock-domain-hint",
+        redirect_uri: "example.com/sso/workos/callback"
+      ]
+
+      assert {:ok, success_url} =
+               opts |> Map.new() |> WorkOS.UserManagement.get_authorization_url()
+
+      assert {"domain_hint", "mock-domain-hint"} in parse_uri(success_url).query
+    end
+
+    test "generates an authorization url with a given `login_hint`" do
+      opts = [
+        organization: "mock-organization",
+        login_hint: "mock-login-hint",
+        redirect_uri: "example.com/sso/workos/callback"
+      ]
+
+      assert {:ok, success_url} =
+               opts |> Map.new() |> WorkOS.UserManagement.get_authorization_url()
+
+      assert {"login_hint", "mock-login-hint"} in parse_uri(success_url).query
+    end
+  end
+
   describe "get_user" do
     test "requests a user", context do
       opts = [user_id: "user_01H5JQDV7R7ATEYZDEG0W5PRYS"]
