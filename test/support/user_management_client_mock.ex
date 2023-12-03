@@ -144,6 +144,54 @@ defmodule WorkOS.UserManagement.ClientMock do
     end)
   end
 
+  def send_verification_email(context, opts \\ []) do
+    Tesla.Mock.mock(fn request ->
+      %{api_key: api_key} = context
+
+      user_id = opts |> Keyword.get(:assert_fields) |> Keyword.get(:user_id)
+      assert request.method == :post
+
+      assert request.url ==
+               "#{WorkOS.base_url()}/user_management/users/#{user_id}/email_verification/send"
+
+      assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
+               {"Authorization", "Bearer #{api_key}"}
+
+      success_body = %{
+        "user" => @user_mock
+      }
+
+      {status, body} = Keyword.get(opts, :respond_with, {200, success_body})
+      %Tesla.Env{status: status, body: body}
+    end)
+  end
+
+  def verify_email(context, opts \\ []) do
+    Tesla.Mock.mock(fn request ->
+      %{api_key: api_key} = context
+
+      user_id = opts |> Keyword.get(:assert_fields) |> Keyword.get(:user_id)
+      assert request.method == :post
+
+      assert request.url ==
+               "#{WorkOS.base_url()}/user_management/users/#{user_id}/email_verification/confirm"
+
+      assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
+               {"Authorization", "Bearer #{api_key}"}
+
+      body = Jason.decode!(request.body)
+
+      for {field, value} <- Keyword.get(opts, :assert_fields, []) |> Keyword.delete(:user_id) do
+        assert body[to_string(field)] == value
+      end
+
+      success_body = %{"user" => @user_mock}
+
+      {status, body} = Keyword.get(opts, :respond_with, {200, success_body})
+      %Tesla.Env{status: status, body: body}
+    end)
+  end
+
   def send_password_reset_email(context, opts \\ []) do
     Tesla.Mock.mock(fn request ->
       %{api_key: api_key} = context

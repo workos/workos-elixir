@@ -88,6 +88,38 @@ defmodule WorkOS.UserManagementTest do
     end
   end
 
+  describe "send_verification_email" do
+    test "with a valid payload, revokes an invitation", context do
+      opts = [user_id: "user_01H5JQDV7R7ATEYZDEG0W5PRYS"]
+
+      context |> ClientMock.send_verification_email(assert_fields: opts)
+
+      assert {:ok, %WorkOS.UserManagement.EmailVerification.SendVerificationEmail{user: user}} =
+               WorkOS.UserManagement.send_verification_email(opts |> Keyword.get(:user_id))
+
+      refute is_nil(user["id"])
+    end
+  end
+
+  describe "verify_email" do
+    test "with a valid payload, verifies user email", context do
+      opts = [
+        user_id: "user_01H5JQDV7R7ATEYZDEG0W5PRYS",
+        code: "Foo test"
+      ]
+
+      context |> ClientMock.verify_email(assert_fields: opts)
+
+      assert {:ok, %WorkOS.UserManagement.EmailVerification.VerifyEmail{user: user}} =
+               WorkOS.UserManagement.verify_email(
+                 opts |> Keyword.get(:user_id),
+                 opts |> Enum.into(%{})
+               )
+
+      refute is_nil(user["id"])
+    end
+  end
+
   describe "send_password_reset_email" do
     test "with a valid payload, sends password reset email", context do
       opts = [
@@ -102,7 +134,6 @@ defmodule WorkOS.UserManagementTest do
     end
   end
 
-  @tag :single
   describe "reset_password" do
     test "with a valid payload, resets password", context do
       opts = [

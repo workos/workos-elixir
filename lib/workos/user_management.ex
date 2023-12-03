@@ -10,6 +10,8 @@ defmodule WorkOS.UserManagement do
   alias WorkOS.UserManagement.Invitation
   alias WorkOS.UserManagement.OrganizationMembership
   alias WorkOS.UserManagement.ResetPassword
+  alias WorkOS.UserManagement.EmailVerification.VerifyEmail
+  alias WorkOS.UserManagement.EmailVerification.SendVerificationEmail
 
   @doc """
   Gets a user.
@@ -135,6 +137,49 @@ defmodule WorkOS.UserManagement do
   @spec delete_user(WorkOS.Client.t(), String.t()) :: WorkOS.Client.response(nil)
   def delete_user(client \\ WorkOS.client(), user_id) do
     WorkOS.Client.delete(client, Empty, "/user_management/users/:id", %{},
+      opts: [
+        path_params: [id: user_id]
+      ]
+    )
+  end
+
+  @doc """
+  Sends verification email.
+  """
+  @spec send_verification_email(String.t()) :: WorkOS.Client.response(SendVerificationEmail.t())
+  @spec send_verification_email(WorkOS.Client.t(), String.t()) ::
+          WorkOS.Client.response(SendVerificationEmail.t())
+  def send_verification_email(client \\ WorkOS.client(), user_id) do
+    WorkOS.Client.post(
+      client,
+      SendVerificationEmail,
+      "/user_management/users/:id/email_verification/send",
+      %{},
+      opts: [
+        path_params: [id: user_id]
+      ]
+    )
+  end
+
+  @doc """
+  Verifies user email.
+
+  Parameter options:
+
+    * `:code` - The one-time code emailed to the user. (required)
+
+  """
+  @spec verify_email(String.t(), map()) :: WorkOS.Client.response(VerifyEmail.t())
+  @spec verify_email(WorkOS.Client.t(), String.t(), map()) ::
+          WorkOS.Client.response(VerifyEmail.t())
+  def verify_email(client \\ WorkOS.client(), user_id, opts) when is_map_key(opts, :code) do
+    WorkOS.Client.post(
+      client,
+      VerifyEmail,
+      "/user_management/users/:id/email_verification/confirm",
+      %{
+        code: opts[:code]
+      },
       opts: [
         path_params: [id: user_id]
       ]

@@ -113,6 +113,8 @@ defmodule WorkOS.MixProject do
         WorkOS.UserManagement.User,
         WorkOS.UserManagement.OrganizationMembership,
         WorkOS.UserManagement.ResetPassword,
+        WorkOS.UserManagement.EmailVerification.VerifyEmail,
+        WorkOS.UserManagement.EmailVerification.SendVerificationEmail,
         WorkOS.Empty,
         WorkOS.Error,
         WorkOS.List
