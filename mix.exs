@@ -115,6 +115,11 @@ defmodule WorkOS.MixProject do
         WorkOS.UserManagement.ResetPassword,
         WorkOS.UserManagement.EmailVerification.VerifyEmail,
         WorkOS.UserManagement.EmailVerification.SendVerificationEmail,
+        WorkOS.UserManagement.MultiFactor.SMS,
+        WorkOS.UserManagement.MultiFactor.TOTP,
+        WorkOS.UserManagement.MultiFactor.AuthenticationChallenge,
+        WorkOS.UserManagement.MultiFactor.AuthenticationFactor,
+        WorkOS.UserManagement.MultiFactor.EnrollAuthFactor,
         WorkOS.Empty,
         WorkOS.Error,
         WorkOS.List
