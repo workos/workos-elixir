@@ -8,6 +8,7 @@ defmodule WorkOS.UserManagement do
   alias WorkOS.Empty
   alias WorkOS.UserManagement.User
   alias WorkOS.UserManagement.Invitation
+  alias WorkOS.UserManagement.OrganizationMembership
 
   @doc """
   Gets a user.
@@ -135,6 +136,117 @@ defmodule WorkOS.UserManagement do
     WorkOS.Client.delete(client, Empty, "/user_management/users/:id", %{},
       opts: [
         path_params: [id: user_id]
+      ]
+    )
+  end
+
+  @doc """
+  Gets an organization membership.
+  """
+  @spec get_organization_membership(String.t()) ::
+          WorkOS.Client.response(OrganizationMembership.t())
+  @spec get_organization_membership(WorkOS.Client.t(), String.t()) ::
+          WorkOS.Client.response(OrganizationMembership.t())
+  def get_organization_membership(client \\ WorkOS.client(), organization_membership_id) do
+    WorkOS.Client.get(
+      client,
+      OrganizationMembership,
+      "/user_management/organization_memberships/:id",
+      opts: [
+        path_params: [id: organization_membership_id]
+      ]
+    )
+  end
+
+  @doc """
+  Lists all organization memberships.
+
+  Parameter options:
+
+    * `:user_id` - The ID of the User.
+    * `:organization_id` - The ID of the Organization to which the user belongs to.
+    * `:limit` - Maximum number of records to return. Accepts values between 1 and 100. Default is 10.
+    * `:after` - Pagination cursor to receive records after a provided event ID.
+    * `:before` - An object ID that defines your place in the list. When the ID is not present, you are at the end of the list.
+    * `:order` - Order the results by the creation time. Supported values are "asc" and "desc" for showing older and newer records first respectively.
+
+  """
+  @spec list_organization_memberships(WorkOS.Client.t(), map()) ::
+          WorkOS.Client.response(WorkOS.List.t(OrganizationMembership.t()))
+  def list_organization_memberships(client, opts) do
+    WorkOS.Client.get(
+      client,
+      WorkOS.List.of(OrganizationMembership),
+      "/user_management/organization_memberships",
+      opts: [
+        query: %{
+          user_id: opts[:user_id],
+          organization_id: opts[:organization_id],
+          limit: opts[:limit],
+          after: opts[:after],
+          before: opts[:before],
+          order: opts[:order]
+        }
+      ]
+    )
+  end
+
+  @spec list_organization_memberships(map()) ::
+          WorkOS.Client.response(WorkOS.List.t(OrganizationMembership.t()))
+  def list_organization_memberships(opts \\ %{}) do
+    WorkOS.Client.get(
+      WorkOS.client(),
+      WorkOS.List.of(OrganizationMembership),
+      "/user_management/organization_memberships",
+      opts: [
+        query: %{
+          user_id: opts[:user_id],
+          organization_id: opts[:organization_id],
+          limit: opts[:limit],
+          after: opts[:after],
+          before: opts[:before],
+          order: opts[:order]
+        }
+      ]
+    )
+  end
+
+  @doc """
+  Creates an organization membership.
+
+  Parameter options:
+
+    * `:user_id` - The ID of the User. (required)
+    * `:organization_id` - The ID of the Organization to which the user belongs to. (required)
+
+  """
+  @spec create_organization_membership(map()) ::
+          WorkOS.Client.response(OrganizationMembership.t())
+  @spec create_organization_membership(WorkOS.Client.t(), map()) ::
+          WorkOS.Client.response(OrganizationMembership.t())
+  def create_organization_membership(client \\ WorkOS.client(), opts)
+      when is_map_key(opts, :user_id) and is_map_key(opts, :organization_id) do
+    WorkOS.Client.post(
+      client,
+      OrganizationMembership,
+      "/user_management/organization_memberships",
+      %{
+        user_id: opts[:user_id],
+        organization_id: opts[:organization_id]
+      }
+    )
+  end
+
+  @doc """
+  Deletes an organization membership.
+  """
+  @spec delete_organization_membership(String.t()) :: WorkOS.Client.response(nil)
+  @spec delete_organization_membership(WorkOS.Client.t(), String.t()) ::
+          WorkOS.Client.response(nil)
+  def delete_organization_membership(client \\ WorkOS.client(), organization_membership_id) do
+    WorkOS.Client.delete(client, Empty, "/user_management/organization_memberships/:id", %{},
+      opts: [
+        path_params: [id: organization_membership_id]
       ]
     )
   end

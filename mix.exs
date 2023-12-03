@@ -111,6 +111,7 @@ defmodule WorkOS.MixProject do
         WorkOS.AuditLogs.Export,
         WorkOS.UserManagement.Invitation,
         WorkOS.UserManagement.User,
+        WorkOS.UserManagement.OrganizationMembership,
         WorkOS.Empty,
         WorkOS.Error,
         WorkOS.List

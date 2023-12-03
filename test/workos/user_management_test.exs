@@ -88,6 +88,78 @@ defmodule WorkOS.UserManagementTest do
     end
   end
 
+  describe "get_organization_membership" do
+    test "requests an organization membership", context do
+      opts = [organization_membership_id: "om_01H5JQDV7R7ATEYZDEG0W5PRYS"]
+
+      context |> ClientMock.get_organization_membership(assert_fields: opts)
+
+      assert {:ok, %WorkOS.UserManagement.OrganizationMembership{id: id}} =
+               WorkOS.UserManagement.get_organization_membership(
+                 opts
+                 |> Keyword.get(:organization_membership_id)
+               )
+
+      refute is_nil(id)
+    end
+  end
+
+  describe "list_organization_memberships" do
+    test "without any options, returns organization memberships and metadata", context do
+      context
+      |> ClientMock.list_organization_memberships()
+
+      assert {:ok,
+              %WorkOS.List{
+                data: [%WorkOS.UserManagement.OrganizationMembership{}],
+                list_metadata: %{}
+              }} = WorkOS.UserManagement.list_organization_memberships()
+    end
+
+    test "with the user_id option, forms the proper request to the API", context do
+      opts = [user_id: "user_01H5JQDV7R7ATEYZDEG0W5PRYS"]
+
+      context
+      |> ClientMock.list_organization_memberships(assert_fields: opts)
+
+      assert {:ok,
+              %WorkOS.List{
+                data: [%WorkOS.UserManagement.OrganizationMembership{}],
+                list_metadata: %{}
+              }} = WorkOS.UserManagement.list_organization_memberships()
+    end
+  end
+
+  describe "create_organization_membership" do
+    test "with a valid payload, creates an organization membership", context do
+      opts = [
+        user_id: "user_01H5JQDV7R7ATEYZDEG0W5PRYS",
+        organization_id: "org_01EHT88Z8J8795GZNQ4ZP1J81T"
+      ]
+
+      context |> ClientMock.create_organization_membership(assert_fields: opts)
+
+      assert {:ok, %WorkOS.UserManagement.OrganizationMembership{id: id}} =
+               WorkOS.UserManagement.create_organization_membership(opts |> Enum.into(%{}))
+
+      refute is_nil(id)
+    end
+  end
+
+  describe "delete_organization_membership" do
+    test "sends a request to delete an organization membership", context do
+      opts = [organization_membership_id: "om_01H5JQDV7R7ATEYZDEG0W5PRYS"]
+
+      context |> ClientMock.delete_organization_membership(assert_fields: opts)
+
+      assert {:ok, %WorkOS.Empty{}} =
+               WorkOS.UserManagement.delete_organization_membership(
+                 opts
+                 |> Keyword.get(:organization_membership_id)
+               )
+    end
+  end
+
   describe "list_invitations" do
     test "without any options, returns invitations and metadata", context do
       context
