@@ -25,11 +25,11 @@ defmodule WorkOS.UserManagement do
 
   Parameter options:
 
-    * `:organization` - The organization connection selector is used to initiate SSO for an Organization.
-    * `:connection` - The connection connection selector is used to initiate SSO for a Connection.
+    * `:organization_id` - The `organization_id` connection selector is used to initiate SSO for an Organization.
+    * `:connection_id` - The `connection_id` connection selector is used to initiate SSO for a Connection.
     * `:redirect_uri` - A Redirect URI to return an authorized user to. (required)
     * `:client_id` - This value can be obtained from the SSO Configuration page in the WorkOS dashboard.
-    * `:provider` - The provider connection selector is used to initiate SSO using an OAuth provider.
+    * `:provider` - The `provider` connection selector is used to initiate SSO using an OAuth-compatible provider.
     * `:state` - An optional parameter that can be used to encode arbitrary information to help restore application state between redirects.
     * `:login_hint` - Can be used to pre-fill the username/email address field of the IdP sign-in page for the user, if you know their username ahead of time.
     * `:domain_hint` - Can be used to pre-fill the domain field when initiating authentication with Microsoft OAuth, or with a GoogleSAML connection type.
@@ -38,7 +38,7 @@ defmodule WorkOS.UserManagement do
   @spec get_authorization_url(map()) :: {:ok, String.t()} | {:error, String.t()}
   def get_authorization_url(params)
       when is_map_key(params, :redirect_uri) and
-             (is_map_key(params, :connection) or is_map_key(params, :organization) or
+             (is_map_key(params, :connection_id) or is_map_key(params, :organization_id) or
                 is_map_key(params, :provider)) do
     if is_map_key(params, :provider) and params[:provider] not in @provider_types do
       raise(ArgumentError,
@@ -63,8 +63,8 @@ defmodule WorkOS.UserManagement do
         [
           :client_id,
           :redirect_uri,
-          :connection,
-          :organization,
+          :connection_id,
+          :organization_id,
           :provider,
           :state,
           :login_hint,

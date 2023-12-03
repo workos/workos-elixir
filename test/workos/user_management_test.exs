@@ -12,7 +12,10 @@ defmodule WorkOS.UserManagementTest do
 
   describe "get_authorization_url" do
     test "generates an authorize url with the default `base_url`" do
-      opts = [connection: "mock-connection-id", redirect_uri: "example.com/sso/workos/callback"]
+      opts = [
+        connection_id: "mock-connection-id",
+        redirect_uri: "example.com/sso/workos/callback"
+      ]
 
       assert {:ok, success_url} =
                opts |> Map.new() |> WorkOS.UserManagement.get_authorization_url()
@@ -29,22 +32,28 @@ defmodule WorkOS.UserManagementTest do
       assert {"provider", "MicrosoftOAuth"} in parse_uri(success_url).query
     end
 
-    test "generates an authorize url with a `connection`" do
-      opts = [connection: "mock-connection-id", redirect_uri: "example.com/sso/workos/callback"]
+    test "generates an authorize url with a `connection_id`" do
+      opts = [
+        connection_id: "mock-connection-id",
+        redirect_uri: "example.com/sso/workos/callback"
+      ]
 
       assert {:ok, success_url} =
                opts |> Map.new() |> WorkOS.UserManagement.get_authorization_url()
 
-      assert {"connection", "mock-connection-id"} in parse_uri(success_url).query
+      assert {"connection_id", "mock-connection-id"} in parse_uri(success_url).query
     end
 
-    test "generates an authorization url with a `organization`" do
-      opts = [organization: "mock-organization", redirect_uri: "example.com/sso/workos/callback"]
+    test "generates an authorization url with a `organization_id`" do
+      opts = [
+        organization_id: "mock-organization",
+        redirect_uri: "example.com/sso/workos/callback"
+      ]
 
       assert {:ok, success_url} =
                opts |> Map.new() |> WorkOS.UserManagement.get_authorization_url()
 
-      assert {"organization", "mock-organization"} in parse_uri(success_url).query
+      assert {"organization_id", "mock-organization"} in parse_uri(success_url).query
     end
 
     test "generates an authorization url with a custom `base_url` from app config" do
@@ -81,7 +90,7 @@ defmodule WorkOS.UserManagementTest do
 
     test "generates an authorization url with a given `domain_hint`" do
       opts = [
-        organization: "mock-organization",
+        organization_id: "mock-organization",
         domain_hint: "mock-domain-hint",
         redirect_uri: "example.com/sso/workos/callback"
       ]
@@ -94,7 +103,7 @@ defmodule WorkOS.UserManagementTest do
 
     test "generates an authorization url with a given `login_hint`" do
       opts = [
-        organization: "mock-organization",
+        organization_id: "mock-organization",
         login_hint: "mock-login-hint",
         redirect_uri: "example.com/sso/workos/callback"
       ]
