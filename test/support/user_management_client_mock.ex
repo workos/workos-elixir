@@ -166,6 +166,29 @@ defmodule WorkOS.UserManagement.ClientMock do
     end)
   end
 
+  def send_magic_auth_code(context, opts \\ []) do
+    Tesla.Mock.mock(fn request ->
+      %{api_key: api_key} = context
+
+      assert request.method == :post
+      assert request.url == "#{WorkOS.base_url()}/user_management/magic_auth/send"
+
+      assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
+               {"Authorization", "Bearer #{api_key}"}
+
+      body = Jason.decode!(request.body)
+
+      for {field, value} <- Keyword.get(opts, :assert_fields, []) do
+        assert body[to_string(field)] == value
+      end
+
+      success_body = %{}
+
+      {status, body} = Keyword.get(opts, :respond_with, {200, success_body})
+      %Tesla.Env{status: status, body: body}
+    end)
+  end
+
   def enroll_auth_factor(context, opts \\ []) do
     Tesla.Mock.mock(fn request ->
       %{api_key: api_key} = context
@@ -185,7 +208,10 @@ defmodule WorkOS.UserManagement.ClientMock do
         assert body[to_string(field)] == value
       end
 
-      success_body = %{"challenge" => @authentication_challenge_mock, "factor" => @authentication_factor_mock}
+      success_body = %{
+        "challenge" => @authentication_challenge_mock,
+        "factor" => @authentication_factor_mock
+      }
 
       {status, body} = Keyword.get(opts, :respond_with, {200, success_body})
       %Tesla.Env{status: status, body: body}

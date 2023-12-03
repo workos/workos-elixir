@@ -88,16 +88,33 @@ defmodule WorkOS.UserManagementTest do
     end
   end
 
+  describe "send_magic_auth_code" do
+    test "with a valid payload, sends magic auth code email", context do
+      opts = [
+        email: "test@example.com",
+      ]
+
+      context |> ClientMock.send_magic_auth_code(assert_fields: opts)
+
+      assert :ok =
+               WorkOS.UserManagement.send_magic_auth_code(opts |> Keyword.get(:email))
+    end
+  end
+
   describe "enroll_auth_factor" do
     test "with a valid payload, enrolls auth factor", context do
       opts = [
         type: "totp",
-        user_id: "user_01H5JQDV7R7ATEYZDEG0W5PRYS",
+        user_id: "user_01H5JQDV7R7ATEYZDEG0W5PRYS"
       ]
 
       context |> ClientMock.enroll_auth_factor(assert_fields: opts)
 
-      assert {:ok, %WorkOS.UserManagement.MultiFactor.EnrollAuthFactor{challenge: challenge, factor: factor}} =
+      assert {:ok,
+              %WorkOS.UserManagement.MultiFactor.EnrollAuthFactor{
+                challenge: challenge,
+                factor: factor
+              }} =
                WorkOS.UserManagement.enroll_auth_factor(
                  opts |> Keyword.get(:user_id),
                  opts |> Enum.into(%{})
@@ -111,7 +128,7 @@ defmodule WorkOS.UserManagementTest do
   describe "list_auth_factors" do
     test "without any options, returns auth factors and metadata", context do
       opts = [
-        user_id: "user_01H5JQDV7R7ATEYZDEG0W5PRYS",
+        user_id: "user_01H5JQDV7R7ATEYZDEG0W5PRYS"
       ]
 
       context

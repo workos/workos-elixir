@@ -120,6 +120,7 @@ defmodule WorkOS.MixProject do
         WorkOS.UserManagement.MultiFactor.AuthenticationChallenge,
         WorkOS.UserManagement.MultiFactor.AuthenticationFactor,
         WorkOS.UserManagement.MultiFactor.EnrollAuthFactor,
+        WorkOS.UserManagement.MagicAuth.SendMagicAuthCode,
         WorkOS.Empty,
         WorkOS.Error,
         WorkOS.List

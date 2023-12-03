@@ -14,6 +14,7 @@ defmodule WorkOS.UserManagement do
   alias WorkOS.UserManagement.EmailVerification.SendVerificationEmail
   alias WorkOS.UserManagement.MultiFactor.AuthenticationFactor
   alias WorkOS.UserManagement.MultiFactor.EnrollAuthFactor
+  alias WorkOS.UserManagement.MagicAuth.SendMagicAuthCode
 
   @provider_types ["authkit", "GoogleOAuth", "MicrosoftOAuth"]
   @factor_types ["totp"]
@@ -146,6 +147,31 @@ defmodule WorkOS.UserManagement do
         path_params: [id: user_id]
       ]
     )
+  end
+
+  @doc """
+  Creates a one-time Magic Auth code.
+
+  Parameter options:
+
+    * `:email` - The email address the one-time code will be sent to. (required)
+
+  """
+  @spec send_magic_auth_code(String.t()) :: WorkOS.Client.response(SendMagicAuthCode.t())
+  @spec send_magic_auth_code(WorkOS.Client.t(), String.t()) ::
+          WorkOS.Client.response(SendMagicAuthCode.t())
+  def send_magic_auth_code(client \\ WorkOS.client(), email) do
+    case WorkOS.Client.post(
+           client,
+           EnrollAuthFactor,
+           "/user_management/magic_auth/send",
+           %{
+             email: email
+           }
+         ) do
+      {:ok, _} -> :ok
+      {:error, reason} -> {:error, reason}
+    end
   end
 
   @doc """
