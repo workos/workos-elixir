@@ -85,6 +85,7 @@ defmodule WorkOS.MixProject do
       "Core API": [
         WorkOS.AuditLogs,
         WorkOS.DirectorySync,
+        WorkOS.DomainVerification,
         WorkOS.Events,
         WorkOS.Organizations,
         WorkOS.Passwordless,

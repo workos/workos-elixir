@@ -1,6 +1,6 @@
 defmodule WorkOS.DomainVerification.OrganizationDomain do
   @moduledoc """
-  WorkOS OrganizationDomain struct.
+  WorkOS Organization Domain struct.
   """
 
   @behaviour WorkOS.Castable
@@ -11,7 +11,7 @@ defmodule WorkOS.DomainVerification.OrganizationDomain do
           domain: String.t(),
           state: String.t(),
           verification_strategy: String.t(),
-          verification_token: String.t(),
+          verification_token: String.t()
         }
 
   @enforce_keys [
@@ -20,7 +20,7 @@ defmodule WorkOS.DomainVerification.OrganizationDomain do
     :domain,
     :state,
     :verification_strategy,
-    :verification_token,
+    :verification_token
   ]
   defstruct [
     :id,
@@ -28,7 +28,7 @@ defmodule WorkOS.DomainVerification.OrganizationDomain do
     :domain,
     :state,
     :verification_strategy,
-    :verification_token,
+    :verification_token
   ]
 
   @impl true
@@ -39,7 +39,7 @@ defmodule WorkOS.DomainVerification.OrganizationDomain do
       domain: map["domain"],
       state: map["state"],
       verification_strategy: map["verification_strategy"],
-      verification_token: map["verification_token"],
+      verification_token: map["verification_token"]
     }
   end
 end
