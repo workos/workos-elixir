@@ -12,6 +12,8 @@ defmodule WorkOS.SSO do
   alias WorkOS.SSO.Connection
   alias WorkOS.SSO.ProfileAndToken
 
+  @provider_types ["GoogleOAuth", "MicrosoftOAuth"]
+
   @doc """
   Lists all connections.
 
@@ -111,6 +113,13 @@ defmodule WorkOS.SSO do
     if is_map_key(params, :domain) do
       Logger.warning(
         "The `domain` parameter for `get_authorization_url` is deprecated. Please use `organization` instead."
+      )
+    end
+
+    if is_map_key(params, :provider) and params[:provider] not in @provider_types do
+      raise(ArgumentError,
+        message:
+          "#{params[:provider]} is not a valid value. `provider` must be in #{@provider_types}"
       )
     end
 
