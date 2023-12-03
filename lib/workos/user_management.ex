@@ -6,15 +6,15 @@ defmodule WorkOS.UserManagement do
   """
 
   alias WorkOS.Empty
-  alias WorkOS.UserManagement.User
-  alias WorkOS.UserManagement.Invitation
-  alias WorkOS.UserManagement.OrganizationMembership
-  alias WorkOS.UserManagement.ResetPassword
-  alias WorkOS.UserManagement.EmailVerification.VerifyEmail
+  alias WorkOS.UserManagement.Authentication
   alias WorkOS.UserManagement.EmailVerification.SendVerificationEmail
+  alias WorkOS.UserManagement.EmailVerification.VerifyEmail
+  alias WorkOS.UserManagement.Invitation
+  alias WorkOS.UserManagement.MagicAuth.SendMagicAuthCode
   alias WorkOS.UserManagement.MultiFactor.AuthenticationFactor
   alias WorkOS.UserManagement.MultiFactor.EnrollAuthFactor
-  alias WorkOS.UserManagement.MagicAuth.SendMagicAuthCode
+  alias WorkOS.UserManagement.OrganizationMembership
+  alias WorkOS.UserManagement.ResetPassword
 
   @provider_types ["authkit", "GoogleOAuth", "MicrosoftOAuth"]
   @factor_types ["totp"]
@@ -146,6 +146,212 @@ defmodule WorkOS.UserManagement do
       opts: [
         path_params: [id: user_id]
       ]
+    )
+  end
+
+  @doc """
+  Authenticates a user with password.
+
+  Parameter options:
+
+    * `:email` - The email address of the user. (required)
+    * `:password` - The password of the user. (required)
+    * `:ip_address` - The IP address of the request from the user who is attempting to authenticate.
+    * `:user_agent` - The user agent of the request from the user who is attempting to authenticate. This should be the value of the User-Agent header.
+
+  """
+  @spec authenticate_with_password(map()) ::
+          WorkOS.Client.response(Authentication.t())
+  @spec authenticate_with_password(WorkOS.Client.t(), map()) ::
+          WorkOS.Client.response(Authentication.t())
+  def authenticate_with_password(client \\ WorkOS.client(), opts)
+      when is_map_key(opts, :email) and
+             is_map_key(opts, :password) do
+    WorkOS.Client.post(
+      client,
+      Authentication,
+      "/user_management/authenticate",
+      %{
+        client_id: WorkOS.client_id(client),
+        client_secret: WorkOS.api_key(client),
+        grant_type: "password",
+        email: opts[:email],
+        password: opts[:password],
+        ip_address: opts[:ip_address],
+        user_agent: opts[:user_agent]
+      }
+    )
+  end
+
+  @doc """
+  Authenticates an OAuth or SSO User.
+
+  Parameter options:
+
+    * `:code` - The authorization value which was passed back as a query parameter in the callback to the Redirect URI. (required)
+    * `:ip_address` - The IP address of the request from the user who is attempting to authenticate.
+    * `:user_agent` - The user agent of the request from the user who is attempting to authenticate. This should be the value of the User-Agent header.
+
+  """
+  @spec authenticate_with_code(map()) ::
+          WorkOS.Client.response(Authentication.t())
+  @spec authenticate_with_code(WorkOS.Client.t(), map()) ::
+          WorkOS.Client.response(Authentication.t())
+  def authenticate_with_code(client \\ WorkOS.client(), opts)
+      when is_map_key(opts, :code) do
+    WorkOS.Client.post(
+      client,
+      Authentication,
+      "/user_management/authenticate",
+      %{
+        client_id: WorkOS.client_id(client),
+        client_secret: WorkOS.api_key(client),
+        grant_type: "authorization_code",
+        code: opts[:code],
+        ip_address: opts[:ip_address],
+        user_agent: opts[:user_agent]
+      }
+    )
+  end
+
+  @doc """
+  Authenticates with Magic Auth.
+
+  Parameter options:
+
+    * `:code` - The one-time code that was emailed to the user. (required)
+    * `:email` - The email the User who will be authenticated. (required)
+    * `:link_authorization_code` - An authorization code used in a previous authenticate request that resulted in an existing user error response.
+    * `:ip_address` - The IP address of the request from the user who is attempting to authenticate.
+    * `:user_agent` - The user agent of the request from the user who is attempting to authenticate. This should be the value of the User-Agent header.
+
+  """
+  @spec authenticate_with_magic_auth(map()) ::
+          WorkOS.Client.response(Authentication.t())
+  @spec authenticate_with_magic_auth(WorkOS.Client.t(), map()) ::
+          WorkOS.Client.response(Authentication.t())
+  def authenticate_with_magic_auth(client \\ WorkOS.client(), opts)
+      when is_map_key(opts, :code) and
+             is_map_key(opts, :email) do
+    WorkOS.Client.post(
+      client,
+      Authentication,
+      "/user_management/authenticate",
+      %{
+        client_id: WorkOS.client_id(client),
+        client_secret: WorkOS.api_key(client),
+        grant_type: "urn:workos:oauth:grant-type:magic-auth:code",
+        code: opts[:code],
+        email: opts[:email],
+        link_authorization_code: opts[:link_authorization_code],
+        ip_address: opts[:ip_address],
+        user_agent: opts[:user_agent]
+      }
+    )
+  end
+
+  @doc """
+  Authenticates with Email Verification Code
+
+  Parameter options:
+
+    * `:code` - The one-time code that was emailed to the user. (required)
+    * `:pending_authentication_code` - The pending_authentication_token returned from an authentication attempt due to an unverified email address. (required)
+    * `:ip_address` - The IP address of the request from the user who is attempting to authenticate.
+    * `:user_agent` - The user agent of the request from the user who is attempting to authenticate. This should be the value of the User-Agent header.
+
+  """
+  @spec authenticate_with_email_verification(map()) ::
+          WorkOS.Client.response(Authentication.t())
+  @spec authenticate_with_email_verification(WorkOS.Client.t(), map()) ::
+          WorkOS.Client.response(Authentication.t())
+  def authenticate_with_email_verification(client \\ WorkOS.client(), opts)
+      when is_map_key(opts, :code) and
+             is_map_key(opts, :pending_authentication_code) do
+    WorkOS.Client.post(
+      client,
+      Authentication,
+      "/user_management/authenticate",
+      %{
+        client_id: WorkOS.client_id(client),
+        client_secret: WorkOS.api_key(client),
+        grant_type: "urn:workos:oauth:grant-type:email-verification:code",
+        code: opts[:code],
+        pending_authentication_code: opts[:pending_authentication_code],
+        ip_address: opts[:ip_address],
+        user_agent: opts[:user_agent]
+      }
+    )
+  end
+
+  @doc """
+  Authenticates with MFA TOTP
+
+  Parameter options:
+
+    * `:code` - The time-based-one-time-password generated by the Factor that was challenged. (required)
+    * `:authentication_challenge_id` - The unique ID of the authentication Challenge created for the TOTP Factor for which the user is enrolled. (required)
+    * `:pending_authentication_code` - The token returned from a failed authentication attempt due to MFA challenge. (required)
+    * `:ip_address` - The IP address of the request from the user who is attempting to authenticate.
+    * `:user_agent` - The user agent of the request from the user who is attempting to authenticate. This should be the value of the User-Agent header.
+
+  """
+  @spec authenticate_with_totp(map()) ::
+          WorkOS.Client.response(Authentication.t())
+  @spec authenticate_with_totp(WorkOS.Client.t(), map()) ::
+          WorkOS.Client.response(Authentication.t())
+  def authenticate_with_totp(client \\ WorkOS.client(), opts)
+      when is_map_key(opts, :code) and
+             is_map_key(opts, :authentication_challenge_id) and
+             is_map_key(opts, :pending_authentication_code) do
+    WorkOS.Client.post(
+      client,
+      Authentication,
+      "/user_management/authenticate",
+      %{
+        client_id: WorkOS.client_id(client),
+        client_secret: WorkOS.api_key(client),
+        grant_type: "urn:workos:oauth:grant-type:mfa-totp",
+        code: opts[:code],
+        authentication_challenge_id: opts[:authentication_challenge_id],
+        pending_authentication_code: opts[:pending_authentication_code],
+        ip_address: opts[:ip_address],
+        user_agent: opts[:user_agent]
+      }
+    )
+  end
+
+  @doc """
+  Authenticates with Selected Organization
+
+  Parameter options:
+
+    * `:pending_authentication_code` - The token returned from a failed authentication attempt due to organization selection being required. (required)
+    * `:organization_id` - The Organization ID the user selected. (required)
+    * `:ip_address` - The IP address of the request from the user who is attempting to authenticate.
+    * `:user_agent` - The user agent of the request from the user who is attempting to authenticate. This should be the value of the User-Agent header.
+
+  """
+  @spec authenticate_with_selected_organization(map()) ::
+          WorkOS.Client.response(Authentication.t())
+  @spec authenticate_with_selected_organization(WorkOS.Client.t(), map()) ::
+          WorkOS.Client.response(Authentication.t())
+  def authenticate_with_selected_organization(client \\ WorkOS.client(), opts)
+      when is_map_key(opts, :pending_authentication_code) and
+             is_map_key(opts, :organization_id) do
+    WorkOS.Client.post(
+      client,
+      Authentication,
+      "/user_management/authenticate",
+      %{
+        client_id: WorkOS.client_id(client),
+        client_secret: WorkOS.api_key(client),
+        grant_type: "urn:workos:oauth:grant-type:organization-selection",
+        pending_authentication_code: opts[:pending_authentication_code],
+        organization_id: opts[:organization_id],
+        ip_address: opts[:ip_address],
+        user_agent: opts[:user_agent]
+      }
     )
   end
 

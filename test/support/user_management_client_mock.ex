@@ -59,6 +59,11 @@ defmodule WorkOS.UserManagement.ClientMock do
     "authentication_factor_id" => "auth_factor_1234"
   }
 
+  @authentication_mock %{
+    "user" => @user_mock,
+    "organization_id" => "organization_01H5JQDV7R7ATEYZDEG0W5PRYS"
+  }
+
   def get_user(context, opts \\ []) do
     Tesla.Mock.mock(fn request ->
       %{api_key: api_key} = context
@@ -162,6 +167,30 @@ defmodule WorkOS.UserManagement.ClientMock do
                {"Authorization", "Bearer #{api_key}"}
 
       {status, body} = Keyword.get(opts, :respond_with, {204, %{}})
+      %Tesla.Env{status: status, body: body}
+    end)
+  end
+
+  def authenticate(context, opts \\ []) do
+    Tesla.Mock.mock(fn request ->
+      %{api_key: api_key} = context
+
+      assert request.method == :post
+      assert request.url == "#{WorkOS.base_url()}/user_management/authenticate"
+
+      assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
+               {"Authorization", "Bearer #{api_key}"}
+
+      body = Jason.decode!(request.body)
+
+      for {field, value} <-
+            Keyword.get(opts, :assert_fields, []) do
+        assert body[to_string(field)] == value
+      end
+
+      success_body = @authentication_mock
+
+      {status, body} = Keyword.get(opts, :respond_with, {200, success_body})
       %Tesla.Env{status: status, body: body}
     end)
   end

@@ -88,10 +88,98 @@ defmodule WorkOS.UserManagementTest do
     end
   end
 
+  describe "authenticate_with_password" do
+    test "with a valid payload, authenticates with password", context do
+      opts = [email: "test@example.com", password: "foo-bar"]
+
+      context |> ClientMock.authenticate(assert_fields: opts)
+
+      assert {:ok, %WorkOS.UserManagement.Authentication{user: user}} =
+               WorkOS.UserManagement.authenticate_with_password(opts |> Enum.into(%{}))
+
+      refute is_nil(user["id"])
+    end
+  end
+
+  describe "authenticate_with_code" do
+    test "with a valid payload, authenticates with code", context do
+      opts = [code: "foo-bar"]
+
+      context |> ClientMock.authenticate(assert_fields: opts)
+
+      assert {:ok, %WorkOS.UserManagement.Authentication{user: user}} =
+               WorkOS.UserManagement.authenticate_with_code(opts |> Enum.into(%{}))
+
+      refute is_nil(user["id"])
+    end
+  end
+
+  describe "authenticate_with_magic_auth" do
+    test "with a valid payload, authenticates with magic auth", context do
+      opts = [code: "foo-bar", email: "test@example.com"]
+
+      context |> ClientMock.authenticate(assert_fields: opts)
+
+      assert {:ok, %WorkOS.UserManagement.Authentication{user: user}} =
+               WorkOS.UserManagement.authenticate_with_magic_auth(opts |> Enum.into(%{}))
+
+      refute is_nil(user["id"])
+    end
+  end
+
+  describe "authenticate_with_email_verification" do
+    test "with a valid payload, authenticates with email verification", context do
+      opts = [code: "foo-bar", pending_authentication_code: "foo-bar"]
+
+      context |> ClientMock.authenticate(assert_fields: opts)
+
+      assert {:ok, %WorkOS.UserManagement.Authentication{user: user}} =
+               WorkOS.UserManagement.authenticate_with_email_verification(opts |> Enum.into(%{}))
+
+      refute is_nil(user["id"])
+    end
+  end
+
+  describe "authenticate_with_totp" do
+    test "with a valid payload, authenticates with MFA TOTP", context do
+      opts = [
+        code: "foo-bar",
+        authentication_challenge_id: "auth_challenge_1234",
+        pending_authentication_code: "foo-bar"
+      ]
+
+      context |> ClientMock.authenticate(assert_fields: opts)
+
+      assert {:ok, %WorkOS.UserManagement.Authentication{user: user}} =
+               WorkOS.UserManagement.authenticate_with_totp(opts |> Enum.into(%{}))
+
+      refute is_nil(user["id"])
+    end
+  end
+
+  describe "authenticate_with_selected_organization" do
+    test "with a valid payload, authenticates with a selected organization", context do
+      opts = [
+        pending_authentication_code: "foo-bar",
+        organization_id: "organization_01H5JQDV7R7ATEYZDEG0W5PRYS"
+      ]
+
+      context |> ClientMock.authenticate(assert_fields: opts)
+
+      assert {:ok, %WorkOS.UserManagement.Authentication{user: user}} =
+               WorkOS.UserManagement.authenticate_with_selected_organization(
+                 opts
+                 |> Enum.into(%{})
+               )
+
+      refute is_nil(user["id"])
+    end
+  end
+
   describe "send_magic_auth_code" do
     test "with a valid payload, sends magic auth code email", context do
       opts = [
-        email: "test@example.com",
+        email: "test@example.com"
       ]
 
       context |> ClientMock.send_magic_auth_code(assert_fields: opts)
