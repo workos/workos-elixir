@@ -98,6 +98,7 @@ defmodule WorkOS.MixProject do
         WorkOS.DirectorySync.Directory,
         WorkOS.DirectorySync.Directory.Group,
         WorkOS.DirectorySync.Directory.User,
+        WorkOS.DomainVerification.OrganizationDomain,
         WorkOS.Events.Event,
         WorkOS.Organizations.Organization,
         WorkOS.Organizations.Organization.Domain,
