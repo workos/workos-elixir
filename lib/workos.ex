@@ -92,7 +92,7 @@ defmodule WorkOS do
   Retrieves the WorkOS client ID from application config.
   """
   @spec client_id() :: String.t()
-  def client_id() do
+  def client_id do
     case Application.get_env(:workos, @config_module) do
       config when is_list(config) ->
         Keyword.get(config, :client_id, nil)
@@ -111,7 +111,7 @@ defmodule WorkOS do
   Retrieves the WorkOS API key from application config.
   """
   @spec api_key() :: String.t()
-  def api_key() do
+  def api_key do
     WorkOS.config()
     |> Keyword.get(:api_key)
   end

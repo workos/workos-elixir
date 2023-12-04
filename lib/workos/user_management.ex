@@ -6,7 +6,6 @@ defmodule WorkOS.UserManagement do
   """
 
   alias WorkOS.Empty
-  alias WorkOS.UserManagement.User
   alias WorkOS.UserManagement.Authentication
   alias WorkOS.UserManagement.EmailVerification.SendVerificationEmail
   alias WorkOS.UserManagement.EmailVerification.VerifyEmail
@@ -16,6 +15,7 @@ defmodule WorkOS.UserManagement do
   alias WorkOS.UserManagement.MultiFactor.EnrollAuthFactor
   alias WorkOS.UserManagement.OrganizationMembership
   alias WorkOS.UserManagement.ResetPassword
+  alias WorkOS.UserManagement.User
 
   @provider_types ["authkit", "GoogleOAuth", "MicrosoftOAuth"]
   @factor_types ["totp"]

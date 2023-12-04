@@ -5,8 +5,8 @@ defmodule WorkOS.AuditLogs do
   @see https://workos.com/docs/reference/audit-logs
   """
 
-  alias WorkOS.Empty
   alias WorkOS.AuditLogs.Export
+  alias WorkOS.Empty
 
   @doc """
   Creates an Audit Log Event.

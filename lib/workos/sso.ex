@@ -8,8 +8,8 @@ defmodule WorkOS.SSO do
   require Logger
 
   alias WorkOS.Empty
-  alias WorkOS.SSO.Profile
   alias WorkOS.SSO.Connection
+  alias WorkOS.SSO.Profile
   alias WorkOS.SSO.ProfileAndToken
 
   @provider_types ["GoogleOAuth", "MicrosoftOAuth"]

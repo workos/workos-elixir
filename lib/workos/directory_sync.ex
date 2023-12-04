@@ -5,10 +5,10 @@ defmodule WorkOS.DirectorySync do
   @see https://workos.com/docs/reference/directory-sync
   """
 
-  alias WorkOS.Empty
   alias WorkOS.DirectorySync.Directory
-  alias WorkOS.DirectorySync.Directory.User
   alias WorkOS.DirectorySync.Directory.Group
+  alias WorkOS.DirectorySync.Directory.User
+  alias WorkOS.Empty
 
   @doc """
   Gets a directory given an ID.
