@@ -77,6 +77,11 @@ defmodule WorkOS.UserManagement do
     {:ok, "#{WorkOS.base_url()}/sso/authorize?#{query}"}
   end
 
+  def get_authorization_url(_params),
+    do:
+      {:error,
+       "Incomplete arguments. Need to specify either a 'connection', 'organization', or 'provider'."}
+
   @doc """
   Gets a user.
   """

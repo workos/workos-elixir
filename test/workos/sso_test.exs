@@ -108,6 +108,14 @@ defmodule WorkOS.SSOTest do
 
       assert {"login_hint", "mock-login-hint"} in parse_uri(success_url).query
     end
+
+    test "with a invalid selector, returns error" do
+      opts = [
+        redirect_uri: "example.com/sso/workos/callback"
+      ]
+
+      {:error, _message} = opts |> Map.new() |> WorkOS.UserManagement.get_authorization_url()
+    end
   end
 
   describe "get_profile_and_token" do

@@ -109,13 +109,7 @@ defmodule WorkOS.SSO do
   def get_authorization_url(params)
       when is_map_key(params, :redirect_uri) and
              (is_map_key(params, :connection) or is_map_key(params, :organization) or
-                is_map_key(params, :provider) or is_map_key(params, :domain)) do
-    if is_map_key(params, :domain) do
-      Logger.warning(
-        "The `domain` parameter for `get_authorization_url` is deprecated. Please use `organization` instead."
-      )
-    end
-
+                is_map_key(params, :provider)) do
     if is_map_key(params, :provider) and params[:provider] not in @provider_types do
       raise(ArgumentError,
         message:
@@ -144,8 +138,7 @@ defmodule WorkOS.SSO do
           :provider,
           :state,
           :login_hint,
-          :domain_hint,
-          :domain
+          :domain_hint
         ] ++ Map.keys(defaults)
       )
       |> URI.encode_query()
@@ -156,7 +149,7 @@ defmodule WorkOS.SSO do
   def get_authorization_url(_params),
     do:
       {:error,
-       "Incomplete arguments. Need to specify either a 'connection', 'organization', 'domain', or 'provider'."}
+       "Incomplete arguments. Need to specify either a 'connection', 'organization', or 'provider'."}
 
   @doc """
   Gets an access token along with the user `Profile`.
