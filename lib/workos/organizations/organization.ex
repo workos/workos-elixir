@@ -12,7 +12,7 @@ defmodule WorkOS.Organizations.Organization do
           id: String.t(),
           object: String.t(),
           name: String.t(),
-          allow_profiles_outside_organization: Boolean.t(),
+          allow_profiles_outside_organization: boolean(),
           domains: list(Domain.t()) | nil,
           updated_at: String.t(),
           created_at: String.t()

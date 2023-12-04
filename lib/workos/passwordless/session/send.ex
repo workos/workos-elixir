@@ -6,7 +6,7 @@ defmodule WorkOS.Passwordless.Session.Send do
   @behaviour WorkOS.Castable
 
   @type t() :: %__MODULE__{
-          success: Boolean.t()
+          success: boolean()
         }
 
   @enforce_keys [:success]

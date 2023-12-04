@@ -8,7 +8,7 @@ defmodule WorkOS.UserManagement.User do
   @type t() :: %__MODULE__{
           id: String.t(),
           email: String.t(),
-          email_verified: Boolean.t(),
+          email_verified: boolean(),
           first_name: String.t() | nil,
           last_name: String.t() | nil,
           updated_at: String.t(),
