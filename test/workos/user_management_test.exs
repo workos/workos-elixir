@@ -294,8 +294,7 @@ defmodule WorkOS.UserManagementTest do
 
       context |> ClientMock.send_magic_auth_code(assert_fields: opts)
 
-      assert :ok =
-               WorkOS.UserManagement.send_magic_auth_code(opts |> Keyword.get(:email))
+      assert :ok = WorkOS.UserManagement.send_magic_auth_code(opts |> Keyword.get(:email))
     end
   end
 
@@ -381,8 +380,7 @@ defmodule WorkOS.UserManagementTest do
 
       context |> ClientMock.send_password_reset_email(assert_fields: opts)
 
-      assert :ok =
-               WorkOS.UserManagement.send_password_reset_email(opts |> Enum.into(%{}))
+      assert :ok = WorkOS.UserManagement.send_password_reset_email(opts |> Enum.into(%{}))
     end
   end
 

@@ -38,8 +38,7 @@ defmodule WorkOS.AuditLogsTest do
 
       context |> ClientMock.create_event(assert_fields: opts)
 
-      assert {:ok, %WorkOS.Empty{}} =
-               WorkOS.AuditLogs.create_event(opts |> Enum.into(%{}))
+      assert {:ok, %WorkOS.Empty{}} = WorkOS.AuditLogs.create_event(opts |> Enum.into(%{}))
     end
 
     test "with a valid payload, creates an event", context do
@@ -50,8 +49,7 @@ defmodule WorkOS.AuditLogsTest do
 
       context |> ClientMock.create_event(assert_fields: opts)
 
-      assert {:ok, %WorkOS.Empty{}} =
-               WorkOS.AuditLogs.create_event(opts |> Enum.into(%{}))
+      assert {:ok, %WorkOS.Empty{}} = WorkOS.AuditLogs.create_event(opts |> Enum.into(%{}))
     end
   end
 
