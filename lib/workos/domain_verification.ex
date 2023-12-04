@@ -53,7 +53,7 @@ defmodule WorkOS.DomainVerification do
   @spec verify_organization_domain(WorkOS.Client.t(), String.t()) ::
           WorkOS.Client.response(OrganizationDomain.t())
   def verify_organization_domain(client \\ WorkOS.client(), organization_domain_id) do
-    WorkOS.Client.post(client, OrganizationDomain, "/organization_domains/:id", %{},
+    WorkOS.Client.post(client, OrganizationDomain, "/organization_domains/:id/verify", %{},
       opts: [
         path_params: [id: organization_domain_id]
       ]
