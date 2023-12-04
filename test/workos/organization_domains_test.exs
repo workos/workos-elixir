@@ -1,7 +1,7 @@
-defmodule WorkOS.DomainVerificationTest do
+defmodule WorkOS.OrganizationDomainsTest do
   use WorkOS.TestCase
 
-  alias WorkOS.DomainVerification.ClientMock
+  alias WorkOS.OrganizationDomains.ClientMock
 
   setup :setup_env
 
@@ -11,8 +11,8 @@ defmodule WorkOS.DomainVerificationTest do
 
       context |> ClientMock.get_organization_domain(assert_fields: opts)
 
-      assert {:ok, %WorkOS.DomainVerification.OrganizationDomain{id: id}} =
-               WorkOS.DomainVerification.get_organization_domain(
+      assert {:ok, %WorkOS.OrganizationDomains.OrganizationDomain{id: id}} =
+               WorkOS.OrganizationDomains.get_organization_domain(
                  opts
                  |> Keyword.get(:organization_domain_id)
                )
@@ -27,8 +27,8 @@ defmodule WorkOS.DomainVerificationTest do
 
       context |> ClientMock.create_organization_domain(assert_fields: opts)
 
-      assert {:ok, %WorkOS.DomainVerification.OrganizationDomain{id: id}} =
-               WorkOS.DomainVerification.create_organization_domain(opts |> Enum.into(%{}))
+      assert {:ok, %WorkOS.OrganizationDomains.OrganizationDomain{id: id}} =
+               WorkOS.OrganizationDomains.create_organization_domain(opts |> Enum.into(%{}))
 
       refute is_nil(id)
     end
@@ -40,8 +40,8 @@ defmodule WorkOS.DomainVerificationTest do
 
       context |> ClientMock.verify_organization_domain(assert_fields: opts)
 
-      assert {:ok, %WorkOS.DomainVerification.OrganizationDomain{id: id}} =
-               WorkOS.DomainVerification.verify_organization_domain(
+      assert {:ok, %WorkOS.OrganizationDomains.OrganizationDomain{id: id}} =
+               WorkOS.OrganizationDomains.verify_organization_domain(
                  opts
                  |> Keyword.get(:organization_domain_id)
                )

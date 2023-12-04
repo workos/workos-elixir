@@ -807,3 +807,54 @@ Kino.nothing()
 {:ok, %WorkOS.UserManagement.Invitation{id: id}} =
   WorkOS.UserManagement.revoke_invitation(client, Kino.Input.read(invitation_id))
 ```
+
+### Organization Domains 
+
+#### Get an Organization Domain
+
+Get the details of an existing organization.
+
+```elixir
+organization_domain_id = Kino.Input.text("Organization Domain ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+:ok = WorkOS.OrganizationDomains.get_organization_domain(client, Kino.Input.read(organization_domain_id))
+```
+
+#### Create an Organization Domain
+
+Creates a new Organization Domain.
+
+```elixir
+organization_id = Kino.Input.text("Organization ID") |> Kino.render()
+
+domain = Kino.Input.text("Domain") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.List{}} =
+  WorkOS.OrganizationDomains.create_organization_domain(client, %{
+    organization_id: Kino.Input.read(organization_id),
+    domain: Kino.Input.read(domain),
+  })
+```
+
+#### Verify an Organization Domain
+
+Initiates verification process for an Organization Domain.
+
+```elixir
+organization_domain_id = Kino.Input.text("Organization Domain ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.List{}} =
+  WorkOS.OrganizationDomains.verify_organization_domain(client, Kino.Input.read(organization_domain_id))
+```

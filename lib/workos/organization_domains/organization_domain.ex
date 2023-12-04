@@ -1,4 +1,4 @@
-defmodule WorkOS.DomainVerification.OrganizationDomain do
+defmodule WorkOS.OrganizationDomains.OrganizationDomain do
   @moduledoc """
   WorkOS Organization Domain struct.
   """

@@ -1,11 +1,11 @@
-defmodule WorkOS.DomainVerification do
+defmodule WorkOS.OrganizationDomains do
   @moduledoc """
-  Manage Domain Verification in WorkOS.
+  Manage Organization Domains in WorkOS.
 
   @see https://workos.com/docs/reference/domain-verification
   """
 
-  alias WorkOS.DomainVerification.OrganizationDomain
+  alias WorkOS.OrganizationDomains.OrganizationDomain
 
   @doc """
   Gets an organization domain given an ID.
