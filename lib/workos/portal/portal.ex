@@ -1,7 +1,7 @@
 defmodule WorkOS.Portal do
   import WorkOS.API
 
-  @generate_link_intents ["sso", "dsync", "audit_logs", "log_streams"]
+  @generate_link_intents ["sso", "dsync", "audit_logs", "log_streams", "domain_verification"]
 
   @moduledoc """
   The Portal module provides resource methods for working with the Admin
