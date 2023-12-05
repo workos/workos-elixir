@@ -59,7 +59,7 @@ defmodule WorkOS.SSO do
       when is_map_key(params, :domain) or is_map_key(params, :provider) or
              is_map_key(params, :connection) or is_map_key(params, :organization) do
     if is_map_key(params, :domain) do
-      Logger.warn("[DEPRECATION] `domain` is deprecated. Please use `organization` instead.")
+      Logger.warning("[DEPRECATION] `domain` is deprecated. Please use `organization` instead.")
     end
 
     query =

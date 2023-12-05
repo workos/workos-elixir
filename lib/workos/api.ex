@@ -42,7 +42,7 @@ defmodule WorkOS.API do
   @doc """
   Performs a DELETE request
   """
-  def delete(path, params \\ "", opts \\ []) do
+  def delete(path, params \\ [], opts \\ []) do
     client(opts)
     |> Tesla.delete(path, query: params)
     |> handle_response

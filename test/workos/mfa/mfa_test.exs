@@ -8,7 +8,7 @@ defmodule WorkOS.MFATest do
       %{
         method: :post,
         url: "https://api.workos.com/auth/factors/enroll",
-        body: "{\"phone_number\":\"+15555555555\",\"type\":\"sms\"}"
+        body: "{\"type\":\"sms\",\"phone_number\":\"+15555555555\"}"
       } ->
         %Tesla.Env{
           status: 201,
@@ -27,7 +27,7 @@ defmodule WorkOS.MFATest do
       %{
         method: :post,
         url: "https://api.workos.com/auth/factors/enroll",
-        body: "{\"totp_issuer\":\"Foo Corp\",\"totp_user\":\"user_01GBTCQ2\",\"type\":\"totp\"}"
+        body: "{\"type\":\"totp\",\"totp_issuer\":\"Foo Corp\",\"totp_user\":\"user_01GBTCQ2\"}"
       } ->
         %Tesla.Env{
           status: 201,
