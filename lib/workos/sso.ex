@@ -12,8 +12,6 @@ defmodule WorkOS.SSO do
   alias WorkOS.SSO.Profile
   alias WorkOS.SSO.ProfileAndToken
 
-  @provider_types ["GoogleOAuth", "MicrosoftOAuth"]
-
   @doc """
   Lists all connections.
 
@@ -110,13 +108,6 @@ defmodule WorkOS.SSO do
       when is_map_key(params, :redirect_uri) and
              (is_map_key(params, :connection) or is_map_key(params, :organization) or
                 is_map_key(params, :provider)) do
-    if is_map_key(params, :provider) and params[:provider] not in @provider_types do
-      raise(ArgumentError,
-        message:
-          "#{params[:provider]} is not a valid value. `provider` must be in #{@provider_types}"
-      )
-    end
-
     client_id =
       params[:client_id] || WorkOS.client_id() ||
         raise "Missing required `client_id` parameter."

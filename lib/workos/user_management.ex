@@ -17,9 +17,6 @@ defmodule WorkOS.UserManagement do
   alias WorkOS.UserManagement.ResetPassword
   alias WorkOS.UserManagement.User
 
-  @provider_types ["authkit", "GoogleOAuth", "MicrosoftOAuth"]
-  @factor_types ["totp"]
-
   @doc """
   Generates an OAuth 2.0 authorization URL.
 
@@ -40,13 +37,6 @@ defmodule WorkOS.UserManagement do
       when is_map_key(params, :redirect_uri) and
              (is_map_key(params, :connection_id) or is_map_key(params, :organization_id) or
                 is_map_key(params, :provider)) do
-    if is_map_key(params, :provider) and params[:provider] not in @provider_types do
-      raise(ArgumentError,
-        message:
-          "#{params[:provider]} is not a valid value. `provider` must be in #{@provider_types}"
-      )
-    end
-
     client_id =
       params[:client_id] || WorkOS.client_id() ||
         raise "Missing required `client_id` parameter."
@@ -457,12 +447,6 @@ defmodule WorkOS.UserManagement do
   @spec enroll_auth_factor(WorkOS.Client.t(), String.t(), map()) ::
           WorkOS.Client.response(EnrollAuthFactor.t())
   def enroll_auth_factor(client \\ WorkOS.client(), user_id, opts) when is_map_key(opts, :type) do
-    if opts[:type] not in @factor_types do
-      raise(ArgumentError,
-        message: "#{opts[:type]} is not a valid value. `type` must be in #{@factor_types}"
-      )
-    end
-
     WorkOS.Client.post(
       client,
       EnrollAuthFactor,
