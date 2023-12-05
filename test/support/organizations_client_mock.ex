@@ -1,7 +1,7 @@
 defmodule WorkOS.Organizations.ClientMock do
   @moduledoc false
 
-  use ExUnit.Case
+  import ExUnit.Assertions, only: [assert: 1]
 
   def list_organizations(context, opts \\ []) do
     Tesla.Mock.mock(fn request ->

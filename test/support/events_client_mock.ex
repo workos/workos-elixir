@@ -1,7 +1,7 @@
 defmodule WorkOS.Events.ClientMock do
   @moduledoc false
 
-  use ExUnit.Case
+  import ExUnit.Assertions, only: [assert: 1]
 
   def list_events(context, opts \\ []) do
     Tesla.Mock.mock(fn request ->

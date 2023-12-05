@@ -1,7 +1,7 @@
 defmodule WorkOS.OrganizationDomains.ClientMock do
   @moduledoc false
 
-  use ExUnit.Case
+  import ExUnit.Assertions, only: [assert: 1]
 
   @organization_domain_mock %{
     "object" => "organization_domain",

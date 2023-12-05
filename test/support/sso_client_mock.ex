@@ -1,7 +1,7 @@
 defmodule WorkOS.SSO.ClientMock do
   @moduledoc false
 
-  use ExUnit.Case
+  import ExUnit.Assertions, only: [assert: 1]
 
   def get_profile_and_token(context, opts \\ []) do
     Tesla.Mock.mock(fn request ->
