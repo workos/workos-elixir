@@ -8,8 +8,6 @@ defmodule WorkOS.Client.TeslaClient do
   @doc """
   Sends a request to a WorkOS API endpoint, given list of request opts.
   """
-  @spec request(WorkOS.Client.t(), Keyword.t()) ::
-          {:ok, %{body: map(), status: pos_integer()}} | {:error, any()}
   def request(client, opts) do
     opts = Keyword.take(opts, [:method, :url, :query, :headers, :body, :opts])
     access_token = opts |> Keyword.get(:opts, []) |> Keyword.get(:access_token, client.api_key)

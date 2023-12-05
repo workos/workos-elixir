@@ -16,7 +16,14 @@ defmodule WorkOS.MixProject do
       package: package(),
       docs: docs(),
       deps: deps(),
-      source_ref: "#{@version}"
+      source_ref: "#{@version}",
+      dialyzer: [
+        flags: [:unmatched_returns, :error_handling, :extra_return],
+        plt_file: {:no_warn, "plts/dialyzer.plt"},
+        plt_core_path: "plts",
+        plt_add_deps: :app_tree,
+        plt_add_apps: [:mix, :ex_unit]
+      ]
     ]
   end
 
