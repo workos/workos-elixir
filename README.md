@@ -22,8 +22,8 @@ end
 
 ```ex
 config :workos, WorkOS.Client,
-      api_key: "sk_12345",
-      client_id: "project_12345"
+      api_key: "sk_example_123456789",
+      client_id: "client_123456789"
 ```
 
 The only required config option is `:api_key` and `:client_id`. 

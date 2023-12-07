@@ -10,8 +10,8 @@ defmodule WorkOS.TestCase do
 
   def setup_env(_context) do
     %{
-      api_key: System.get_env("WORKOS_API_KEY", "sk_12345"),
-      client_id: System.get_env("WORKOS_CLIENT_ID", "project_12345")
+      api_key: System.get_env("WORKOS_API_KEY", "sk_example_123456789"),
+      client_id: System.get_env("WORKOS_CLIENT_ID", "client_123456789")
     }
   end
 end

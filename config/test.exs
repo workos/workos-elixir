@@ -8,8 +8,8 @@ case {workos_api_key, workos_client_id} do
     config :tesla, adapter: Tesla.Mock
 
     config :workos, WorkOS.Client,
-      api_key: "sk_12345",
-      client_id: "project_12345"
+      api_key: "sk_example_123456789",
+      client_id: "client_123456789"
 
   {api_key, client_id} ->
     config :workos, WorkOS.Client, api_key: api_key, client_id: client_id
