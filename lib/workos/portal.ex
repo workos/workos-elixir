@@ -38,9 +38,9 @@ defmodule WorkOS.Portal do
         )
 
   @spec generate_link(map()) ::
-          WorkOS.Client.response(String.t())
+          WorkOS.Client.response(Link.t())
   @spec generate_link(WorkOS.Client.t(), map()) ::
-          WorkOS.Client.response(String.t())
+          WorkOS.Client.response(Link.t())
   def generate_link(client, opts)
       when is_map_key(opts, :organization) and is_map_key(opts, :intent) do
     WorkOS.Client.post(
