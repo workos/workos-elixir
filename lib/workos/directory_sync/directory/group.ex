@@ -49,7 +49,7 @@ defmodule WorkOS.DirectorySync.Directory.Group do
       directory_id: map["directory_id"],
       organization_id: map["organization_id"],
       raw_attributes: map["raw_attributes"],
-      updated_at: map["created_at"],
+      updated_at: map["updated_at"],
       created_at: map["created_at"]
     }
   end

@@ -53,7 +53,7 @@ defmodule WorkOS.DirectorySync.Directory do
       name: map["name"],
       organization_id: map["organization_id"],
       domain: map["domain"],
-      updated_at: map["created_at"],
+      updated_at: map["updated_at"],
       created_at: map["created_at"]
     }
   end
