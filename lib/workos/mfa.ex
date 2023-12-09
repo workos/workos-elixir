@@ -5,6 +5,7 @@ defmodule WorkOS.MFA do
 
   @deprecated "MFA has been replaced by the User Management Multi-Factor API."
 
+  alias WorkOS.Empty
   alias WorkOS.MFA.AuthenticationFactor
   alias WorkOS.MFA.AuthenticationChallenge
   alias WorkOS.MFA.VerifyChallenge
@@ -80,7 +81,7 @@ defmodule WorkOS.MFA do
       VerifyChallenge,
       "/auth/challenges/:id/verify",
       %{
-        sms_template: opts[:sms_template]
+        code: opts[:code]
       },
       opts: [
         path_params: [id: authentication_challenge_id]
@@ -99,7 +100,7 @@ defmodule WorkOS.MFA do
     WorkOS.Client.get(
       client,
       AuthenticationFactor,
-      "/auth/factors/:id ",
+      "/auth/factors/:id",
       opts: [
         path_params: [id: authentication_factor_id]
       ]
