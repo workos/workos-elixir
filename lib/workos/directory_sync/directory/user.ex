@@ -72,7 +72,7 @@ defmodule WorkOS.DirectorySync.Directory.User do
       last_name: map["last_name"],
       job_title: map["job_title"],
       state: map["state"],
-      updated_at: map["created_at"],
+      updated_at: map["updated_at"],
       created_at: map["created_at"]
     }
   end

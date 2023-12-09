@@ -31,7 +31,7 @@ defmodule WorkOS.AuditLogs.Export do
       object: map["object"],
       state: map["state"],
       url: map["url"],
-      updated_at: map["created_at"],
+      updated_at: map["updated_at"],
       created_at: map["created_at"]
     }
   end
