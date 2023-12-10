@@ -102,15 +102,13 @@ defmodule WorkOS.UserManagement do
           WorkOS.Client.response(WorkOS.List.t(User.t()))
   def list_users(client, opts) do
     WorkOS.Client.get(client, WorkOS.List.of(User), "/user_management/users",
-      opts: [
-        query: %{
-          email: opts[:email],
-          organization_id: opts[:organization_id],
-          limit: opts[:limit],
-          after: opts[:after],
-          before: opts[:before],
-          order: opts[:order]
-        }
+      query: [
+        email: opts[:email],
+        organization_id: opts[:organization_id],
+        limit: opts[:limit],
+        after: opts[:after],
+        before: opts[:before],
+        order: opts[:order]
       ]
     )
   end
@@ -119,15 +117,13 @@ defmodule WorkOS.UserManagement do
           WorkOS.Client.response(WorkOS.List.t(User.t()))
   def list_users(opts \\ %{}) do
     WorkOS.Client.get(WorkOS.client(), WorkOS.List.of(User), "/user_management/users",
-      opts: [
-        query: %{
-          email: opts[:email],
-          organization_id: opts[:organization_id],
-          limit: opts[:limit],
-          after: opts[:after],
-          before: opts[:before],
-          order: opts[:order]
-        }
+      query: [
+        email: opts[:email],
+        organization_id: opts[:organization_id],
+        limit: opts[:limit],
+        after: opts[:after],
+        before: opts[:before],
+        order: opts[:order]
       ]
     )
   end
@@ -607,15 +603,13 @@ defmodule WorkOS.UserManagement do
       client,
       WorkOS.List.of(OrganizationMembership),
       "/user_management/organization_memberships",
-      opts: [
-        query: %{
-          user_id: opts[:user_id],
-          organization_id: opts[:organization_id],
-          limit: opts[:limit],
-          after: opts[:after],
-          before: opts[:before],
-          order: opts[:order]
-        }
+      query: [
+        user_id: opts[:user_id],
+        organization_id: opts[:organization_id],
+        limit: opts[:limit],
+        after: opts[:after],
+        before: opts[:before],
+        order: opts[:order]
       ]
     )
   end
@@ -627,15 +621,13 @@ defmodule WorkOS.UserManagement do
       WorkOS.client(),
       WorkOS.List.of(OrganizationMembership),
       "/user_management/organization_memberships",
-      opts: [
-        query: %{
-          user_id: opts[:user_id],
-          organization_id: opts[:organization_id],
-          limit: opts[:limit],
-          after: opts[:after],
-          before: opts[:before],
-          order: opts[:order]
-        }
+      query: [
+        user_id: opts[:user_id],
+        organization_id: opts[:organization_id],
+        limit: opts[:limit],
+        after: opts[:after],
+        before: opts[:before],
+        order: opts[:order]
       ]
     )
   end
@@ -710,15 +702,13 @@ defmodule WorkOS.UserManagement do
           WorkOS.Client.response(WorkOS.List.t(Invitation.t()))
   def list_invitations(client, opts) do
     WorkOS.Client.get(client, WorkOS.List.of(Invitation), "/user_management/invitations",
-      opts: [
-        query: %{
-          email: opts[:email],
-          organization_id: opts[:organization_id],
-          limit: opts[:limit],
-          after: opts[:after],
-          before: opts[:before],
-          order: opts[:order]
-        }
+      query: [
+        email: opts[:email],
+        organization_id: opts[:organization_id],
+        limit: opts[:limit],
+        after: opts[:after],
+        before: opts[:before],
+        order: opts[:order]
       ]
     )
   end
@@ -727,15 +717,13 @@ defmodule WorkOS.UserManagement do
           WorkOS.Client.response(WorkOS.List.t(Invitation.t()))
   def list_invitations(opts \\ %{}) do
     WorkOS.Client.get(WorkOS.client(), WorkOS.List.of(Invitation), "/user_management/invitations",
-      opts: [
-        query: %{
-          email: opts[:email],
-          organization_id: opts[:organization_id],
-          limit: opts[:limit],
-          after: opts[:after],
-          before: opts[:before],
-          order: opts[:order]
-        }
+      query: [
+        email: opts[:email],
+        organization_id: opts[:organization_id],
+        limit: opts[:limit],
+        after: opts[:after],
+        before: opts[:before],
+        order: opts[:order]
       ]
     )
   end

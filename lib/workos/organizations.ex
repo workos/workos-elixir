@@ -24,14 +24,12 @@ defmodule WorkOS.Organizations do
           WorkOS.Client.response(WorkOS.List.t(Organization.t()))
   def list_organizations(client, opts) do
     WorkOS.Client.get(client, WorkOS.List.of(Organization), "/organizations",
-      opts: [
-        query: %{
-          domains: opts[:domains],
-          limit: opts[:limit],
-          after: opts[:after],
-          before: opts[:before],
-          order: opts[:order]
-        }
+      query: [
+        domains: opts[:domains],
+        limit: opts[:limit],
+        after: opts[:after],
+        before: opts[:before],
+        order: opts[:order]
       ]
     )
   end
@@ -40,14 +38,12 @@ defmodule WorkOS.Organizations do
           WorkOS.Client.response(WorkOS.List.t(Organization.t()))
   def list_organizations(opts \\ %{}) do
     WorkOS.Client.get(WorkOS.client(), WorkOS.List.of(Organization), "/organizations",
-      opts: [
-        query: %{
-          domains: opts[:domains],
-          limit: opts[:limit],
-          after: opts[:after],
-          before: opts[:before],
-          order: opts[:order]
-        }
+      query: [
+        domains: opts[:domains],
+        limit: opts[:limit],
+        after: opts[:after],
+        before: opts[:before],
+        order: opts[:order]
       ]
     )
   end

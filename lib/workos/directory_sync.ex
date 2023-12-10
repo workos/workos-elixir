@@ -42,16 +42,14 @@ defmodule WorkOS.DirectorySync do
           WorkOS.Client.response(WorkOS.List.t(Directory.t()))
   def list_directories(client, opts) do
     WorkOS.Client.get(client, WorkOS.List.of(Directory), "/directories",
-      opts: [
-        query: %{
-          domain: opts[:domain],
-          organization_id: opts[:organization_id],
-          search: opts[:search],
-          limit: opts[:limit],
-          before: opts[:before],
-          after: opts[:after],
-          order: opts[:order]
-        }
+      query: [
+        domain: opts[:domain],
+        organization_id: opts[:organization_id],
+        search: opts[:search],
+        limit: opts[:limit],
+        before: opts[:before],
+        after: opts[:after],
+        order: opts[:order]
       ]
     )
   end
@@ -60,16 +58,14 @@ defmodule WorkOS.DirectorySync do
           WorkOS.Client.response(WorkOS.List.t(Directory.t()))
   def list_directories(opts \\ %{}) do
     WorkOS.Client.get(WorkOS.client(), WorkOS.List.of(Directory), "/directories",
-      opts: [
-        query: %{
-          domain: opts[:domain],
-          organization_id: opts[:organization_id],
-          search: opts[:search],
-          limit: opts[:limit],
-          before: opts[:before],
-          after: opts[:after],
-          order: opts[:order]
-        }
+      query: [
+        domain: opts[:domain],
+        organization_id: opts[:organization_id],
+        search: opts[:search],
+        limit: opts[:limit],
+        before: opts[:before],
+        after: opts[:after],
+        order: opts[:order]
       ]
     )
   end
@@ -115,15 +111,13 @@ defmodule WorkOS.DirectorySync do
           WorkOS.Client.response(WorkOS.List.t(User.t()))
   def list_users(client, opts) do
     WorkOS.Client.get(client, WorkOS.List.of(User), "/directory_users",
-      opts: [
-        query: %{
-          directory: opts[:directory],
-          group: opts[:group],
-          limit: opts[:limit],
-          before: opts[:before],
-          after: opts[:after],
-          order: opts[:order]
-        }
+      query: [
+        directory: opts[:directory],
+        group: opts[:group],
+        limit: opts[:limit],
+        before: opts[:before],
+        after: opts[:after],
+        order: opts[:order]
       ]
     )
   end
@@ -132,15 +126,13 @@ defmodule WorkOS.DirectorySync do
           WorkOS.Client.response(WorkOS.List.t(User.t()))
   def list_users(opts \\ %{}) do
     WorkOS.Client.get(WorkOS.client(), WorkOS.List.of(User), "/directory_users",
-      opts: [
-        query: %{
-          directory: opts[:directory],
-          group: opts[:group],
-          limit: opts[:limit],
-          before: opts[:before],
-          after: opts[:after],
-          order: opts[:order]
-        }
+      query: [
+        directory: opts[:directory],
+        group: opts[:group],
+        limit: opts[:limit],
+        before: opts[:before],
+        after: opts[:after],
+        order: opts[:order]
       ]
     )
   end
@@ -173,15 +165,13 @@ defmodule WorkOS.DirectorySync do
           WorkOS.Client.response(WorkOS.List.t(Group.t()))
   def list_groups(client, opts) do
     WorkOS.Client.get(client, WorkOS.List.of(Group), "/directory_groups",
-      opts: [
-        query: %{
-          directory: opts[:directory],
-          user: opts[:user],
-          limit: opts[:limit],
-          before: opts[:before],
-          after: opts[:after],
-          order: opts[:order]
-        }
+      query: [
+        directory: opts[:directory],
+        user: opts[:user],
+        limit: opts[:limit],
+        before: opts[:before],
+        after: opts[:after],
+        order: opts[:order]
       ]
     )
   end
@@ -190,16 +180,14 @@ defmodule WorkOS.DirectorySync do
           WorkOS.Client.response(WorkOS.List.t(Group.t()))
   def list_groups(opts \\ %{}) do
     WorkOS.Client.get(WorkOS.client(), WorkOS.List.of(Group), "/directory_groups",
-      opts: [
-        query: %{
-          domain: opts[:domain],
-          organization_id: opts[:organization_id],
-          search: opts[:search],
-          limit: opts[:limit],
-          before: opts[:before],
-          after: opts[:after],
-          order: opts[:order]
-        }
+      query: [
+        domain: opts[:domain],
+        organization_id: opts[:organization_id],
+        search: opts[:search],
+        limit: opts[:limit],
+        before: opts[:before],
+        after: opts[:after],
+        order: opts[:order]
       ]
     )
   end

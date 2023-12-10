@@ -30,16 +30,14 @@ defmodule WorkOS.SSO do
           WorkOS.Client.response(WorkOS.List.t(Connection.t()))
   def list_connections(client, opts) do
     WorkOS.Client.get(client, WorkOS.List.of(Connection), "/connections",
-      opts: [
-        query: %{
-          connection_type: opts[:connection_type],
-          organization_id: opts[:organization_id],
-          domain: opts[:domain],
-          limit: opts[:limit],
-          after: opts[:after],
-          before: opts[:before],
-          order: opts[:order]
-        }
+      query: [
+        connection_type: opts[:connection_type],
+        organization_id: opts[:organization_id],
+        domain: opts[:domain],
+        limit: opts[:limit],
+        after: opts[:after],
+        before: opts[:before],
+        order: opts[:order]
       ]
     )
   end
@@ -48,16 +46,14 @@ defmodule WorkOS.SSO do
           WorkOS.Client.response(WorkOS.List.t(Connection.t()))
   def list_connections(opts \\ %{}) do
     WorkOS.Client.get(WorkOS.client(), WorkOS.List.of(Connection), "/connections",
-      opts: [
-        query: %{
-          connection_type: opts[:connection_type],
-          organization_id: opts[:organization_id],
-          domain: opts[:domain],
-          limit: opts[:limit],
-          after: opts[:after],
-          before: opts[:before],
-          order: opts[:order]
-        }
+      query: [
+        connection_type: opts[:connection_type],
+        organization_id: opts[:organization_id],
+        domain: opts[:domain],
+        limit: opts[:limit],
+        after: opts[:after],
+        before: opts[:before],
+        order: opts[:order]
       ]
     )
   end

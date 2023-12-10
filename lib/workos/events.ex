@@ -23,14 +23,12 @@ defmodule WorkOS.Events do
           WorkOS.Client.response(WorkOS.List.t(Event.t()))
   def list_events(client, opts) do
     WorkOS.Client.get(client, WorkOS.List.of(Event), "/events",
-      opts: [
-        query: %{
-          events: opts[:events],
-          range_start: opts[:range_start],
-          range_end: opts[:range_end],
-          limit: opts[:limit],
-          after: opts[:after]
-        }
+      query: [
+        events: opts[:events],
+        range_start: opts[:range_start],
+        range_end: opts[:range_end],
+        limit: opts[:limit],
+        after: opts[:after]
       ]
     )
   end
@@ -39,14 +37,12 @@ defmodule WorkOS.Events do
           WorkOS.Client.response(WorkOS.List.t(Event.t()))
   def list_events(opts \\ %{}) do
     WorkOS.Client.get(WorkOS.client(), WorkOS.List.of(Event), "/events",
-      opts: [
-        query: %{
-          events: opts[:events],
-          range_start: opts[:range_start],
-          range_end: opts[:range_end],
-          limit: opts[:limit],
-          after: opts[:after]
-        }
+      query: [
+        events: opts[:events],
+        range_start: opts[:range_start],
+        range_end: opts[:range_end],
+        limit: opts[:limit],
+        after: opts[:after]
       ]
     )
   end

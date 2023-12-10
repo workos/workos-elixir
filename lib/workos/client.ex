@@ -41,10 +41,14 @@ defmodule WorkOS.Client do
   def get(client, castable_module, path, opts \\ []) do
     client_module = client.client || WorkOS.Client.TeslaClient
 
+    query = Keyword.get(opts, :query, %{})
+    filtered_query = Enum.reject(query, fn {_, value} -> value == nil end)
+
     opts =
       opts
       |> Keyword.put(:method, :get)
       |> Keyword.put(:url, path)
+      |> Keyword.put(:query, filtered_query)
 
     client_module.request(client, opts)
     |> handle_response(path, castable_module)
