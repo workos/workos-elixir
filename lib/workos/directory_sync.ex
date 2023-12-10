@@ -181,9 +181,8 @@ defmodule WorkOS.DirectorySync do
   def list_groups(opts \\ %{}) do
     WorkOS.Client.get(WorkOS.client(), WorkOS.List.of(Group), "/directory_groups",
       query: [
-        domain: opts[:domain],
-        organization_id: opts[:organization_id],
-        search: opts[:search],
+        directory: opts[:directory],
+        user: opts[:user],
         limit: opts[:limit],
         before: opts[:before],
         after: opts[:after],
