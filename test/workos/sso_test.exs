@@ -126,7 +126,7 @@ defmodule WorkOS.SSOTest do
       context |> ClientMock.get_profile_and_token(assert_fields: opts)
 
       assert {:ok, %WorkOS.SSO.ProfileAndToken{access_token: access_token, profile: profile}} =
-               WorkOS.SSO.get_profile_and_token(Map.new(opts))
+               WorkOS.SSO.get_profile_and_token(opts |> Keyword.get(:code))
 
       refute is_nil(access_token)
       refute is_nil(profile)
@@ -140,7 +140,7 @@ defmodule WorkOS.SSOTest do
       |> ClientMock.get_profile_and_token(assert_fields: opts)
 
       {:ok, %WorkOS.SSO.ProfileAndToken{access_token: access_token, profile: profile}} =
-        WorkOS.SSO.get_profile_and_token(opts |> Map.new())
+        WorkOS.SSO.get_profile_and_token(opts |> Keyword.get(:code))
 
       refute is_nil(access_token)
       refute is_nil(profile)

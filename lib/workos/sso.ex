@@ -146,15 +146,15 @@ defmodule WorkOS.SSO do
     * `:code` - The authorization value which was passed back as a query parameter in the callback to the Redirect URI. (required)
 
   """
-  @spec get_profile_and_token(map()) :: WorkOS.Client.response(ProfileAndToken.t())
-  @spec get_profile_and_token(WorkOS.Client.t(), map()) ::
+  @spec get_profile_and_token(String.t()) :: WorkOS.Client.response(ProfileAndToken.t())
+  @spec get_profile_and_token(WorkOS.Client.t(), String.t()) ::
           WorkOS.Client.response(ProfileAndToken.t())
-  def get_profile_and_token(client \\ WorkOS.client(), opts) do
+  def get_profile_and_token(client \\ WorkOS.client(), code) do
     WorkOS.Client.post(client, ProfileAndToken, "/sso/token", %{
       client_id: WorkOS.client_id(client),
       client_secret: WorkOS.api_key(client),
       grant_type: "authorization_code",
-      code: opts[:code]
+      code: code
     })
   end
 
