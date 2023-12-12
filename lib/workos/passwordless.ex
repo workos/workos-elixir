@@ -50,7 +50,7 @@ defmodule WorkOS.Passwordless do
     WorkOS.Client.post(
       client,
       Send,
-      "/passwordless/sessions/:id",
+      "/passwordless/sessions/:id/send",
       %{},
       opts: [
         path_params: [id: session_id]

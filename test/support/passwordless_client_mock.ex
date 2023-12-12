@@ -39,7 +39,7 @@ defmodule WorkOS.Passwordless.ClientMock do
 
       session_id = opts |> Keyword.get(:assert_fields) |> Keyword.get(:session_id)
       assert request.method == :post
-      assert request.url == "#{WorkOS.base_url()}/passwordless/sessions/#{session_id}"
+      assert request.url == "#{WorkOS.base_url()}/passwordless/sessions/#{session_id}/send"
 
       assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
                {"Authorization", "Bearer #{api_key}"}
