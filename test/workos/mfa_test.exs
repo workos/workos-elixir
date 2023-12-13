@@ -37,10 +37,7 @@ defmodule WorkOS.MFATest do
                 id: id,
                 authentication_factor_id: authentication_factor_id
               }} =
-               WorkOS.MFA.challenge_factor(
-                 opts |> Keyword.get(:authentication_factor_id),
-                 opts |> Enum.into(%{})
-               )
+               WorkOS.MFA.challenge_factor(opts |> Enum.into(%{}))
 
       refute is_nil(id)
       refute is_nil(authentication_factor_id)

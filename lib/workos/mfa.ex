@@ -43,13 +43,15 @@ defmodule WorkOS.MFA do
 
   Parameter options:
 
+    * `:authentication_factor_id` - The ID of the Authentication Factor. (required)
     * `:sms_template` - A valid phone number for an SMS-enabled device. Required when type is sms.
 
   """
-  @spec challenge_factor(String.t(), map()) :: WorkOS.Client.response(AuthenticationChallenge.t())
-  @spec challenge_factor(WorkOS.Client.t(), String.t(), map()) ::
+  @spec challenge_factor(map()) :: WorkOS.Client.response(AuthenticationChallenge.t())
+  @spec challenge_factor(WorkOS.Client.t(), map()) ::
           WorkOS.Client.response(AuthenticationChallenge.t())
-  def challenge_factor(client \\ WorkOS.client(), authentication_factor_id, opts) do
+  def challenge_factor(client \\ WorkOS.client(), opts)
+      when is_map_key(opts, :authentication_factor_id) do
     WorkOS.Client.post(
       client,
       AuthenticationChallenge,
@@ -58,7 +60,7 @@ defmodule WorkOS.MFA do
         sms_template: opts[:sms_template]
       },
       opts: [
-        path_params: [id: authentication_factor_id]
+        path_params: [id: opts[:authentication_factor_id]]
       ]
     )
   end
