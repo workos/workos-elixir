@@ -149,7 +149,7 @@ defmodule WorkOS.Organizations.ClientMock do
     Tesla.Mock.mock(fn request ->
       %{api_key: api_key} = context
 
-      organization_id = opts |> Keyword.get(:assert_fields) |> Keyword.get(:organization)
+      organization_id = opts |> Keyword.get(:assert_fields) |> Keyword.get(:organization_id)
       assert request.method == :put
       assert request.url == "#{WorkOS.base_url()}/organizations/#{organization_id}"
 
@@ -158,7 +158,8 @@ defmodule WorkOS.Organizations.ClientMock do
 
       body = Jason.decode!(request.body)
 
-      for {field, value} <- Keyword.get(opts, :assert_fields, []) |> Keyword.delete(:organization) do
+      for {field, value} <-
+            Keyword.get(opts, :assert_fields, []) |> Keyword.delete(:organization_id) do
         assert body[to_string(field)] == value
       end
 

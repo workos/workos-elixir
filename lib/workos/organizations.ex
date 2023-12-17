@@ -116,12 +116,12 @@ defmodule WorkOS.Organizations do
     * `:allow_profiles_outside_organization` - Whether the Connections within this Organization should allow Profiles that do not have a domain that is present in the set of the Organization’s User Email Domains.
 
   """
-  @spec update_organization(map()) :: WorkOS.Client.response(Organization.t())
-  @spec update_organization(WorkOS.Client.t(), map()) ::
+  @spec update_organization(String.t(), map()) :: WorkOS.Client.response(Organization.t())
+  @spec update_organization(WorkOS.Client.t(), String.t(), map()) ::
           WorkOS.Client.response(Organization.t())
-  def update_organization(client \\ WorkOS.client(), opts)
-      when is_map_key(opts, :organization) and is_map_key(opts, :name) do
-    WorkOS.Client.put(client, Organization, "/organizations/#{opts[:organization]}", %{
+  def update_organization(client \\ WorkOS.client(), organization_id, opts)
+      when is_map_key(opts, :name) do
+    WorkOS.Client.put(client, Organization, "/organizations/#{organization_id}", %{
       name: opts[:name],
       domains: opts[:domains],
       allow_profiles_outside_organization: !!opts[:allow_profiles_outside_organization]

@@ -86,7 +86,7 @@ defmodule WorkOS.OrganizationsTest do
   describe "update_organization" do
     test "with a valid payload, updates an organization", context do
       opts = [
-        organization: "org_01EHT88Z8J8795GZNQ4ZP1J81T",
+        organization_id: "org_01EHT88Z8J8795GZNQ4ZP1J81T",
         domains: ["example.com"],
         name: "Test Organization 2"
       ]
@@ -94,7 +94,10 @@ defmodule WorkOS.OrganizationsTest do
       context |> ClientMock.update_organization(assert_fields: opts)
 
       assert {:ok, %WorkOS.Organizations.Organization{id: id}} =
-               WorkOS.Organizations.update_organization(opts |> Enum.into(%{}))
+               WorkOS.Organizations.update_organization(
+                 opts |> Keyword.get(:organization_id),
+                 opts |> Enum.into(%{})
+               )
 
       refute is_nil(id)
     end
