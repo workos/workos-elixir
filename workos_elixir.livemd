@@ -156,7 +156,7 @@ Kino.nothing()
 
 ```elixir
 {:ok, %WorkOS.Organizations.Organization{id: id}} =
-  WorkOS.SSO.get_organization(client, Kino.Input.read(organization_id))
+  WorkOS.Organizations.get_organization(client, Kino.Input.read(organization_id))
 ```
 
 #### Create an Organization
