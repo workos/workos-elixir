@@ -74,9 +74,7 @@ Kino.nothing()
 
 ```elixir
 {:ok, %WorkOS.SSO.Profile{id: id}} =
-  WorkOS.SSO.get_profile(client, %{
-    access_token: Kino.Input.read(access_token)
-  })
+  WorkOS.SSO.get_profile(client, Kino.Input.read(access_token))
 ```
 
 #### Get a Connection
