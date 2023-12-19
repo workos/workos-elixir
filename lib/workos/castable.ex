@@ -23,6 +23,8 @@ defmodule WorkOS.Castable do
     implementation.cast(generic_map)
   end
 
+  def cast(WorkOS.Empty, "Accepted"), do: %WorkOS.Empty{status: "Accepted"}
+
   @spec cast_list(module(), [generic_map()] | nil) :: [struct()] | nil
   def cast_list(_implementation, nil) do
     nil
