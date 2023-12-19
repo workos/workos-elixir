@@ -1,0 +1,23 @@
+version: v1.0
+name: Release to Hex
+
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
+    
+blocks:
+  - name: Build and Release
+    task:
+      secrets:
+        - name: elixir-hex-api-key
+      jobs:
+        - name: Elixir Build and Release
+          commands:
+            - checkout
+            - sem-version elixir 1.11.4
+            - mix local.hex --force
+            - mix local.rebar --force
+            - mix deps.get
+            - mix compile
+            - mix hex.publish --yes
