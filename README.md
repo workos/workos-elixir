@@ -1,5 +1,7 @@
 # WorkOS Elixir Library
 
+> **Note:** this an experimental SDK and breaking changes may occur. We don't recommend using this in production since we can't guarantee its stability.
+
 The WorkOS library for Elixir provides convenient access to the WorkOS API from applications written in Elixir.
 
 ## Documentation
