@@ -1,0 +1,856 @@
+# WorkOS + Elixir
+
+```elixir
+Mix.install([
+  {:workos, "~> 1.0.0"},
+  {:kino, "~> 0.9.4"}
+])
+```
+
+## Create a client
+
+To start using WorkOS, create a `client` with the API key and client ID that you copy via the WorkOS Dashboard:
+
+```elixir
+client = WorkOS.client(api_key: System.fetch_env!("WORKOS_API_KEY"), client_id: System.fetch_env!("WORKOS_CLIENT_ID"))
+```
+
+Note that if you choose to configure WorkOS in your app config, passing a client struct is always optional.
+
+## API
+
+We've created some inputs below to be used along the API calls. Feel free to replace these as needed!
+
+### Single Sign-On
+
+#### Get Authorization URL
+
+Generate an OAuth 2.0 authorization URL.
+
+```elixir
+provider = Kino.Input.text("Provider", default: "GoogleOAuth") |> Kino.render()
+
+redirect_uri =
+  Kino.Input.text("RedirectUri", default: "example.com/sso/workos/callback") |> Kino.render()
+
+client_id = Kino.Input.text("ClientID", default: "project_12345") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, url} =
+  WorkOS.SSO.get_authorization_url(%{
+    provider: Kino.Input.read(provider),
+    redirect_uri: Kino.Input.read(redirect_uri),
+    client_id: Kino.Input.read(client_id)
+  })
+```
+
+#### Get a Profile and Token
+
+Get an access token along with the user [Profile](https://workos.com/docs/reference/sso/profile) using the `code` passed to your [Redirect URI](https://workos.com/docs/reference/sso/redirect-uri).
+
+```elixir
+code = Kino.Input.text("Code") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.SSO.ProfileAndToken{access_token: access_token, profile: profile}} =
+  WorkOS.SSO.get_profile_and_token(client, Kino.Input.read(code))
+```
+
+#### Get a User Profile
+
+Exchange an access token for a user’s [Profile](https://workos.com/docs/reference/sso/profile).
+
+```elixir
+access_token = Kino.Input.text("Access Token") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.SSO.Profile{id: id}} =
+  WorkOS.SSO.get_profile(client, Kino.Input.read(access_token))
+```
+
+#### Get a Connection
+
+Get the details of an existing [Connection](https://workos.com/docs/reference/sso/connection).
+
+```elixir
+connection_id = Kino.Input.text("Connection ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.SSO.Connection{id: id}} =
+  WorkOS.SSO.get_connection(client, Kino.Input.read(connection_id))
+```
+
+#### List Connections
+
+Get a list of all of your existing connections matching the criteria specified.
+
+```elixir
+{:ok, %WorkOS.List{}} =
+  WorkOS.SSO.list_connections(client)
+```
+
+#### Delete a Connection
+
+Delete an existing connection.
+
+```elixir
+connection_id = Kino.Input.text("Connection ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.Empty{}} = WorkOS.SSO.delete_connection(client, Kino.Input.read(connection_id))
+```
+
+### Organizations
+
+#### List Organizations
+
+Get a list of all of your existing organizations matching the criteria specified.
+
+```elixir
+{:ok, %WorkOS.List{}} =
+  WorkOS.Organizations.list_organizations(client)
+```
+
+#### Delete an Organization
+
+Deletes an organization in the current environment.
+
+```elixir
+organization_id = Kino.Input.text("Organization ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.Empty{}} = WorkOS.Organizations.delete_organization(client, Kino.Input.read(organization_id))
+```
+
+#### Get an Organization
+
+Get the details of an existing organization.
+
+```elixir
+organization_id = Kino.Input.text("Organization ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.Organizations.Organization{id: id}} =
+  WorkOS.Organizations.get_organization(client, Kino.Input.read(organization_id))
+```
+
+#### Create an Organization
+
+Creates a new organization in the current environment.
+
+```elixir
+name = Kino.Input.text("Name") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.Organizations.Organization{id: id, name: name}} =
+  WorkOS.Organizations.create_organization(client, %{
+    name: Kino.Input.read(name),
+    allow_profiles_outside_organization: false
+  })
+```
+
+#### Update an Organization
+
+Updates an organization in the current environment.
+
+```elixir
+name = Kino.Input.text("Name") |> Kino.render()
+organization = Kino.Input.text("Organization ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.Organizations.Organization{id: id, name: name}} =
+  WorkOS.Organizations.update_organization(client, %{
+    name: Kino.Input.read(name),
+    organization: Kino.Input.read(organization)
+  })
+```
+
+### Admin Portal
+
+#### Generate a Portal Link
+
+Generate a Portal Link scoped to an Organization.
+
+```elixir
+organization = Kino.Input.text("Organization") |> Kino.render()
+intent = Kino.Input.text("Intent") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.Portal.Link{link: link}} =
+  WorkOS.Portal.generate_link(client, %{
+    organization: Kino.Input.read(organization),
+    intent: Kino.Input.read(intent),
+  })
+```
+
+### Directory Sync
+
+#### Get a Directory
+
+Get the details of an existing directory.
+
+```elixir
+directory_id = Kino.Input.text("Directory ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.DirectorySync.Directory{id: id}} =
+  WorkOS.DirectorySync.get_directory(client, Kino.Input.read(directory_id))
+```
+
+#### List Directories
+
+Get a list of all of your existing directories matching the criteria specified.
+
+```elixir
+{:ok, %WorkOS.List{}} =
+  WorkOS.DirectorySync.list_directories(client)
+```
+
+#### Delete a Directory
+
+Delete an existing directory.
+
+```elixir
+directory_id = Kino.Input.text("Directory ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.Empty{}} = WorkOS.DirectorySync.delete_directory(client, Kino.Input.read(directory_id))
+```
+
+#### Get a Directory User
+
+Get the details of an existing Directory User.
+
+```elixir
+directory_user_id = Kino.Input.text("Directory User ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.DirectorySync.Directory.User{id: id}} =
+  WorkOS.DirectorySync.get_user(client, Kino.Input.read(directory_user_id))
+```
+
+#### List Directory Users
+
+Get a list of all of existing Directory Users matching the criteria specified.
+
+```elixir
+directory_id = Kino.Input.text("Directory ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.List{}} =
+  WorkOS.DirectorySync.list_users(client, %{
+    directory: Kino.Input.read(directory_id),
+  })
+```
+
+#### Get a Directory Group
+
+Get the details of an existing Directory Group.
+
+```elixir
+directory_group_id = Kino.Input.text("Directory Group ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.DirectorySync.Directory.Group{id: id}} =
+  WorkOS.DirectorySync.get_group(client, Kino.Input.read(directory_group_id))
+```
+
+#### List Directory Groups
+
+Get a list of all of existing directory groups matching the criteria specified.
+
+```elixir
+directory_id = Kino.Input.text("Directory ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.List{}} =
+  WorkOS.DirectorySync.list_groups(client, %{
+    directory: Kino.Input.read(directory_id),
+  })
+```
+
+### Magic Link
+
+#### Create Passwordless Session
+
+Create a Passwordless Session for a Magic Link Connection.
+
+```elixir
+email = Kino.Input.text("Email") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.Passwordless.Session{id: id, name: name}} =
+  WorkOS.Passwordless.create_session(client, %{
+    type: "MagicLink",
+    email: Kino.Input.read(email)
+  })
+```
+
+#### Email a Magic Link
+
+Email a user the Magic Link confirmation URL.
+
+```elixir
+session_id = Kino.Input.text("Passwordless Session ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.Passwordless.Session.Send{}} =
+  WorkOS.Passwordless.send_session(client, Kino.Input.read(session_id))
+```
+
+### Events
+
+#### List Events
+
+```elixir
+{:ok, %WorkOS.List{}} = WorkOS.Events.list_events(client, %{})
+```
+
+### Audit Logs
+
+#### Create Event
+
+Emits an Audit Log Event.
+
+```elixir
+organization_id = Kino.Input.text("Organization ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.Empty{}} = WorkOS.Events.create_event(client, %{
+  organization_id: organization_id,
+  event: %{
+    "action" => "document.updated",
+    "occurred_at" => "2022-09-08T19:46:03.435Z",
+    "actor" => %{
+      "id" => "user_1",
+      "name" => "Jon Smith",
+      "type" => "user"
+    },
+    "targets" => [
+      %{
+        "id" => "document_39127",
+        "type" => "document"
+      }
+    ],
+    "context" => %{
+      "location" => "192.0.0.8",
+      "user_agent" => "Firefox"
+    },
+    "metadata" => %{
+      "successful" => true
+    }
+  }   
+})
+```
+
+#### Create Export 
+
+Create an Audit Log Export.
+
+```elixir
+organization_id = Kino.Input.text("Organization ID") |> Kino.render()
+range_start = Kino.Input.text("Range Start") |> Kino.render()
+range_end = Kino.Input.text("Range End") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.AuditLogs.Export{id: id}} =
+  WorkOS.AuditLogs.create_export(client, %{
+    organization_id: Kino.Input.read(organization_id),
+    range_start: Kino.Input.read(range_start),
+    range_end: Kino.Input.read(range_end),
+  })
+```
+
+#### Get Export 
+
+Get an Audit Log Export.
+
+```elixir
+audit_log_export_id = Kino.Input.text("Audit Log Export ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.AuditLogs.Export{id: id}} =
+  WorkOS.AuditLogs.get_export(client, audit_log_export_id)
+```
+
+### User Management
+
+#### Get Authorization URL
+
+Generate an OAuth 2.0 authorization URL.
+
+```elixir
+provider = Kino.Input.text("Provider", default: "authkit") |> Kino.render()
+
+redirect_uri =
+  Kino.Input.text("RedirectUri", default: "example.com/sso/workos/callback") |> Kino.render()
+
+client_id = Kino.Input.text("ClientID", default: "project_12345") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, url} =
+  WorkOS.UserManagement.get_authorization_url(%{
+    provider: Kino.Input.read(provider),
+    redirect_uri: Kino.Input.read(redirect_uri),
+    client_id: Kino.Input.read(client_id)
+  })
+```
+
+#### Authenticate with Password 
+
+Authenticates a user with email and password.
+
+```elixir
+email = Kino.Input.text("Email") |> Kino.render()
+
+password = Kino.Input.text("Password") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, u%WorkOS.UserManagement.Authentication{user: user}} =
+  WorkOS.UserManagement.authenticate_with_password(client, %{
+    email: Kino.Input.read(provider),
+    password: Kino.Input.read(redirect_uri)
+  })
+```
+
+#### Authenticate an OAuth or SSO User
+
+Authenticate a user using OAuth or an organization's SSO connection.
+
+```elixir
+code = Kino.Input.text("Code") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.UserManagement.Authentication{user: user}} =
+  WorkOS.UserManagement.authenticate_with_code(client, %{
+    code: Kino.Input.read(code),
+  })
+```
+
+#### Authenticate with Magic Auth
+
+Authenticates a user by verifying a one-time code sent to the user's email address by the Magic Auth Send Code endpoint.
+
+```elixir
+code = Kino.Input.text("Code") |> Kino.render()
+
+email = Kino.Input.text("Email") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.UserManagement.Authentication{user: user}} =
+  WorkOS.UserManagement.authenticate_with_magic_auth(client, %{
+    code: Kino.Input.read(code),
+    email: Kino.Input.read(email),
+  })
+```
+
+#### Authenticate with Email Verification Code
+
+When Email Verification is required in your Environment and an authentication attempt is made by a user with an unverified email address, a one-time code will automatically be sent to the user's email address. The authenticate API returns an email verification required error, which contains a pending_authentication_token.
+
+```elixir
+code = Kino.Input.text("Code") |> Kino.render()
+
+pending_authentication_code = Kino.Input.text("Pending Authentication Code") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.UserManagement.Authentication{user: user}} =
+  WorkOS.UserManagement.authenticate_with_email_verification(client, %{
+    code: Kino.Input.read(code),
+    pending_authentication_code: Kino.Input.read(pending_authentication_code),
+  })
+```
+
+#### Authenticate with MFA TOTP
+
+When an authentication attempt is made by a user with an MFA Factor enrolled, the user will be required to enter a time-based-one-time-password (TOTP) each time they authenticate. This is indicated by the MFA challenge error response when calling the authenticate API.
+
+```elixir
+authentication_challenge_id = Kino.Input.text("Authentication Challenge ID") |> Kino.render()
+
+pending_authentication_code = Kino.Input.text("Pending Authentication Code") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.UserManagement.Authentication{user: user}} =
+  WorkOS.UserManagement.authenticate_with_totp(client, %{
+    authentication_challenge_id: Kino.Input.read(authentication_challenge_id),
+    pending_authentication_code: Kino.Input.read(pending_authentication_code),
+  })
+```
+
+#### Authenticate with Selected Organization
+
+When a user is a member of multiple organizations, they must choose which organization to sign into as part of authentication. The organization selection error is returned when this happens. 
+
+```elixir
+authentication_challenge_id = Kino.Input.text("Authentication Challenge ID") |> Kino.render()
+
+organization_id = Kino.Input.text("Organization ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.UserManagement.Authentication{user: user}} =
+  WorkOS.UserManagement.authenticate_with_selected_organization(client, %{
+    authentication_challenge_id: Kino.Input.read(authentication_challenge_id),
+    organization_id: Kino.Input.read(organization_id),
+  })
+```
+
+#### Send Magic Auth Code
+
+Creates a one-time Magic Auth code and emails it to the user.
+
+```elixir
+email = Kino.Input.text("Email") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+:ok =
+  WorkOS.UserManagement.send_magic_auth_code(client, Kino.Input.read(email))
+```
+
+#### Enroll Auth Factor
+
+Enrolls a user in a new Factor.
+
+```elixir
+user_id = Kino.Input.text("User ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.UserManagement.MultiFactor.EnrollAuthFactor{challenge: challenge, factor: factor}} =
+  WorkOS.UserManagement.enroll_auth_factor(client, Kino.Input.read(user_id), %{
+    type: "totp",
+  })
+```
+
+#### List Auth Factors 
+
+Lists the Auth Factors for a user.
+
+```elixir
+{:ok, %WorkOS.List{}} =
+  WorkOS.UserManagement.list_auth_factors(client)
+```
+
+#### Send Verification Email
+
+Sends a verification email to the provided user. The verification email will contain a one-time code which can be used to complete the email verification process.
+
+```elixir
+user_id = Kino.Input.text("User ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.UserManagement.EmailVerification.SendVerificationEmail{user: user}} =
+  WorkOS.UserManagement.send_verification_email(client, Kino.Input.read(user_id))
+```
+
+#### Verify Email Code
+
+Verifies user email using one-time code that was sent to the user.
+
+```elixir
+user_id = Kino.Input.text("User ID") |> Kino.render()
+
+code = Kino.Input.text("Code") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.UserManagement.EmailVerification.VerifyEmail{user: user}} =
+  WorkOS.UserManagement.verify_email(client, Kino.Input.read(user_id), %{
+    code: Kino.Input.read(code),
+  })
+```
+
+#### Send Password Reset Email
+
+Sends a password reset email to a user.
+
+```elixir
+email = Kino.Input.text("Email") |> Kino.render()
+
+password_reset_url = Kino.Input.text("Password Reset URL") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+:ok = WorkOS.UserManagement.send_password_reset_email(client, %{
+    email: Kino.Input.read(email),
+    password_reset_url: Kino.Input.read(password_reset_url),
+  })
+```
+
+#### Complete Password Reset
+
+Resets user password using token that was sent to the user.
+
+```elixir
+email = Kino.Input.text("Email") |> Kino.render()
+
+password_reset_url = Kino.Input.text("Password Reset URL") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+:ok = WorkOS.UserManagement.reset_password(client, %{
+    token: Kino.Input.read(token),
+    new_password: Kino.Input.read(new_password),
+  })
+```
+
+#### Get an Organization Membership
+
+Get the details of an existing Organization Membership.
+
+```elixir
+organization_membership_id = Kino.Input.text("Organization Membership ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+:ok = WorkOS.UserManagement.get_organization_membership(client, Kino.Input.read(organization_membership_id))
+```
+
+#### List Organization Memberships
+
+Get a list of all of your existing Organization Memberships matching the criteria specified.
+
+```elixir
+{:ok, %WorkOS.List{}} =
+  WorkOS.UserManagement.list_organization_memberships(client)
+```
+
+#### Create an Organization Membership
+
+Get a list of all of your existing Organization Memberships matching the criteria specified.
+
+```elixir
+user_id = Kino.Input.text("User ID") |> Kino.render()
+
+organization_id = Kino.Input.text("Organization ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.List{}} =
+  WorkOS.UserManagement.create_organization_membership(client, %{
+    user_id: Kino.Input.read(user_id),
+    organization_id: Kino.Input.read(organization_id),
+  })
+```
+
+#### Delete an Organization Membership
+
+Deletes an existing Organization Membership.
+
+```elixir
+organization_membership_id = Kino.Input.text("Organization Membership ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.Empty{}} = WorkOS.UserManagement.delete_organization_membership(client, Kino.Input.read(organization_membership_id))
+```
+
+#### Get an Invitation
+
+Get the details of an existing Invitation.
+
+```elixir
+invitation_id = Kino.Input.text("Invitation ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+:ok = WorkOS.UserManagement.get_invitation(client, Kino.Input.read(invitation_id))
+```
+
+#### List Invitations
+
+Get a list of all of your existing Invitations matching the criteria specified.
+
+```elixir
+{:ok, %WorkOS.List{}} =
+  WorkOS.UserManagement.list_invitations(client)
+```
+
+#### Send an Invitation
+
+Sends an Invitation to a recipient.
+
+```elixir
+email = Kino.Input.text("Email") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.UserManagement.Invitation{id: id}} =
+  WorkOS.UserManagement.send_invitation(client, %{
+    email: Kino.Input.read(email),
+  })
+```
+
+#### Revoke an Invitation
+
+Revokes an existing Invitation.
+
+```elixir
+invitation_id = Kino.Input.text("Invitation ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.UserManagement.Invitation{id: id}} =
+  WorkOS.UserManagement.revoke_invitation(client, Kino.Input.read(invitation_id))
+```
+
+### Organization Domains 
+
+#### Get an Organization Domain
+
+Get the details of an existing organization.
+
+```elixir
+organization_domain_id = Kino.Input.text("Organization Domain ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+:ok = WorkOS.OrganizationDomains.get_organization_domain(client, Kino.Input.read(organization_domain_id))
+```
+
+#### Create an Organization Domain
+
+Creates a new Organization Domain.
+
+```elixir
+organization_id = Kino.Input.text("Organization ID") |> Kino.render()
+
+domain = Kino.Input.text("Domain") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.List{}} =
+  WorkOS.OrganizationDomains.create_organization_domain(client, %{
+    organization_id: Kino.Input.read(organization_id),
+    domain: Kino.Input.read(domain),
+  })
+```
+
+#### Verify an Organization Domain
+
+Initiates verification process for an Organization Domain.
+
+```elixir
+organization_domain_id = Kino.Input.text("Organization Domain ID") |> Kino.render()
+
+Kino.nothing()
+```
+
+```elixir
+{:ok, %WorkOS.List{}} =
+  WorkOS.OrganizationDomains.verify_organization_domain(client, Kino.Input.read(organization_domain_id))
+```

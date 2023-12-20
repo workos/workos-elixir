@@ -22,6 +22,9 @@ erl_crash.dump
 # Ignore package tarball (built via "mix hex.build").
 workos-*.tar
 
-
 # Temporary files for e.g. tests
 /tmp
+
+# Dialyzer 
+/plts/*.plt
+/plts/*.plt.hash

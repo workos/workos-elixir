@@ -2,9 +2,10 @@ defmodule WorkOS.Webhooks.Event do
   @moduledoc """
   Module to represent a webhook event
   """
+
   defstruct [:id, :event, :data]
 
-  @spec new(payload :: String.t()) :: __MODULE__
+  @spec new(map) :: %__MODULE__{}
   def new(payload) do
     processed_map =
       [:id, :event, :data]

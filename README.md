@@ -14,45 +14,25 @@ Add this package to the list of dependencies in your `mix.exs` file:
 
 ```ex
 def deps do
-  [{:workos, "~> 0.4.0"}]
+  [{:workos, "~> 1.0.0"}]
 end
 ```
-The hex package can be found here: https://hex.pm/packages/workos
 
 ## Configuration
 
-The WorkOS API relies on two configuration parameters, the `client_id` and the `api_key`. There are two ways to configure these values with this package.
-
-### Recommended Method
-In your `config/config.exs` file you can set the `:client_id` and `:api_key` scoped to `:workos` to be used globally by default across the SDK:
+### Configure WorkOS API key & client ID on your app config
 
 ```ex
-config :workos,
-  client_id: "project_12345"
-  api_key: "sk_12345",
+config :workos, WorkOS.Client,
+      api_key: "sk_example_123456789",
+      client_id: "client_123456789"
 ```
 
-Ideally, you should use environment variables to store protected keys like your `:api_key` like so:
+The only required config option is `:api_key` and `:client_id`. 
 
-```ex
-config :workos,
-  client_id: System.get_env("WORKOS_CLIENT_ID"),
-  api_key: System.get_env("WORKOS_API_KEY")
-```
+By default, this library uses [Tesla](https://github.com/elixir-tesla/tesla) but it can be replaced via the `:client` option, according to the `WorkOS.Client` module behavior. 
 
-### Opts Method
-Alternatively, you can override or avoid using these globally configured variables by passing a `:api_key` or `:client_id` directly to SDK methods via the optional `opts` parameter available on all methods:
-
-```ex
-WorkOS.SSO.get_authorization_url(%{
-  connection: "<Connection ID>",
-  redirect_uri: "https://workos.com"
-}, [
-  client_id: "project_12345",
-  api_key: "sk_12345"
-])
-```
-This is great if you need to switch client IDs on the fly.
+###
 
 ## SDK Versioning
 
@@ -60,7 +40,9 @@ For our SDKs WorkOS follows a Semantic Versioning process where all releases wil
 
 ## More Information
 
-* [Single Sign-On Guide](https://workos.com/docs/sso/guide)
-* [Directory Sync Guide](https://workos.com/docs/directory-sync/guide)
-* [Admin Portal Guide](https://workos.com/docs/admin-portal/guide)
-* [Magic Link Guide](https://workos.com/docs/magic-link/guide)
+- [User Management Guide](https://workos.com/docs/user-management)
+- [Single Sign-On Guide](https://workos.com/docs/sso/guide)
+- [Directory Sync Guide](https://workos.com/docs/directory-sync/guide)
+- [Admin Portal Guide](https://workos.com/docs/admin-portal/guide)
+- [Magic Link Guide](https://workos.com/docs/magic-link/guide)
+- [Domain Verification Guide](https://workos.com/docs/domain-verification/guide)
