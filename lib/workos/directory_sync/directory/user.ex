@@ -19,6 +19,7 @@ defmodule WorkOS.DirectorySync.Directory.User do
           last_name: String.t(),
           job_title: String.t() | nil,
           state: String.t(),
+          groups: [%WorkOS.DirectorySync.Directory.Group{}],
           updated_at: String.t(),
           created_at: String.t()
         }
@@ -34,6 +35,7 @@ defmodule WorkOS.DirectorySync.Directory.User do
     :emails,
     :username,
     :last_name,
+    :groups,
     :state,
     :updated_at,
     :created_at
@@ -51,6 +53,7 @@ defmodule WorkOS.DirectorySync.Directory.User do
     :username,
     :last_name,
     :job_title,
+    :groups,
     :state,
     :updated_at,
     :created_at
@@ -71,6 +74,7 @@ defmodule WorkOS.DirectorySync.Directory.User do
       username: map["username"],
       last_name: map["last_name"],
       job_title: map["job_title"],
+      groups: WorkOS.Castable.cast_list(WorkOS.DirectorySync.Directory.Group, map["groups"]),
       state: map["state"],
       updated_at: map["updated_at"],
       created_at: map["created_at"]
