@@ -64,6 +64,14 @@ defmodule WorkOS.UserManagement.ClientMock do
     "organization_id" => "organization_01H5JQDV7R7ATEYZDEG0W5PRYS"
   }
 
+  @authentication_code_mock %{
+    "user" => @user_mock,
+    "organization_id" => "organization_01H5JQDV7R7ATEYZDEG0W5PRYS",
+    "access_token" => "01DMEK0J53CVMC32CK5SE0KZ8Q",
+    "refresh_token" => "01DMEK0J53CVMC32CK5SE0KZ8Q",
+    "authentication_method" => "SSO"
+  }
+
   def get_user(context, opts \\ []) do
     Tesla.Mock.mock(fn request ->
       %{api_key: api_key} = context
@@ -183,12 +191,15 @@ defmodule WorkOS.UserManagement.ClientMock do
 
       body = Jason.decode!(request.body)
 
-      for {field, value} <-
-            Keyword.get(opts, :assert_fields, []) do
+      for {field, value} <- Keyword.get(opts, :assert_fields, []) do
         assert body[to_string(field)] == value
       end
 
-      success_body = @authentication_mock
+      success_body =
+        case body do
+          %{"code" => _} -> @authentication_code_mock
+          _ -> @authentication_mock
+        end
 
       {status, body} = Keyword.get(opts, :respond_with, {200, success_body})
       %Tesla.Env{status: status, body: body}
