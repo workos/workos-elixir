@@ -225,10 +225,12 @@ defmodule WorkOS.UserManagementTest do
 
       context |> ClientMock.authenticate(assert_fields: opts)
 
-      assert {:ok, %WorkOS.UserManagement.Authentication{user: user}} =
+      assert {:ok, auth = %WorkOS.UserManagement.Authentication{}} =
                WorkOS.UserManagement.authenticate_with_code(opts |> Enum.into(%{}))
 
-      refute is_nil(user["id"])
+      refute is_nil(auth.user["id"])
+      refute is_nil(auth.access_token)
+      refute is_nil(auth.refresh_token)
     end
   end
 
