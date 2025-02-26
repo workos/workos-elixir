@@ -19,10 +19,11 @@ defmodule WorkOS.SSO.ProfileAndToken do
   ]
 
   @impl true
+  @spec cast(map :: map()) :: t()
   def cast(map) do
     %__MODULE__{
       access_token: map["access_token"],
-      profile: map["profile"]
+      profile: Profile.cast(map["profile"])
     }
   end
 end
