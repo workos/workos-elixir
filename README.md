@@ -14,7 +14,7 @@ Add this package to the list of dependencies in your `mix.exs` file:
 
 ```ex
 def deps do
-  [{:workos, "~> 1.0.0"}]
+  [{:workos, "~> 1.1.0"}]
 end
 ```
 
