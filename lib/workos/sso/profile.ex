@@ -33,6 +33,7 @@ defmodule WorkOS.SSO.Profile do
   ]
 
   @impl true
+  @spec cast(map :: map()) :: t()
   def cast(map) do
     %__MODULE__{
       id: map["id"],
@@ -41,7 +42,8 @@ defmodule WorkOS.SSO.Profile do
       connection_id: map["connection_id"],
       connection_type: map["connection_type"],
       email: map["email"],
-      first_name: map["last_name"],
+      first_name: map["first_name"],
+      last_name: map["last_name"],
       groups: map["groups"],
       raw_attributes: map["raw_attributes"]
     }
