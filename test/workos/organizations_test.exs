@@ -102,4 +102,33 @@ defmodule WorkOS.OrganizationsTest do
       refute is_nil(id)
     end
   end
+
+  describe "edge and error cases" do
+    test "list_organizations returns error on 500", context do
+      context |> ClientMock.list_organizations(respond_with: {500, %{}})
+      assert {:error, _} = WorkOS.Organizations.list_organizations()
+    end
+
+    test "get_organization returns error on 404", context do
+      opts = [organization_id: "nonexistent"]
+      context |> ClientMock.get_organization(assert_fields: opts, respond_with: {404, %{}})
+      assert {:error, _} = WorkOS.Organizations.get_organization(opts[:organization_id])
+    end
+
+    test "create_organization returns error when :name is missing", _context do
+      opts = %{domains: ["example.com"]}
+      assert {:error, _} = WorkOS.Organizations.create_organization(opts)
+    end
+
+    test "update_organization returns error when :name is missing", _context do
+      organization_id = "org_01EHT88Z8J8795GZNQ4ZP1J81T"
+      opts = %{domains: ["example.com"]}
+      assert {:error, _} = WorkOS.Organizations.update_organization(organization_id, opts)
+    end
+
+    test "list_organizations returns empty list", context do
+      context |> ClientMock.list_organizations(respond_with: {200, %{"data" => [], "list_metadata" => %{}}})
+      assert {:ok, %WorkOS.List{data: [], list_metadata: _}} = WorkOS.Organizations.list_organizations()
+    end
+  end
 end

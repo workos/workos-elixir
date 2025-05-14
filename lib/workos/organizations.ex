@@ -113,23 +113,30 @@ defmodule WorkOS.Organizations do
     * `:idempotency_key` - A unique string as the value. Each subsequent request matching this unique string will return the same response.
 
   """
-  @spec create_organization(map()) :: WorkOS.Client.response(Organization.t())
-  @spec create_organization(WorkOS.Client.t(), map()) ::
-          WorkOS.Client.response(Organization.t())
-  def create_organization(client \\ WorkOS.client(), opts) when is_map_key(opts, :name) do
-    WorkOS.Client.post(
-      client,
-      Organization,
-      "/organizations",
-      %{
-        name: opts[:name],
-        domains: opts[:domains],
-        allow_profiles_outside_organization: opts[:allow_profiles_outside_organization]
-      },
-      headers: [
-        {"Idempotency-Key", opts[:idempotency_key]}
-      ]
-    )
+  @spec create_organization(map()) :: WorkOS.Client.response(Organization.t()) | {:error, atom()}
+  @spec create_organization(WorkOS.Client.t(), map()) :: WorkOS.Client.response(Organization.t()) | {:error, atom()}
+  def create_organization(opts) when is_map(opts) do
+    create_organization(WorkOS.client(), opts)
+  end
+
+  def create_organization(client, opts) when is_map(opts) do
+    if Map.has_key?(opts, :name) do
+      WorkOS.Client.post(
+        client,
+        Organization,
+        "/organizations",
+        %{
+          name: opts[:name],
+          domains: opts[:domains],
+          allow_profiles_outside_organization: opts[:allow_profiles_outside_organization]
+        },
+        headers: [
+          {"Idempotency-Key", opts[:idempotency_key]}
+        ]
+      )
+    else
+      {:error, :missing_name}
+    end
   end
 
   @doc """
@@ -143,15 +150,21 @@ defmodule WorkOS.Organizations do
     * `:allow_profiles_outside_organization` - Whether the Connections within this Organization should allow Profiles that do not have a domain that is present in the set of the Organization's User Email Domains.
 
   """
-  @spec update_organization(String.t(), map()) :: WorkOS.Client.response(Organization.t())
-  @spec update_organization(WorkOS.Client.t(), String.t(), map()) ::
-          WorkOS.Client.response(Organization.t())
-  def update_organization(client \\ WorkOS.client(), organization_id, opts)
-      when is_map_key(opts, :name) do
-    WorkOS.Client.put(client, Organization, "/organizations/#{organization_id}", %{
-      name: opts[:name],
-      domains: opts[:domains],
-      allow_profiles_outside_organization: !!opts[:allow_profiles_outside_organization]
-    })
+  @spec update_organization(String.t(), map()) :: WorkOS.Client.response(Organization.t()) | {:error, atom()}
+  @spec update_organization(WorkOS.Client.t(), String.t(), map()) :: WorkOS.Client.response(Organization.t()) | {:error, atom()}
+  def update_organization(organization_id, opts) when is_map(opts) do
+    update_organization(WorkOS.client(), organization_id, opts)
+  end
+
+  def update_organization(client, organization_id, opts) when is_map(opts) do
+    if Map.has_key?(opts, :name) do
+      WorkOS.Client.put(client, Organization, "/organizations/#{organization_id}", %{
+        name: opts[:name],
+        domains: opts[:domains],
+        allow_profiles_outside_organization: !!opts[:allow_profiles_outside_organization]
+      })
+    else
+      {:error, :missing_name}
+    end
   end
 end
