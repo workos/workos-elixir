@@ -45,9 +45,8 @@ defmodule WorkOS.DirectorySync.ClientMock do
   }
 
   def get_directory(context, opts \\ []) do
-    Tesla.Mock.mock(fn request ->
+    fn request ->
       %{api_key: api_key} = context
-
       directory_id = opts |> Keyword.get(:assert_fields) |> Keyword.get(:directory_id)
       assert request.method == :get
       assert request.url == "#{WorkOS.base_url()}/directories/#{directory_id}"
@@ -68,9 +67,11 @@ defmodule WorkOS.DirectorySync.ClientMock do
         "updated_at" => "2023-07-17T20:07:20.055Z"
       }
 
-      {status, body} = Keyword.get(opts, :respond_with, {200, success_body})
-      %Tesla.Env{status: status, body: body}
-    end)
+      case Keyword.get(opts, :respond_with, {200, success_body}) do
+        {:error, reason} -> {:error, reason}
+        {status, body} -> %Tesla.Env{status: status, body: body}
+      end
+    end
   end
 
   def list_directories(context, opts \\ []) do
@@ -104,8 +105,10 @@ defmodule WorkOS.DirectorySync.ClientMock do
         }
       }
 
-      {status, body} = Keyword.get(opts, :respond_with, {200, success_body})
-      %Tesla.Env{status: status, body: body}
+      case Keyword.get(opts, :respond_with, {200, success_body}) do
+        {:error, reason} -> {:error, reason}
+        {status, body} -> %Tesla.Env{status: status, body: body}
+      end
     end)
   end
 
@@ -120,8 +123,10 @@ defmodule WorkOS.DirectorySync.ClientMock do
       assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
                {"Authorization", "Bearer #{api_key}"}
 
-      {status, body} = Keyword.get(opts, :respond_with, {204, %{}})
-      %Tesla.Env{status: status, body: body}
+      case Keyword.get(opts, :respond_with, {204, %{}}) do
+        {:error, reason} -> {:error, reason}
+        {status, body} -> %Tesla.Env{status: status, body: body}
+      end
     end)
   end
 
@@ -136,8 +141,10 @@ defmodule WorkOS.DirectorySync.ClientMock do
       assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
                {"Authorization", "Bearer #{api_key}"}
 
-      {status, body} = Keyword.get(opts, :respond_with, {200, @directory_user_response})
-      %Tesla.Env{status: status, body: body}
+      case Keyword.get(opts, :respond_with, {200, @directory_user_response}) do
+        {:error, reason} -> {:error, reason}
+        {status, body} -> %Tesla.Env{status: status, body: body}
+      end
     end)
   end
 
@@ -161,8 +168,10 @@ defmodule WorkOS.DirectorySync.ClientMock do
         }
       }
 
-      {status, body} = Keyword.get(opts, :respond_with, {200, success_body})
-      %Tesla.Env{status: status, body: body}
+      case Keyword.get(opts, :respond_with, {200, success_body}) do
+        {:error, reason} -> {:error, reason}
+        {status, body} -> %Tesla.Env{status: status, body: body}
+      end
     end)
   end
 
@@ -177,8 +186,10 @@ defmodule WorkOS.DirectorySync.ClientMock do
       assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
                {"Authorization", "Bearer #{api_key}"}
 
-      {status, body} = Keyword.get(opts, :respond_with, {200, @directory_group_response})
-      %Tesla.Env{status: status, body: body}
+      case Keyword.get(opts, :respond_with, {200, @directory_group_response}) do
+        {:error, reason} -> {:error, reason}
+        {status, body} -> %Tesla.Env{status: status, body: body}
+      end
     end)
   end
 
@@ -202,8 +213,10 @@ defmodule WorkOS.DirectorySync.ClientMock do
         }
       }
 
-      {status, body} = Keyword.get(opts, :respond_with, {200, success_body})
-      %Tesla.Env{status: status, body: body}
+      case Keyword.get(opts, :respond_with, {200, success_body}) do
+        {:error, reason} -> {:error, reason}
+        {status, body} -> %Tesla.Env{status: status, body: body}
+      end
     end)
   end
 end

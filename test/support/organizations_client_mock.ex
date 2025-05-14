@@ -52,8 +52,10 @@ defmodule WorkOS.Organizations.ClientMock do
         }
       }
 
-      {status, body} = Keyword.get(opts, :respond_with, {200, success_body})
-      %Tesla.Env{status: status, body: body}
+      case Keyword.get(opts, :respond_with, {200, success_body}) do
+        {:error, reason} -> {:error, reason}
+        {status, body} -> %Tesla.Env{status: status, body: body}
+      end
     end)
   end
 
@@ -68,8 +70,10 @@ defmodule WorkOS.Organizations.ClientMock do
       assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
                {"Authorization", "Bearer #{api_key}"}
 
-      {status, body} = Keyword.get(opts, :respond_with, {204, %{}})
-      %Tesla.Env{status: status, body: body}
+      case Keyword.get(opts, :respond_with, {204, %{}}) do
+        {:error, reason} -> {:error, reason}
+        {status, body} -> %Tesla.Env{status: status, body: body}
+      end
     end)
   end
 
@@ -100,8 +104,10 @@ defmodule WorkOS.Organizations.ClientMock do
         "updated_at" => "2023-07-17T20:07:20.055Z"
       }
 
-      {status, body} = Keyword.get(opts, :respond_with, {200, success_body})
-      %Tesla.Env{status: status, body: body}
+      case Keyword.get(opts, :respond_with, {200, success_body}) do
+        {:error, reason} -> {:error, reason}
+        {status, body} -> %Tesla.Env{status: status, body: body}
+      end
     end)
   end
 
@@ -179,8 +185,10 @@ defmodule WorkOS.Organizations.ClientMock do
         "updated_at" => "2023-07-17T20:07:20.055Z"
       }
 
-      {status, body} = Keyword.get(opts, :respond_with, {200, success_body})
-      %Tesla.Env{status: status, body: body}
+      case Keyword.get(opts, :respond_with, {200, success_body}) do
+        {:error, reason} -> {:error, reason}
+        {status, body} -> %Tesla.Env{status: status, body: body}
+      end
     end)
   end
 end
