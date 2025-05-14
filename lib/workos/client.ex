@@ -105,14 +105,25 @@ defmodule WorkOS.Client do
   defp handle_response(response, path, castable_module) do
     case response do
       {:ok, %{body: "", status: status}} when status in 200..299 ->
-        {:ok, Castable.cast(castable_module, %{})}
+        {:error, ""}
+
+      {:ok, %{body: body, status: status}} when status in 200..299 and is_map(body) ->
+        {:ok, WorkOS.Castable.cast(castable_module, body)}
 
       {:ok, %{body: body, status: status}} when status in 200..299 ->
-        {:ok, Castable.cast(castable_module, body)}
+        Logger.error("#{inspect(__MODULE__)} error when calling #{path}: #{inspect(body)}")
+        {:error, body}
+
+      {:ok, %{body: reason, status: :error}} when is_atom(reason) ->
+        Logger.error(
+          "#{inspect(__MODULE__)} client error when calling #{path}: #{inspect(reason)}"
+        )
+
+        {:error, :client_error}
 
       {:ok, %{body: body}} when is_map(body) ->
         Logger.error("#{inspect(__MODULE__)} error when calling #{path}: #{inspect(body)}")
-        {:error, Castable.cast(WorkOS.Error, body)}
+        {:error, WorkOS.Castable.cast(WorkOS.Error, body)}
 
       {:ok, %{body: body}} when is_binary(body) ->
         Logger.error("#{inspect(__MODULE__)} error when calling #{path}: #{body}")

@@ -23,6 +23,13 @@ defmodule WorkOS.MixProject do
         plt_core_path: "plts",
         plt_add_deps: :app_tree,
         plt_add_apps: [:mix, :ex_unit]
+      ],
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.html": :test,
+        "coveralls.json": :test
       ]
     ]
   end
@@ -71,7 +78,8 @@ defmodule WorkOS.MixProject do
       {:plug_crypto, "~> 2.0"},
       {:ex_doc, "~> 0.23", only: :dev, runtime: false},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.0", only: [:test, :dev], runtime: false}
+      {:dialyxir, "~> 1.0", only: [:test, :dev], runtime: false},
+      {:excoveralls, "~> 0.18", only: [:test]}
     ]
   end
 

@@ -1,6 +1,13 @@
 defmodule WorkOS.Castable do
-  @moduledoc false
+  @moduledoc """
+  Defines the Castable protocol for WorkOS SDK, used for casting API responses to Elixir structs.
 
+  This module provides the `cast/2` and `cast_list/2` functions, as well as the `impl` type used throughout the SDK for flexible casting.
+  """
+
+  @typedoc """
+  Represents a castable implementation. This can be a module, a tuple of modules, or :raw for raw maps.
+  """
   @type impl :: module() | {module(), module()} | :raw
   @type generic_map :: %{String.t() => any()}
 

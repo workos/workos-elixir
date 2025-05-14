@@ -64,11 +64,15 @@ defmodule WorkOS.SSO do
   @spec delete_connection(String.t()) :: WorkOS.Client.response(nil)
   @spec delete_connection(WorkOS.Client.t(), String.t()) :: WorkOS.Client.response(nil)
   def delete_connection(client \\ WorkOS.client(), connection_id) do
-    WorkOS.Client.delete(client, Empty, "/connections/:id", %{},
-      opts: [
-        path_params: [id: connection_id]
-      ]
-    )
+    if is_nil(connection_id) or connection_id in ["", nil] do
+      {:error, :invalid_connection_id}
+    else
+      WorkOS.Client.delete(client, Empty, "/connections/:id", %{},
+        opts: [
+          path_params: [id: connection_id]
+        ]
+      )
+    end
   end
 
   @doc """
@@ -77,11 +81,15 @@ defmodule WorkOS.SSO do
   @spec get_connection(String.t()) :: WorkOS.Client.response(Connection.t())
   @spec get_connection(WorkOS.Client.t(), String.t()) :: WorkOS.Client.response(Connection.t())
   def get_connection(client \\ WorkOS.client(), connection_id) do
-    WorkOS.Client.get(client, Connection, "/connections/:id",
-      opts: [
-        path_params: [id: connection_id]
-      ]
-    )
+    if is_nil(connection_id) or connection_id in ["", nil] do
+      {:error, :invalid_connection_id}
+    else
+      WorkOS.Client.get(client, Connection, "/connections/:id",
+        opts: [
+          path_params: [id: connection_id]
+        ]
+      )
+    end
   end
 
   @doc """

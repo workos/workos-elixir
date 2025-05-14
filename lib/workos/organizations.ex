@@ -114,7 +114,8 @@ defmodule WorkOS.Organizations do
 
   """
   @spec create_organization(map()) :: WorkOS.Client.response(Organization.t()) | {:error, atom()}
-  @spec create_organization(WorkOS.Client.t(), map()) :: WorkOS.Client.response(Organization.t()) | {:error, atom()}
+  @spec create_organization(WorkOS.Client.t(), map()) ::
+          WorkOS.Client.response(Organization.t()) | {:error, atom()}
   def create_organization(opts) when is_map(opts) do
     create_organization(WorkOS.client(), opts)
   end
@@ -150,8 +151,10 @@ defmodule WorkOS.Organizations do
     * `:allow_profiles_outside_organization` - Whether the Connections within this Organization should allow Profiles that do not have a domain that is present in the set of the Organization's User Email Domains.
 
   """
-  @spec update_organization(String.t(), map()) :: WorkOS.Client.response(Organization.t()) | {:error, atom()}
-  @spec update_organization(WorkOS.Client.t(), String.t(), map()) :: WorkOS.Client.response(Organization.t()) | {:error, atom()}
+  @spec update_organization(String.t(), map()) ::
+          WorkOS.Client.response(Organization.t()) | {:error, atom()}
+  @spec update_organization(WorkOS.Client.t(), String.t(), map()) ::
+          WorkOS.Client.response(Organization.t()) | {:error, atom()}
   def update_organization(organization_id, opts) when is_map(opts) do
     update_organization(WorkOS.client(), organization_id, opts)
   end
