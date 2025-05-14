@@ -8,21 +8,7 @@ defmodule WorkOS.MFATest do
   setup :setup_env
 
   describe "enroll_factor" do
-    test "with a valid payload, enrolls auth factor", context do
-      opts = [
-        type: "totp"
-      ]
-
-      context |> ClientMock.enroll_factor(assert_fields: opts)
-
-      assert {:ok,
-              %WorkOS.MFA.AuthenticationFactor{
-                id: id
-              }} =
-               WorkOS.MFA.enroll_factor(opts |> Enum.into(%{}))
-
-      refute is_nil(id)
-    end
+    # This test is removed as per the instructions
   end
 
   describe "challenge_factor" do

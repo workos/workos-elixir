@@ -28,14 +28,13 @@ defmodule WorkOS.UserManagement.OrganizationMembership do
     :created_at
   ]
 
-  @impl true
-  def cast(map) do
+  def cast(params) do
     %__MODULE__{
-      id: map["id"],
-      user_id: map["user_id"],
-      organization_id: map["organization_id"],
-      updated_at: map["updated_at"],
-      created_at: map["created_at"]
+      id: params["id"],
+      user_id: params["user_id"],
+      organization_id: params["organization_id"],
+      updated_at: params["updated_at"],
+      created_at: params["created_at"]
     }
   end
 end

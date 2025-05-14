@@ -17,9 +17,9 @@ defmodule WorkOS.UserManagement.MultiFactor.SMS do
   ]
 
   @impl true
-  def cast(map) do
+  def cast(params) do
     %__MODULE__{
-      phone_number: map["phone_number"]
+      phone_number: params["phone_number"]
     }
   end
 end

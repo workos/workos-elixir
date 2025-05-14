@@ -494,7 +494,7 @@ defmodule WorkOS.SSOTest do
   describe "default-argument function heads" do
     test "calls default-argument versions for coverage" do
       Tesla.Mock.mock(fn
-        %{method: :get, url: url} = req ->
+        %{method: :get, url: url} = _req ->
           if String.contains?(url, "/connections/") do
             %Tesla.Env{status: 404, body: %{}}
           else
@@ -505,7 +505,7 @@ defmodule WorkOS.SSOTest do
             end
           end
 
-        %{method: :post, url: url, body: body} ->
+        %{method: :post, url: url, body: _body} ->
           if String.contains?(url, "/sso/token") do
             %Tesla.Env{status: 404, body: %{}}
           else
@@ -524,7 +524,7 @@ defmodule WorkOS.SSOTest do
   describe "default-argument heads with no arguments" do
     test "calls list_connections/0 with no arguments for coverage" do
       Tesla.Mock.mock(fn
-        %{method: :get, url: url} = req ->
+        %{method: :get, url: url} = _req ->
           if String.contains?(url, "/connections") do
             %Tesla.Env{status: 200, body: %{"data" => [], "list_metadata" => %{}}}
           else

@@ -8,8 +8,8 @@ defmodule WorkOS.ClientTest do
   end
 
   setup do
-    client = Client.new(api_key: "sk_test", client_id: "client_123")
-    %{client: client}
+    _client = Client.new(api_key: "sk_test", client_id: "client_123")
+    %{client: _client}
   end
 
   test "struct creation and new/1" do
