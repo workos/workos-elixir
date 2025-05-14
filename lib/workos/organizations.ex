@@ -2,7 +2,34 @@ defmodule WorkOS.Organizations do
   @moduledoc """
   Manage Organizations in WorkOS.
 
-  @see https://workos.com/docs/reference/organization
+  Provides functions to list, create, update, retrieve, and delete organizations via the WorkOS API.
+
+  See the [WorkOS Organizations API Reference](https://workos.com/docs/reference/organization) for more details.
+
+  ## Example Usage
+
+  ```elixir
+  # List organizations
+  {:ok, %WorkOS.List{data: organizations}} = WorkOS.Organizations.list_organizations()
+
+  # Create an organization
+  {:ok, organization} = WorkOS.Organizations.create_organization(%{
+    name: "Test Organization",
+    domains: ["example.com"]
+  })
+
+  # Get an organization by ID
+  {:ok, organization} = WorkOS.Organizations.get_organization("org_01EHT88Z8J8795GZNQ4ZP1J81T")
+
+  # Update an organization
+  {:ok, updated_org} = WorkOS.Organizations.update_organization(
+    "org_01EHT88Z8J8795GZNQ4ZP1J81T",
+    %{name: "New Name", domains: ["newdomain.com"]}
+  )
+
+  # Delete an organization
+  {:ok, _} = WorkOS.Organizations.delete_organization("org_01EHT88Z8J8795GZNQ4ZP1J81T")
+  ```
   """
 
   alias WorkOS.Empty
@@ -82,7 +109,7 @@ defmodule WorkOS.Organizations do
 
     * `:name` - A descriptive name for the Organization. This field does not need to be unique. (required)
     * `:domains` - The domains of the Organization.
-    * `:allow_profiles_outside_organization` - Whether the Connections within this Organization should allow Profiles that do not have a domain that is present in the set of the Organization’s User Email Domains.
+    * `:allow_profiles_outside_organization` - Whether the Connections within this Organization should allow Profiles that do not have a domain that is present in the set of the Organization's User Email Domains.
     * `:idempotency_key` - A unique string as the value. Each subsequent request matching this unique string will return the same response.
 
   """
@@ -113,7 +140,7 @@ defmodule WorkOS.Organizations do
     * `:organization` - Unique identifier of the Organization. (required)
     * `:name` - A descriptive name for the Organization. This field does not need to be unique. (required)
     * `:domains` - The domains of the Organization.
-    * `:allow_profiles_outside_organization` - Whether the Connections within this Organization should allow Profiles that do not have a domain that is present in the set of the Organization’s User Email Domains.
+    * `:allow_profiles_outside_organization` - Whether the Connections within this Organization should allow Profiles that do not have a domain that is present in the set of the Organization's User Email Domains.
 
   """
   @spec update_organization(String.t(), map()) :: WorkOS.Client.response(Organization.t())
