@@ -193,6 +193,12 @@ defmodule WorkOS.UserManagementTest do
 
       refute is_nil(id)
     end
+
+    test "update_user/3 returns error when user_id is missing" do
+      assert_raise Tesla.Mock.Error, fn ->
+        WorkOS.UserManagement.update_user(nil, %{})
+      end
+    end
   end
 
   describe "delete_user" do
@@ -544,6 +550,145 @@ defmodule WorkOS.UserManagementTest do
                WorkOS.UserManagement.revoke_invitation(opts |> Keyword.get(:invitation_id))
 
       refute is_nil(id)
+    end
+  end
+
+  describe "WorkOS.UserManagement.MagicAuth.SendMagicAuthCode" do
+    test "struct creation and cast" do
+      code = %WorkOS.UserManagement.MagicAuth.SendMagicAuthCode{
+        email: "test@example.com"
+      }
+
+      assert code.email == "test@example.com"
+
+      casted =
+        WorkOS.UserManagement.MagicAuth.SendMagicAuthCode.cast(%{"email" => "test@example.com"})
+
+      assert %WorkOS.UserManagement.MagicAuth.SendMagicAuthCode{email: "test@example.com"} =
+               casted
+    end
+  end
+
+  describe "WorkOS.UserManagement.MultiFactor.AuthenticationChallenge" do
+    test "struct creation and cast" do
+      challenge = %WorkOS.UserManagement.MultiFactor.AuthenticationChallenge{
+        id: "challenge_123",
+        code: "123456",
+        authentication_factor_id: "factor_123",
+        expires_at: "2024-01-01T00:00:00Z",
+        updated_at: "2024-01-01T00:00:00Z",
+        created_at: "2024-01-01T00:00:00Z"
+      }
+
+      assert challenge.id == "challenge_123"
+      assert challenge.code == "123456"
+      assert challenge.authentication_factor_id == "factor_123"
+      assert challenge.expires_at == "2024-01-01T00:00:00Z"
+      assert challenge.updated_at == "2024-01-01T00:00:00Z"
+      assert challenge.created_at == "2024-01-01T00:00:00Z"
+
+      casted =
+        WorkOS.UserManagement.MultiFactor.AuthenticationChallenge.cast(%{
+          "id" => "challenge_123",
+          "code" => "123456",
+          "authentication_factor_id" => "factor_123",
+          "expires_at" => "2024-01-01T00:00:00Z",
+          "updated_at" => "2024-01-01T00:00:00Z",
+          "created_at" => "2024-01-01T00:00:00Z"
+        })
+
+      assert %WorkOS.UserManagement.MultiFactor.AuthenticationChallenge{
+               id: "challenge_123",
+               code: "123456"
+             } = casted
+    end
+  end
+
+  describe "WorkOS.UserManagement.MultiFactor.SMS" do
+    test "struct creation and cast" do
+      sms = %WorkOS.UserManagement.MultiFactor.SMS{phone_number: "+1234567890"}
+      assert sms.phone_number == "+1234567890"
+
+      casted = WorkOS.UserManagement.MultiFactor.SMS.cast(%{"phone_number" => "+1234567890"})
+      assert %WorkOS.UserManagement.MultiFactor.SMS{phone_number: "+1234567890"} = casted
+    end
+  end
+
+  describe "WorkOS.UserManagement.MultiFactor.TOTP" do
+    test "struct creation and cast" do
+      totp = %WorkOS.UserManagement.MultiFactor.TOTP{
+        issuer: "WorkOS",
+        user: "user@example.com",
+        secret: "secret",
+        qr_code: "qr_code",
+        uri: "otpauth://totp/WorkOS:user@example.com?secret=secret"
+      }
+
+      assert totp.issuer == "WorkOS"
+      assert totp.user == "user@example.com"
+      assert totp.secret == "secret"
+      assert totp.qr_code == "qr_code"
+      assert totp.uri == "otpauth://totp/WorkOS:user@example.com?secret=secret"
+
+      casted =
+        WorkOS.UserManagement.MultiFactor.TOTP.cast(%{
+          "issuer" => "WorkOS",
+          "user" => "user@example.com",
+          "secret" => "secret",
+          "qr_code" => "qr_code",
+          "uri" => "otpauth://totp/WorkOS:user@example.com?secret=secret"
+        })
+
+      assert %WorkOS.UserManagement.MultiFactor.TOTP{issuer: "WorkOS", user: "user@example.com"} =
+               casted
+    end
+  end
+
+  describe "WorkOS.UserManagement argument validation and error cases" do
+    test "create_user/2 returns error when :email is missing" do
+      assert_raise FunctionClauseError, fn ->
+        WorkOS.UserManagement.create_user(%{})
+      end
+    end
+
+    test "update_user/3 returns error when user_id is missing" do
+      assert_raise Tesla.Mock.Error, fn ->
+        WorkOS.UserManagement.update_user(nil, %{})
+      end
+    end
+
+    test "get_authorization_url/1 returns error when required keys are missing" do
+      assert {:error, _} = WorkOS.UserManagement.get_authorization_url(%{})
+      assert {:error, _} = WorkOS.UserManagement.get_authorization_url(%{redirect_uri: "foo"})
+    end
+
+    test "create_user/2 propagates client error" do
+      # Simulate WorkOS.Client.post returning error
+      me = self()
+      m = Module.concat([:TestClient])
+
+      defmodule m do
+        def post(_, _, _, _), do: {:error, :client_error}
+        def request(_, _), do: {:error, :client_error}
+      end
+
+      client = %WorkOS.Client{api_key: "k", client_id: "c", base_url: "u", client: m}
+
+      assert {:error, :client_error} =
+               WorkOS.UserManagement.create_user(client, %{email: "foo@bar.com"})
+    end
+
+    test "get_user/2 propagates client error" do
+      me = self()
+      m = Module.concat([:TestClient2])
+
+      defmodule m do
+        def get(_, _, _, _), do: {:error, :client_error}
+        def request(_, _), do: {:error, :client_error}
+      end
+
+      client = %WorkOS.Client{api_key: "k", client_id: "c", base_url: "u", client: m}
+      assert {:error, :client_error} = WorkOS.UserManagement.get_user(client, "user_123")
     end
   end
 end

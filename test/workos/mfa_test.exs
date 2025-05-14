@@ -91,4 +91,43 @@ defmodule WorkOS.MFATest do
       refute is_nil(id)
     end
   end
+
+  describe "WorkOS.MFA.SMS" do
+    test "struct creation and cast" do
+      sms = %WorkOS.MFA.SMS{phone_number: "+1234567890"}
+      assert sms.phone_number == "+1234567890"
+
+      casted = WorkOS.MFA.SMS.cast(%{"phone_number" => "+1234567890"})
+      assert %WorkOS.MFA.SMS{phone_number: "+1234567890"} = casted
+    end
+  end
+
+  describe "WorkOS.MFA.TOTP" do
+    test "struct creation and cast" do
+      totp = %WorkOS.MFA.TOTP{
+        issuer: "WorkOS",
+        user: "user@example.com",
+        secret: "secret",
+        qr_code: "qr_code",
+        uri: "otpauth://totp/WorkOS:user@example.com?secret=secret"
+      }
+
+      assert totp.issuer == "WorkOS"
+      assert totp.user == "user@example.com"
+      assert totp.secret == "secret"
+      assert totp.qr_code == "qr_code"
+      assert totp.uri == "otpauth://totp/WorkOS:user@example.com?secret=secret"
+
+      casted =
+        WorkOS.MFA.TOTP.cast(%{
+          "issuer" => "WorkOS",
+          "user" => "user@example.com",
+          "secret" => "secret",
+          "qr_code" => "qr_code",
+          "uri" => "otpauth://totp/WorkOS:user@example.com?secret=secret"
+        })
+
+      assert %WorkOS.MFA.TOTP{issuer: "WorkOS", user: "user@example.com"} = casted
+    end
+  end
 end
