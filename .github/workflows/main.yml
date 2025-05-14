@@ -83,6 +83,12 @@ jobs:
     - name: Run tests
       run: mix test
 
+    - name: Upload test results to Codecov
+      if: ${{ !cancelled() }}
+      uses: codecov/test-results-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+
     - name: Retrieve PLT Cache
       uses: actions/cache@v3
       if: matrix.dialyzer
