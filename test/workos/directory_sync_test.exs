@@ -2,6 +2,9 @@ defmodule WorkOS.DirectorySyncTest do
   use WorkOS.TestCase
 
   alias WorkOS.DirectorySync.ClientMock
+  alias WorkOS.DirectorySync.Directory
+  alias WorkOS.DirectorySync.Directory.Group, as: DirectoryGroup
+  alias WorkOS.DirectorySync.Directory.User, as: DirectoryUser
 
   setup :setup_env
 
@@ -299,9 +302,9 @@ defmodule WorkOS.DirectorySyncTest do
         "domain" => "foo-corp.com"
       }
 
-      struct = WorkOS.DirectorySync.Directory.cast(map)
+      struct = Directory.cast(map)
 
-      assert %WorkOS.DirectorySync.Directory{
+      assert %Directory{
                id: "directory_123",
                object: "directory",
                name: "Foo",
@@ -317,9 +320,9 @@ defmodule WorkOS.DirectorySyncTest do
         "last_name" => "Snow"
       }
 
-      struct = WorkOS.DirectorySync.Directory.User.cast(map)
+      struct = DirectoryUser.cast(map)
 
-      assert %WorkOS.DirectorySync.Directory.User{
+      assert %DirectoryUser{
                id: "user_123",
                object: "directory_user",
                first_name: "Jon",
@@ -329,9 +332,9 @@ defmodule WorkOS.DirectorySyncTest do
 
     test "Directory.Group struct creation and cast" do
       map = %{"id" => "dir_grp_123", "object" => "directory_group", "name" => "Foo Group"}
-      struct = WorkOS.DirectorySync.Directory.Group.cast(map)
+      struct = DirectoryGroup.cast(map)
 
-      assert %WorkOS.DirectorySync.Directory.Group{
+      assert %DirectoryGroup{
                id: "dir_grp_123",
                object: "directory_group",
                name: "Foo Group"

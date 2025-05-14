@@ -2,6 +2,11 @@ defmodule WorkOS.UserManagementTest do
   use WorkOS.TestCase
 
   alias WorkOS.UserManagement.ClientMock
+  alias WorkOS.UserManagement.Invitation
+  alias WorkOS.UserManagement.MagicAuth.SendMagicAuthCode
+  alias WorkOS.UserManagement.MultiFactor.AuthenticationChallenge
+  alias WorkOS.UserManagement.MultiFactor.SMS, as: MultiFactorSMS
+  alias WorkOS.UserManagement.MultiFactor.TOTP, as: MultiFactorTOTP
 
   setup :setup_env
 
@@ -495,7 +500,7 @@ defmodule WorkOS.UserManagementTest do
 
       assert {:ok,
               %WorkOS.List{
-                data: [%WorkOS.UserManagement.Invitation{}],
+                data: [%Invitation{}],
                 list_metadata: %{}
               }} = WorkOS.UserManagement.list_invitations()
     end
@@ -508,7 +513,7 @@ defmodule WorkOS.UserManagementTest do
 
       assert {:ok,
               %WorkOS.List{
-                data: [%WorkOS.UserManagement.Invitation{}],
+                data: [%Invitation{}],
                 list_metadata: %{}
               }} = WorkOS.UserManagement.list_invitations()
     end
@@ -520,7 +525,7 @@ defmodule WorkOS.UserManagementTest do
 
       context |> ClientMock.get_invitation(assert_fields: opts)
 
-      assert {:ok, %WorkOS.UserManagement.Invitation{id: id}} =
+      assert {:ok, %Invitation{id: id}} =
                WorkOS.UserManagement.get_invitation(opts |> Keyword.get(:invitation_id))
 
       refute is_nil(id)
@@ -533,7 +538,7 @@ defmodule WorkOS.UserManagementTest do
 
       context |> ClientMock.send_invitation(assert_fields: opts)
 
-      assert {:ok, %WorkOS.UserManagement.Invitation{id: id}} =
+      assert {:ok, %Invitation{id: id}} =
                WorkOS.UserManagement.send_invitation(opts |> Enum.into(%{}))
 
       refute is_nil(id)
@@ -546,32 +551,32 @@ defmodule WorkOS.UserManagementTest do
 
       context |> ClientMock.revoke_invitation(assert_fields: opts)
 
-      assert {:ok, %WorkOS.UserManagement.Invitation{id: id}} =
+      assert {:ok, %Invitation{id: id}} =
                WorkOS.UserManagement.revoke_invitation(opts |> Keyword.get(:invitation_id))
 
       refute is_nil(id)
     end
   end
 
-  describe "WorkOS.UserManagement.MagicAuth.SendMagicAuthCode" do
+  describe "SendMagicAuthCode" do
     test "struct creation and cast" do
-      code = %WorkOS.UserManagement.MagicAuth.SendMagicAuthCode{
+      code = %SendMagicAuthCode{
         email: "test@example.com"
       }
 
       assert code.email == "test@example.com"
 
       casted =
-        WorkOS.UserManagement.MagicAuth.SendMagicAuthCode.cast(%{"email" => "test@example.com"})
+        SendMagicAuthCode.cast(%{"email" => "test@example.com"})
 
-      assert %WorkOS.UserManagement.MagicAuth.SendMagicAuthCode{email: "test@example.com"} =
+      assert %SendMagicAuthCode{email: "test@example.com"} =
                casted
     end
   end
 
-  describe "WorkOS.UserManagement.MultiFactor.AuthenticationChallenge" do
+  describe "AuthenticationChallenge" do
     test "struct creation and cast" do
-      challenge = %WorkOS.UserManagement.MultiFactor.AuthenticationChallenge{
+      challenge = %AuthenticationChallenge{
         id: "challenge_123",
         code: "123456",
         authentication_factor_id: "factor_123",
@@ -588,7 +593,7 @@ defmodule WorkOS.UserManagementTest do
       assert challenge.created_at == "2024-01-01T00:00:00Z"
 
       casted =
-        WorkOS.UserManagement.MultiFactor.AuthenticationChallenge.cast(%{
+        AuthenticationChallenge.cast(%{
           "id" => "challenge_123",
           "code" => "123456",
           "authentication_factor_id" => "factor_123",
@@ -597,26 +602,26 @@ defmodule WorkOS.UserManagementTest do
           "created_at" => "2024-01-01T00:00:00Z"
         })
 
-      assert %WorkOS.UserManagement.MultiFactor.AuthenticationChallenge{
+      assert %AuthenticationChallenge{
                id: "challenge_123",
                code: "123456"
              } = casted
     end
   end
 
-  describe "WorkOS.UserManagement.MultiFactor.SMS" do
+  describe "MultiFactorSMS" do
     test "struct creation and cast" do
-      sms = %WorkOS.UserManagement.MultiFactor.SMS{phone_number: "+1234567890"}
+      sms = %MultiFactorSMS{phone_number: "+1234567890"}
       assert sms.phone_number == "+1234567890"
 
-      casted = WorkOS.UserManagement.MultiFactor.SMS.cast(%{"phone_number" => "+1234567890"})
-      assert %WorkOS.UserManagement.MultiFactor.SMS{phone_number: "+1234567890"} = casted
+      casted = MultiFactorSMS.cast(%{"phone_number" => "+1234567890"})
+      assert %MultiFactorSMS{phone_number: "+1234567890"} = casted
     end
   end
 
-  describe "WorkOS.UserManagement.MultiFactor.TOTP" do
+  describe "MultiFactorTOTP" do
     test "struct creation and cast" do
-      totp = %WorkOS.UserManagement.MultiFactor.TOTP{
+      totp = %MultiFactorTOTP{
         issuer: "WorkOS",
         user: "user@example.com",
         secret: "secret",
@@ -631,7 +636,7 @@ defmodule WorkOS.UserManagementTest do
       assert totp.uri == "otpauth://totp/WorkOS:user@example.com?secret=secret"
 
       casted =
-        WorkOS.UserManagement.MultiFactor.TOTP.cast(%{
+        MultiFactorTOTP.cast(%{
           "issuer" => "WorkOS",
           "user" => "user@example.com",
           "secret" => "secret",
@@ -639,7 +644,7 @@ defmodule WorkOS.UserManagementTest do
           "uri" => "otpauth://totp/WorkOS:user@example.com?secret=secret"
         })
 
-      assert %WorkOS.UserManagement.MultiFactor.TOTP{issuer: "WorkOS", user: "user@example.com"} =
+      assert %MultiFactorTOTP{issuer: "WorkOS", user: "user@example.com"} =
                casted
     end
   end

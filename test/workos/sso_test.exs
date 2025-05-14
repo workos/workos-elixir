@@ -2,6 +2,7 @@ defmodule WorkOS.SSOTest do
   use WorkOS.TestCase
 
   alias WorkOS.SSO.ClientMock
+  alias WorkOS.SSO.Connection.Domain
 
   setup :setup_env
 
@@ -346,9 +347,9 @@ defmodule WorkOS.SSOTest do
     end
   end
 
-  describe "WorkOS.SSO.Connection.Domain" do
+  describe "Domain" do
     test "struct creation and cast" do
-      domain = %WorkOS.SSO.Connection.Domain{
+      domain = %Domain{
         id: "domain_123",
         object: "connection_domain",
         domain: "example.com"
@@ -359,13 +360,13 @@ defmodule WorkOS.SSOTest do
       assert domain.domain == "example.com"
 
       casted =
-        WorkOS.SSO.Connection.Domain.cast(%{
+        Domain.cast(%{
           "id" => "domain_123",
           "object" => "connection_domain",
           "domain" => "example.com"
         })
 
-      assert %WorkOS.SSO.Connection.Domain{id: "domain_123", domain: "example.com"} = casted
+      assert %Domain{id: "domain_123", domain: "example.com"} = casted
     end
   end
 

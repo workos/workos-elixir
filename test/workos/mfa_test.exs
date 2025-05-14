@@ -2,6 +2,8 @@ defmodule WorkOS.MFATest do
   use WorkOS.TestCase
 
   alias WorkOS.MFA.ClientMock
+  alias WorkOS.MFA.SMS
+  alias WorkOS.MFA.TOTP
 
   setup :setup_env
 
@@ -92,19 +94,19 @@ defmodule WorkOS.MFATest do
     end
   end
 
-  describe "WorkOS.MFA.SMS" do
+  describe "SMS" do
     test "struct creation and cast" do
-      sms = %WorkOS.MFA.SMS{phone_number: "+1234567890"}
+      sms = %SMS{phone_number: "+1234567890"}
       assert sms.phone_number == "+1234567890"
 
-      casted = WorkOS.MFA.SMS.cast(%{"phone_number" => "+1234567890"})
-      assert %WorkOS.MFA.SMS{phone_number: "+1234567890"} = casted
+      casted = SMS.cast(%{"phone_number" => "+1234567890"})
+      assert %SMS{phone_number: "+1234567890"} = casted
     end
   end
 
-  describe "WorkOS.MFA.TOTP" do
+  describe "TOTP" do
     test "struct creation and cast" do
-      totp = %WorkOS.MFA.TOTP{
+      totp = %TOTP{
         issuer: "WorkOS",
         user: "user@example.com",
         secret: "secret",
@@ -119,7 +121,7 @@ defmodule WorkOS.MFATest do
       assert totp.uri == "otpauth://totp/WorkOS:user@example.com?secret=secret"
 
       casted =
-        WorkOS.MFA.TOTP.cast(%{
+        TOTP.cast(%{
           "issuer" => "WorkOS",
           "user" => "user@example.com",
           "secret" => "secret",
@@ -127,7 +129,7 @@ defmodule WorkOS.MFATest do
           "uri" => "otpauth://totp/WorkOS:user@example.com?secret=secret"
         })
 
-      assert %WorkOS.MFA.TOTP{issuer: "WorkOS", user: "user@example.com"} = casted
+      assert %TOTP{issuer: "WorkOS", user: "user@example.com"} = casted
     end
   end
 end

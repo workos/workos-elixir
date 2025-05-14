@@ -2,6 +2,7 @@ defmodule WorkOS.EventsTest do
   use WorkOS.TestCase
 
   alias WorkOS.Events.ClientMock
+  alias WorkOS.Events.Event
 
   setup :setup_env
 
@@ -16,9 +17,9 @@ defmodule WorkOS.EventsTest do
     end
   end
 
-  describe "WorkOS.Events.Event struct and cast" do
+  describe "Event struct and cast" do
     test "struct creation" do
-      event = %WorkOS.Events.Event{
+      event = %Event{
         id: "event_123",
         event: "connection.activated",
         data: %{foo: "bar"},
@@ -39,8 +40,8 @@ defmodule WorkOS.EventsTest do
         "created_at" => "2024-01-01T00:00:00Z"
       }
 
-      event = WorkOS.Events.Event.cast(map)
-      assert %WorkOS.Events.Event{} = event
+      event = Event.cast(map)
+      assert %Event{} = event
       assert event.id == "event_123"
       assert event.event == "connection.activated"
       assert event.data == %{foo: "bar"}
@@ -72,7 +73,7 @@ defmodule WorkOS.EventsTest do
         }
       end)
 
-      assert {:ok, %WorkOS.List{data: [%WorkOS.Events.Event{}], list_metadata: %{}}} =
+      assert {:ok, %WorkOS.List{data: [%Event{}], list_metadata: %{}}} =
                WorkOS.Events.list_events(client, opts)
     end
 
@@ -98,7 +99,7 @@ defmodule WorkOS.EventsTest do
         }
       end)
 
-      assert {:ok, %WorkOS.List{data: [%WorkOS.Events.Event{}], list_metadata: %{}}} =
+      assert {:ok, %WorkOS.List{data: [%Event{}], list_metadata: %{}}} =
                WorkOS.Events.list_events(opts)
     end
   end
