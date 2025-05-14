@@ -4,8 +4,6 @@
 
 [![codecov](https://codecov.io/gh/hydepwns/workos-elixir/graph/badge.svg?token=D0XH6LBE1K)](https://codecov.io/gh/hydepwns/workos-elixir)
 
-<img src="https://codecov.io/gh/hydepwns/workos-elixir/graphs/icicle.svg?token=D0XH6LBE1K" alt="Codecov Icicle Graph" width="100%"/>
-
 The WorkOS library for Elixir provides convenient access to the WorkOS API from applications written in Elixir.
 
 ## Documentation
