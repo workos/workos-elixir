@@ -2,7 +2,7 @@
 
 > **Note:** this an experimental SDK and breaking changes may occur. We don't recommend using this in production since we can't guarantee its stability.
 
-[![codecov](https://codecov.io/gh/hydepwns/workos-elixir/graph/badge.svg?token=D0XH6LBE1K)](https://codecov.io/gh/hydepwns/workos-elixir)
+[![codecov](https://codecov.io/gh/workos/workos-elixir/graph/badge.svg?token=D0XH6LBE1K)](https://codecov.io/gh/workos/workos-elixir)
 
 The WorkOS library for Elixir provides convenient access to the WorkOS API from applications written in Elixir.
 
@@ -14,7 +14,7 @@ See the [API Reference](https://workos.com/docs/reference/client-libraries) for 
 
 Add this package to the list of dependencies in your `mix.exs` file:
 
-```ex
+```elixir
 def deps do
   [{:workos, "~> 1.1.0"}]
 end
@@ -24,7 +24,7 @@ end
 
 ### Configure WorkOS API key & client ID on your app config
 
-```ex
+```elixir
 config :workos, WorkOS.Client,
       api_key: "sk_example_123456789",
       client_id: "client_123456789"
