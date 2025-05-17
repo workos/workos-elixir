@@ -2,7 +2,34 @@ defmodule WorkOS.Organizations do
   @moduledoc """
   Manage Organizations in WorkOS.
 
-  @see https://workos.com/docs/reference/organization
+  Provides functions to list, create, update, retrieve, and delete organizations via the WorkOS API.
+
+  See the [WorkOS Organizations API Reference](https://workos.com/docs/reference/organization) for more details.
+
+  ## Example Usage
+
+  ```elixir
+  # List organizations
+  {:ok, %WorkOS.List{data: organizations}} = WorkOS.Organizations.list_organizations()
+
+  # Create an organization
+  {:ok, organization} = WorkOS.Organizations.create_organization(%{
+    name: "Test Organization",
+    domains: ["example.com"]
+  })
+
+  # Get an organization by ID
+  {:ok, organization} = WorkOS.Organizations.get_organization("org_01EHT88Z8J8795GZNQ4ZP1J81T")
+
+  # Update an organization
+  {:ok, updated_org} = WorkOS.Organizations.update_organization(
+    "org_01EHT88Z8J8795GZNQ4ZP1J81T",
+    %{name: "New Name", domains: ["newdomain.com"]}
+  )
+
+  # Delete an organization
+  {:ok, _} = WorkOS.Organizations.delete_organization("org_01EHT88Z8J8795GZNQ4ZP1J81T")
+  ```
   """
 
   alias WorkOS.Empty
@@ -82,27 +109,35 @@ defmodule WorkOS.Organizations do
 
     * `:name` - A descriptive name for the Organization. This field does not need to be unique. (required)
     * `:domains` - The domains of the Organization.
-    * `:allow_profiles_outside_organization` - Whether the Connections within this Organization should allow Profiles that do not have a domain that is present in the set of the Organization’s User Email Domains.
+    * `:allow_profiles_outside_organization` - Whether the Connections within this Organization should allow Profiles that do not have a domain that is present in the set of the Organization's User Email Domains.
     * `:idempotency_key` - A unique string as the value. Each subsequent request matching this unique string will return the same response.
 
   """
-  @spec create_organization(map()) :: WorkOS.Client.response(Organization.t())
+  @spec create_organization(map()) :: WorkOS.Client.response(Organization.t()) | {:error, atom()}
   @spec create_organization(WorkOS.Client.t(), map()) ::
-          WorkOS.Client.response(Organization.t())
-  def create_organization(client \\ WorkOS.client(), opts) when is_map_key(opts, :name) do
-    WorkOS.Client.post(
-      client,
-      Organization,
-      "/organizations",
-      %{
-        name: opts[:name],
-        domains: opts[:domains],
-        allow_profiles_outside_organization: opts[:allow_profiles_outside_organization]
-      },
-      headers: [
-        {"Idempotency-Key", opts[:idempotency_key]}
-      ]
-    )
+          WorkOS.Client.response(Organization.t()) | {:error, atom()}
+  def create_organization(opts) when is_map(opts) do
+    create_organization(WorkOS.client(), opts)
+  end
+
+  def create_organization(client, opts) when is_map(opts) do
+    if Map.has_key?(opts, :name) do
+      WorkOS.Client.post(
+        client,
+        Organization,
+        "/organizations",
+        %{
+          name: opts[:name],
+          domains: opts[:domains],
+          allow_profiles_outside_organization: opts[:allow_profiles_outside_organization]
+        },
+        headers: [
+          {"Idempotency-Key", opts[:idempotency_key]}
+        ]
+      )
+    else
+      {:error, :missing_name}
+    end
   end
 
   @doc """
@@ -113,18 +148,26 @@ defmodule WorkOS.Organizations do
     * `:organization` - Unique identifier of the Organization. (required)
     * `:name` - A descriptive name for the Organization. This field does not need to be unique. (required)
     * `:domains` - The domains of the Organization.
-    * `:allow_profiles_outside_organization` - Whether the Connections within this Organization should allow Profiles that do not have a domain that is present in the set of the Organization’s User Email Domains.
+    * `:allow_profiles_outside_organization` - Whether the Connections within this Organization should allow Profiles that do not have a domain that is present in the set of the Organization's User Email Domains.
 
   """
-  @spec update_organization(String.t(), map()) :: WorkOS.Client.response(Organization.t())
+  @spec update_organization(String.t(), map()) ::
+          WorkOS.Client.response(Organization.t()) | {:error, atom()}
   @spec update_organization(WorkOS.Client.t(), String.t(), map()) ::
-          WorkOS.Client.response(Organization.t())
-  def update_organization(client \\ WorkOS.client(), organization_id, opts)
-      when is_map_key(opts, :name) do
-    WorkOS.Client.put(client, Organization, "/organizations/#{organization_id}", %{
-      name: opts[:name],
-      domains: opts[:domains],
-      allow_profiles_outside_organization: !!opts[:allow_profiles_outside_organization]
-    })
+          WorkOS.Client.response(Organization.t()) | {:error, atom()}
+  def update_organization(organization_id, opts) when is_map(opts) do
+    update_organization(WorkOS.client(), organization_id, opts)
+  end
+
+  def update_organization(client, organization_id, opts) when is_map(opts) do
+    if Map.has_key?(opts, :name) do
+      WorkOS.Client.put(client, Organization, "/organizations/#{organization_id}", %{
+        name: opts[:name],
+        domains: opts[:domains],
+        allow_profiles_outside_organization: !!opts[:allow_profiles_outside_organization]
+      })
+    else
+      {:error, :missing_name}
+    end
   end
 end

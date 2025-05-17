@@ -4,7 +4,7 @@ defmodule WorkOS.Portal.ClientMock do
   import ExUnit.Assertions, only: [assert: 1]
 
   def generate_link(context, opts \\ []) do
-    Tesla.Mock.mock(fn request ->
+    fn request ->
       %{api_key: api_key} = context
 
       assert request.method == :post
@@ -26,6 +26,6 @@ defmodule WorkOS.Portal.ClientMock do
 
       {status, body} = Keyword.get(opts, :respond_with, {200, success_body})
       %Tesla.Env{status: status, body: body}
-    end)
+    end
   end
 end

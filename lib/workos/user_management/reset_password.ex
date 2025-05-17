@@ -5,8 +5,6 @@ defmodule WorkOS.UserManagement.ResetPassword do
 
   alias WorkOS.UserManagement.User
 
-  @behaviour WorkOS.Castable
-
   @type t() :: %__MODULE__{
           user: User.t()
         }
@@ -18,10 +16,9 @@ defmodule WorkOS.UserManagement.ResetPassword do
     :user
   ]
 
-  @impl true
-  def cast(map) do
+  def cast(params) do
     %__MODULE__{
-      user: map["user"]
+      user: params["user"]
     }
   end
 end

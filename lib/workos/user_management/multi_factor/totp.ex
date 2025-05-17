@@ -29,13 +29,13 @@ defmodule WorkOS.UserManagement.MultiFactor.TOTP do
   ]
 
   @impl true
-  def cast(map) do
+  def cast(params) do
     %__MODULE__{
-      issuer: map["issuer"],
-      user: map["user"],
-      secret: map["secret"],
-      qr_code: map["qr_code"],
-      uri: map["uri"]
+      issuer: params["issuer"],
+      user: params["user"],
+      secret: params["secret"],
+      qr_code: params["qr_code"],
+      uri: params["uri"]
     }
   end
 end
