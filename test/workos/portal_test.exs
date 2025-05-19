@@ -31,6 +31,13 @@ defmodule WorkOS.PortalTest do
     end
 
     test "with a audit_logs intent, returns portal link", context do
+      Tesla.Mock.mock(fn _ ->
+        %Tesla.Env{
+          status: 200,
+          body: %{"link" => "https://id.workos.com/portal/launch?secret=secret"}
+        }
+      end)
+
       opts = [
         intent: "audit_logs",
         organization: "org_01EHQMYV6MBK39QC5PZXHY59C3"
@@ -45,6 +52,13 @@ defmodule WorkOS.PortalTest do
     end
 
     test "with a domain_verification intent, returns portal link", context do
+      Tesla.Mock.mock(fn _ ->
+        %Tesla.Env{
+          status: 200,
+          body: %{"link" => "https://id.workos.com/portal/launch?secret=secret"}
+        }
+      end)
+
       opts = [
         intent: "domain_verification",
         organization: "org_01EHQMYV6MBK39QC5PZXHY59C3"
@@ -59,6 +73,13 @@ defmodule WorkOS.PortalTest do
     end
 
     test "with a dsync intent, returns portal link", context do
+      Tesla.Mock.mock(fn _ ->
+        %Tesla.Env{
+          status: 200,
+          body: %{"link" => "https://id.workos.com/portal/launch?secret=secret"}
+        }
+      end)
+
       opts = [
         intent: "dsync",
         organization: "org_01EHQMYV6MBK39QC5PZXHY59C3"
@@ -73,6 +94,13 @@ defmodule WorkOS.PortalTest do
     end
 
     test "with a log_streams intent, returns portal link", context do
+      Tesla.Mock.mock(fn _ ->
+        %Tesla.Env{
+          status: 200,
+          body: %{"link" => "https://id.workos.com/portal/launch?secret=secret"}
+        }
+      end)
+
       opts = [
         intent: "log_streams",
         organization: "org_01EHQMYV6MBK39QC5PZXHY59C3"
@@ -87,6 +115,13 @@ defmodule WorkOS.PortalTest do
     end
 
     test "with a sso intent, returns portal link", context do
+      Tesla.Mock.mock(fn _ ->
+        %Tesla.Env{
+          status: 200,
+          body: %{"link" => "https://id.workos.com/portal/launch?secret=secret"}
+        }
+      end)
+
       opts = [
         intent: "sso",
         organization: "org_01EHQMYV6MBK39QC5PZXHY59C3"

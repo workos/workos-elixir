@@ -35,8 +35,28 @@ defmodule WorkOS.Events.ClientMock do
         "list_metadata" => %{}
       }
 
-      {status, body} = Keyword.get(opts, :respond_with, {200, success_body})
-      %Tesla.Env{status: status, body: body}
+      case Keyword.get(opts, :respond_with, {200, success_body}) do
+        {:error, reason} -> {:error, reason}
+        {status, body} -> %Tesla.Env{status: status, body: body}
+      end
     end)
+  end
+end
+
+defmodule WorkOS.Events.ClientMockTest do
+  @moduledoc false
+  use ExUnit.Case, async: true
+
+  alias WorkOS.Events.ClientMock
+
+  test "list_events/1 returns mocked response" do
+    context = %{api_key: "sk_test"}
+    assert is_function(ClientMock.list_events(context))
+  end
+
+  test "list_events/2 returns custom response" do
+    context = %{api_key: "sk_test"}
+    fun = ClientMock.list_events(context, respond_with: {201, %{foo: "bar"}})
+    assert is_function(fun)
   end
 end

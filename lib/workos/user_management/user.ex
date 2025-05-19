@@ -3,8 +3,6 @@ defmodule WorkOS.UserManagement.User do
   WorkOS User struct.
   """
 
-  @behaviour WorkOS.Castable
-
   @type t() :: %__MODULE__{
           id: String.t(),
           email: String.t(),
@@ -32,16 +30,15 @@ defmodule WorkOS.UserManagement.User do
     :created_at
   ]
 
-  @impl true
-  def cast(map) do
+  def cast(params) do
     %__MODULE__{
-      id: map["id"],
-      email: map["email"],
-      email_verified: map["email_verified"],
-      first_name: map["first_name"],
-      last_name: map["last_name"],
-      updated_at: map["updated_at"],
-      created_at: map["created_at"]
+      id: params["id"],
+      email: params["email"],
+      email_verified: params["email_verified"],
+      first_name: params["first_name"],
+      last_name: params["last_name"],
+      updated_at: params["updated_at"],
+      created_at: params["created_at"]
     }
   end
 end

@@ -28,3 +28,6 @@ workos-*.tar
 # Dialyzer 
 /plts/*.plt
 /plts/*.plt.hash
+
+# Codecov token
+.secret

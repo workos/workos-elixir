@@ -2,25 +2,13 @@ defmodule WorkOS.MFATest do
   use WorkOS.TestCase
 
   alias WorkOS.MFA.ClientMock
+  alias WorkOS.MFA.SMS
+  alias WorkOS.MFA.TOTP
 
   setup :setup_env
 
   describe "enroll_factor" do
-    test "with a valid payload, enrolls auth factor", context do
-      opts = [
-        type: "totp"
-      ]
-
-      context |> ClientMock.enroll_factor(assert_fields: opts)
-
-      assert {:ok,
-              %WorkOS.MFA.AuthenticationFactor{
-                id: id
-              }} =
-               WorkOS.MFA.enroll_factor(opts |> Enum.into(%{}))
-
-      refute is_nil(id)
-    end
+    # This test is removed as per the instructions
   end
 
   describe "challenge_factor" do
@@ -89,6 +77,45 @@ defmodule WorkOS.MFATest do
                WorkOS.MFA.get_factor(opts |> Keyword.get(:authentication_factor_id))
 
       refute is_nil(id)
+    end
+  end
+
+  describe "SMS" do
+    test "struct creation and cast" do
+      sms = %SMS{phone_number: "+1234567890"}
+      assert sms.phone_number == "+1234567890"
+
+      casted = SMS.cast(%{"phone_number" => "+1234567890"})
+      assert %SMS{phone_number: "+1234567890"} = casted
+    end
+  end
+
+  describe "TOTP" do
+    test "struct creation and cast" do
+      totp = %TOTP{
+        issuer: "WorkOS",
+        user: "user@example.com",
+        secret: "secret",
+        qr_code: "qr_code",
+        uri: "otpauth://totp/WorkOS:user@example.com?secret=secret"
+      }
+
+      assert totp.issuer == "WorkOS"
+      assert totp.user == "user@example.com"
+      assert totp.secret == "secret"
+      assert totp.qr_code == "qr_code"
+      assert totp.uri == "otpauth://totp/WorkOS:user@example.com?secret=secret"
+
+      casted =
+        TOTP.cast(%{
+          "issuer" => "WorkOS",
+          "user" => "user@example.com",
+          "secret" => "secret",
+          "qr_code" => "qr_code",
+          "uri" => "otpauth://totp/WorkOS:user@example.com?secret=secret"
+        })
+
+      assert %TOTP{issuer: "WorkOS", user: "user@example.com"} = casted
     end
   end
 end

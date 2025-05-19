@@ -28,8 +28,10 @@ defmodule WorkOS.Passwordless.ClientMock do
         "object" => "passwordless_session"
       }
 
-      {status, body} = Keyword.get(opts, :respond_with, {200, success_body})
-      %Tesla.Env{status: status, body: body}
+      case Keyword.get(opts, :respond_with, {200, success_body}) do
+        {:error, reason} -> {:error, reason}
+        {status, body} -> %Tesla.Env{status: status, body: body}
+      end
     end)
   end
 
@@ -55,8 +57,28 @@ defmodule WorkOS.Passwordless.ClientMock do
         "success" => true
       }
 
-      {status, body} = Keyword.get(opts, :respond_with, {200, success_body})
-      %Tesla.Env{status: status, body: body}
+      case Keyword.get(opts, :respond_with, {200, success_body}) do
+        {:error, reason} -> {:error, reason}
+        {status, body} -> %Tesla.Env{status: status, body: body}
+      end
     end)
+  end
+end
+
+defmodule WorkOS.Passwordless.ClientMockTest do
+  @moduledoc false
+  use ExUnit.Case, async: true
+
+  alias WorkOS.Passwordless.ClientMock
+
+  test "create_session/1 returns mocked response" do
+    context = %{api_key: "sk_test"}
+    assert is_function(ClientMock.create_session(context))
+  end
+
+  test "create_session/2 returns custom response" do
+    context = %{api_key: "sk_test"}
+    fun = ClientMock.create_session(context, respond_with: {201, %{foo: "bar"}})
+    assert is_function(fun)
   end
 end
