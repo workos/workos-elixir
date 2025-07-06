@@ -3,6 +3,9 @@ defmodule WorkOS.UserManagement.User do
   WorkOS User struct.
   """
 
+  @behaviour WorkOS.Castable
+  @behaviour WorkOS.Mappable
+
   @type t() :: %__MODULE__{
           id: String.t(),
           email: String.t(),
@@ -30,6 +33,7 @@ defmodule WorkOS.UserManagement.User do
     :created_at
   ]
 
+  @impl true
   def cast(params) do
     %__MODULE__{
       id: params["id"],
@@ -40,5 +44,10 @@ defmodule WorkOS.UserManagement.User do
       updated_at: params["updated_at"],
       created_at: params["created_at"]
     }
+  end
+
+  @impl true
+  def to_map(%__MODULE__{} = user) do
+    Map.from_struct(user)
   end
 end
