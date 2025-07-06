@@ -16,7 +16,7 @@ Add this package to the list of dependencies in your `mix.exs` file:
 
 ```elixir
 def deps do
-  [{:workos, "~> 1.1.0"}]
+  [{:workos, "~> 1.1"}]
 end
 ```
 
@@ -33,6 +33,8 @@ config :workos, WorkOS.Client,
 The only required config option is `:api_key` and `:client_id`.
 
 By default, this library uses [Tesla](https://github.com/elixir-tesla/tesla) but it can be replaced via the `:client` option, according to the `WorkOS.Client` module behavior.
+
+###
 
 ## SDK Versioning
 
