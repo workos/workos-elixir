@@ -84,3 +84,21 @@ defmodule WorkOS.AuditLogs.ClientMock do
     end)
   end
 end
+
+defmodule WorkOS.AuditLogs.ClientMockTest do
+  @moduledoc false
+  use ExUnit.Case, async: true
+
+  alias WorkOS.AuditLogs.ClientMock
+
+  test "create_event/1 returns mocked response" do
+    context = %{api_key: "sk_test"}
+    assert is_function(ClientMock.create_event(context))
+  end
+
+  test "create_event/2 returns custom response" do
+    context = %{api_key: "sk_test"}
+    fun = ClientMock.create_event(context, respond_with: {201, %{foo: "bar"}})
+    assert is_function(fun)
+  end
+end

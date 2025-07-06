@@ -85,8 +85,10 @@ defmodule WorkOS.UserManagement.ClientMock do
 
       success_body = @user_mock
 
-      {status, body} = Keyword.get(opts, :respond_with, {200, success_body})
-      %Tesla.Env{status: status, body: body}
+      case Keyword.get(opts, :respond_with, {200, success_body}) do
+        {:error, reason} -> {:error, reason}
+        {status, body} -> %Tesla.Env{status: status, body: body}
+      end
     end)
   end
 
