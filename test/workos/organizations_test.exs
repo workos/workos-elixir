@@ -58,7 +58,7 @@ defmodule WorkOS.OrganizationsTest do
   describe "create_organization" do
     test "with an idempotency key, includes an idempotency key with request", context do
       opts = [
-        domains: ["example.com"],
+        domain_data: [%{domain: "example.com", state: "pending"}],
         name: "Test Organization",
         idempotency_key: "the-idempotency-key"
       ]
@@ -72,7 +72,10 @@ defmodule WorkOS.OrganizationsTest do
     end
 
     test "with a valid payload, creates an organization", context do
-      opts = [domains: ["example.com"], name: "Test Organization"]
+      opts = [
+        domain_data: [%{domain: "example.com", state: "pending"}],
+        name: "Test Organization"
+      ]
 
       context |> ClientMock.create_organization(assert_fields: opts)
 
@@ -87,7 +90,7 @@ defmodule WorkOS.OrganizationsTest do
     test "with a valid payload, updates an organization", context do
       opts = [
         organization_id: "org_01EHT88Z8J8795GZNQ4ZP1J81T",
-        domains: ["example.com"],
+        domain_data: [%{domain: "example.com", state: "pending"}],
         name: "Test Organization 2"
       ]
 

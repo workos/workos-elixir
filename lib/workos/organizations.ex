@@ -81,7 +81,7 @@ defmodule WorkOS.Organizations do
   Parameter options:
 
     * `:name` - A descriptive name for the Organization. This field does not need to be unique. (required)
-    * `:domains` - The domains of the Organization.
+    * `:domain_data` - The domains of the Organization.
     * `:allow_profiles_outside_organization` - Whether the Connections within this Organization should allow Profiles that do not have a domain that is present in the set of the Organization’s User Email Domains.
     * `:idempotency_key` - A unique string as the value. Each subsequent request matching this unique string will return the same response.
 
@@ -96,7 +96,7 @@ defmodule WorkOS.Organizations do
       "/organizations",
       %{
         name: opts[:name],
-        domains: opts[:domains],
+        domain_data: opts[:domain_data],
         allow_profiles_outside_organization: opts[:allow_profiles_outside_organization]
       },
       headers: [
@@ -112,7 +112,7 @@ defmodule WorkOS.Organizations do
 
     * `:organization` - Unique identifier of the Organization. (required)
     * `:name` - A descriptive name for the Organization. This field does not need to be unique. (required)
-    * `:domains` - The domains of the Organization.
+    * `:domain_data` - The domains of the Organization.
     * `:allow_profiles_outside_organization` - Whether the Connections within this Organization should allow Profiles that do not have a domain that is present in the set of the Organization’s User Email Domains.
 
   """
@@ -123,7 +123,7 @@ defmodule WorkOS.Organizations do
       when is_map_key(opts, :name) do
     WorkOS.Client.put(client, Organization, "/organizations/#{organization_id}", %{
       name: opts[:name],
-      domains: opts[:domains],
+      domain_data: opts[:domain_data],
       allow_profiles_outside_organization: !!opts[:allow_profiles_outside_organization]
     })
   end
