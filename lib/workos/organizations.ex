@@ -81,7 +81,9 @@ defmodule WorkOS.Organizations do
   Parameter options:
 
     * `:name` - A descriptive name for the Organization. This field does not need to be unique. (required)
-    * `:domain_data` - The domains of the Organization.
+    * `:domain_data` - A list of maps containing domain information composed of the following:
+      * `:domain` - The domain of the Organization
+      * `:state` - The verification state of the domain. "pending" | "verified"
     * `:allow_profiles_outside_organization` - Whether the Connections within this Organization should allow Profiles that do not have a domain that is present in the set of the Organization’s User Email Domains.
     * `:idempotency_key` - A unique string as the value. Each subsequent request matching this unique string will return the same response.
 
@@ -112,7 +114,9 @@ defmodule WorkOS.Organizations do
 
     * `:organization` - Unique identifier of the Organization. (required)
     * `:name` - A descriptive name for the Organization. This field does not need to be unique. (required)
-    * `:domain_data` - The domains of the Organization.
+    * `:domain_data` - A list of maps containing domain information composed of the following:
+      * `:domain` - The domain of the Organization
+      * `:state` - The verification state of the domain. "pending" | "verified"
     * `:allow_profiles_outside_organization` - Whether the Connections within this Organization should allow Profiles that do not have a domain that is present in the set of the Organization’s User Email Domains.
 
   """
