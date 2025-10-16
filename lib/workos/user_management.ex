@@ -64,7 +64,7 @@ defmodule WorkOS.UserManagement do
       )
       |> URI.encode_query()
 
-    {:ok, "#{WorkOS.base_url()}/sso/authorize?#{query}"}
+    {:ok, "#{WorkOS.base_url()}/user_management/authorize?#{query}"}
   end
 
   def get_authorization_url(_params),
