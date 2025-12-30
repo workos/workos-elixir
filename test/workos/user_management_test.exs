@@ -173,6 +173,51 @@ defmodule WorkOS.UserManagementTest do
 
       refute is_nil(id)
     end
+
+    test "with password, creates a user", context do
+      opts = [email: "test@example.com", password: "secure-password-123"]
+
+      context |> ClientMock.create_user(assert_fields: opts)
+
+      assert {:ok, %WorkOS.UserManagement.User{id: id}} =
+               WorkOS.UserManagement.create_user(opts |> Enum.into(%{}))
+
+      refute is_nil(id)
+    end
+
+    test "with password_hash, creates a user", context do
+      opts = [
+        email: "test@example.com",
+        password_hash: "$2a$10$abc123hashedpassword",
+        password_hash_type: "bcrypt"
+      ]
+
+      context |> ClientMock.create_user(assert_fields: opts)
+
+      assert {:ok, %WorkOS.UserManagement.User{id: id}} =
+               WorkOS.UserManagement.create_user(opts |> Enum.into(%{}))
+
+      refute is_nil(id)
+    end
+
+    test "with all optional fields, creates a user", context do
+      opts = [
+        email: "test@example.com",
+        password: "secure-password-123",
+        first_name: "Test",
+        last_name: "User",
+        email_verified: true,
+        external_id: "ext_123",
+        metadata: %{"role" => "admin"}
+      ]
+
+      context |> ClientMock.create_user(assert_fields: opts)
+
+      assert {:ok, %WorkOS.UserManagement.User{id: id}} =
+               WorkOS.UserManagement.create_user(opts |> Enum.into(%{}))
+
+      refute is_nil(id)
+    end
   end
 
   describe "update_user" do
@@ -181,6 +226,64 @@ defmodule WorkOS.UserManagementTest do
         user_id: "user_01H5JQDV7R7ATEYZDEG0W5PRYS",
         first_name: "Foo test",
         last_name: "Foo test"
+      ]
+
+      context |> ClientMock.update_user(assert_fields: opts)
+
+      assert {:ok, %WorkOS.UserManagement.User{id: id}} =
+               WorkOS.UserManagement.update_user(
+                 opts |> Keyword.get(:user_id),
+                 opts |> Enum.into(%{})
+               )
+
+      refute is_nil(id)
+    end
+
+    test "with email, updates a user", context do
+      opts = [
+        user_id: "user_01H5JQDV7R7ATEYZDEG0W5PRYS",
+        email: "newemail@example.com"
+      ]
+
+      context |> ClientMock.update_user(assert_fields: opts)
+
+      assert {:ok, %WorkOS.UserManagement.User{id: id}} =
+               WorkOS.UserManagement.update_user(
+                 opts |> Keyword.get(:user_id),
+                 opts |> Enum.into(%{})
+               )
+
+      refute is_nil(id)
+    end
+
+    test "with password_hash, updates a user", context do
+      opts = [
+        user_id: "user_01H5JQDV7R7ATEYZDEG0W5PRYS",
+        password_hash: "$2a$10$abc123hashedpassword",
+        password_hash_type: "bcrypt"
+      ]
+
+      context |> ClientMock.update_user(assert_fields: opts)
+
+      assert {:ok, %WorkOS.UserManagement.User{id: id}} =
+               WorkOS.UserManagement.update_user(
+                 opts |> Keyword.get(:user_id),
+                 opts |> Enum.into(%{})
+               )
+
+      refute is_nil(id)
+    end
+
+    test "with all optional fields, updates a user", context do
+      opts = [
+        user_id: "user_01H5JQDV7R7ATEYZDEG0W5PRYS",
+        first_name: "Test",
+        last_name: "User",
+        email: "updated@example.com",
+        email_verified: true,
+        password: "new-password-123",
+        external_id: "ext_456",
+        metadata: %{"role" => "user"}
       ]
 
       context |> ClientMock.update_user(assert_fields: opts)
