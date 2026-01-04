@@ -3,8 +3,6 @@ defmodule WorkOS.MFA do
   This module is deprecated.
   """
 
-  @deprecated "MFA has been replaced by the User Management Multi-Factor API."
-
   alias WorkOS.Empty
   alias WorkOS.MFA.AuthenticationChallenge
   alias WorkOS.MFA.AuthenticationFactor
