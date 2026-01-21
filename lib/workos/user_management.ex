@@ -64,7 +64,7 @@ defmodule WorkOS.UserManagement do
       )
       |> URI.encode_query()
 
-    {:ok, "#{WorkOS.base_url()}/sso/authorize?#{query}"}
+    {:ok, "#{WorkOS.base_url()}/user_management/authorize?#{query}"}
   end
 
   def get_authorization_url(_params),
@@ -134,28 +134,37 @@ defmodule WorkOS.UserManagement do
   Parameter options:
 
     * `:email` - The email address of the user. (required)
-    * `:domains` - The password to set for the user.
+    * `:password` - The password to set for the user.
+    * `:password_hash` - The hashed password to set for the user. Mutually exclusive with `password`.
+    * `:password_hash_type` - The algorithm originally used to hash the password. Valid values are `bcrypt`, `scrypt`, `firebase-scrypt`, `ssha`, `pbkdf2`, and `argon2`.
     * `:first_name` - The user's first name.
     * `:last_name` - The user's last name.
     * `:email_verified` - Whether the user's email address was previously verified.
+    * `:external_id` - The external identifier of the user.
+    * `:metadata` - Object containing metadata key/value pairs associated with the user.
 
   """
   @spec create_user(map()) :: WorkOS.Client.response(User.t())
   @spec create_user(WorkOS.Client.t(), map()) ::
           WorkOS.Client.response(User.t())
   def create_user(client \\ WorkOS.client(), opts) when is_map_key(opts, :email) do
-    WorkOS.Client.post(
-      client,
-      User,
-      "/user_management/users",
-      %{
-        email: opts[:email],
-        domains: opts[:domains],
-        first_name: opts[:first_name],
-        last_name: opts[:last_name],
-        email_verified: opts[:email_verified]
-      }
-    )
+    body =
+      Map.take(
+        opts,
+        [
+          :email,
+          :password,
+          :password_hash,
+          :password_hash_type,
+          :first_name,
+          :last_name,
+          :email_verified,
+          :external_id,
+          :metadata
+        ]
+      )
+
+    WorkOS.Client.post(client, User, "/user_management/users", body)
   end
 
   @doc """
@@ -165,24 +174,36 @@ defmodule WorkOS.UserManagement do
 
     * `:first_name` - The user's first name.
     * `:last_name` - The user's last name.
+    * `:email` - The user's email address. Changing a user's email will set `email_verified` to false.
     * `:email_verified` - Whether the user's email address was previously verified.
     * `:password` - The password to set for the user.
-    * `:password_hash` - The hashed password to set for the user, used when migrating from another user store. Mutually exclusive with password.
-    * `:password_hash_type` - The algorithm originally used to hash the password, used when providing a password_hash. Valid values are `bcrypt`.
+    * `:password_hash` - The hashed password to set for the user. Mutually exclusive with `password`.
+    * `:password_hash_type` - The algorithm originally used to hash the password. Valid values are `bcrypt`, `scrypt`, `firebase-scrypt`, `ssha`, `pbkdf2`, and `argon2`.
+    * `:external_id` - The external identifier of the user.
+    * `:metadata` - Object containing metadata key/value pairs associated with the user.
 
   """
   @spec update_user(String.t(), map()) :: WorkOS.Client.response(User.t())
   @spec update_user(WorkOS.Client.t(), String.t(), map()) ::
           WorkOS.Client.response(User.t())
   def update_user(client \\ WorkOS.client(), user_id, opts) do
-    WorkOS.Client.put(client, User, "/user_management/users/#{user_id}", %{
-      first_name: opts[:first_name],
-      last_name: opts[:last_name],
-      email_verified: !!opts[:email_verified],
-      password: opts[:password],
-      password_hash: opts[:password_hash],
-      password_hash_type: opts[:password_hash_type]
-    })
+    body =
+      Map.take(
+        opts,
+        [
+          :first_name,
+          :last_name,
+          :email,
+          :email_verified,
+          :password,
+          :password_hash,
+          :password_hash_type,
+          :external_id,
+          :metadata
+        ]
+      )
+
+    WorkOS.Client.put(client, User, "/user_management/users/#{user_id}", body)
   end
 
   @doc """
