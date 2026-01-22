@@ -1,0 +1,68 @@
+name: Release
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  create-release:
+    name: Create GitHub Release
+    if: github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'version-bump')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Generate token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.WORKOS_BOT_APP_ID }}
+          private-key: ${{ secrets.WORKOS_BOT_PRIVATE_KEY }}
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ steps.generate-token.outputs.token }}
+
+      - name: Get version from mix.exs
+        id: get-version
+        run: |
+          VERSION=$(grep '@version "' mix.exs | sed 's/.*@version "\(.*\)"/\1/')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.get-version.outputs.version }}
+          name: v${{ steps.get-version.outputs.version }}
+          generate_release_notes: true
+          token: ${{ steps.generate-token.outputs.token }}
+
+  publish:
+    name: Publish to Hex
+    needs: create-release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Elixir and Erlang
+        uses: erlef/setup-beam@5304e04ea2b355f03681464e683d92e3b2f18451 # v1.18.2
+        with:
+          elixir-version: '1.15'
+          otp-version: '26.0'
+
+      - name: Install dependencies
+        run: mix deps.get
+
+      - name: Publish to Hex
+        run: mix hex.publish --yes
+        env:
+          HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
