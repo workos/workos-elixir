@@ -1,7 +1,7 @@
 defmodule WorkOS.MixProject do
   use Mix.Project
 
-  @version "1.1.3"
+  @version "1.1.4"
   @source_url "https://github.com/workos/workos-elixir"
 
   def project do
