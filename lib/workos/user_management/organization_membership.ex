@@ -9,6 +9,7 @@ defmodule WorkOS.UserManagement.OrganizationMembership do
           id: String.t(),
           user_id: String.t(),
           organization_id: String.t(),
+          idp_attributes: map(),
           updated_at: String.t(),
           created_at: String.t()
         }
@@ -24,6 +25,7 @@ defmodule WorkOS.UserManagement.OrganizationMembership do
     :id,
     :user_id,
     :organization_id,
+    :idp_attributes,
     :updated_at,
     :created_at
   ]
@@ -34,6 +36,7 @@ defmodule WorkOS.UserManagement.OrganizationMembership do
       id: map["id"],
       user_id: map["user_id"],
       organization_id: map["organization_id"],
+      idp_attributes: map["idp_attributes"] || %{},
       updated_at: map["updated_at"],
       created_at: map["created_at"]
     }
