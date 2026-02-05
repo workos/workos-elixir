@@ -136,6 +136,19 @@ defmodule WorkOS.UserManagementTest do
     end
   end
 
+  describe "get_user_by_external_id" do
+    test "requests a user by external_id", context do
+      opts = [external_id: "ext_user_123"]
+      context |> ClientMock.get_user_by_external_id(assert_fields: opts)
+
+      assert {:ok, %WorkOS.UserManagement.User{id: id, external_id: external_id}} =
+               WorkOS.UserManagement.get_user_by_external_id(opts |> Keyword.get(:external_id))
+
+      refute is_nil(id)
+      assert external_id == "ext_user_123"
+    end
+  end
+
   describe "list_users" do
     test "without any options, returns users and metadata", context do
       context

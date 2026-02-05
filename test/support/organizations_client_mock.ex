@@ -105,6 +105,39 @@ defmodule WorkOS.Organizations.ClientMock do
     end)
   end
 
+  def get_organization_by_external_id(context, opts \\ []) do
+    Tesla.Mock.mock(fn request ->
+      %{api_key: api_key} = context
+
+      external_id = opts |> Keyword.get(:assert_fields) |> Keyword.get(:external_id)
+      assert request.method == :get
+      assert request.url == "#{WorkOS.base_url()}/organizations/external_id/#{external_id}"
+
+      assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
+               {"Authorization", "Bearer #{api_key}"}
+
+      success_body = %{
+        "id" => "org_01EHT88Z8J8795GZNQ4ZP1J81T",
+        "object" => "organization",
+        "name" => "Test Organization",
+        "allow_profiles_outside_organization" => false,
+        "external_id" => external_id,
+        "domains" => [
+          %{
+            "domain" => "example.com",
+            "object" => "organization_domain",
+            "id" => "org_domain_01EHT88Z8WZEFWYPM6EC9BX2R8"
+          }
+        ],
+        "created_at" => "2023-07-17T20:07:20.055Z",
+        "updated_at" => "2023-07-17T20:07:20.055Z"
+      }
+
+      {status, body} = Keyword.get(opts, :respond_with, {200, success_body})
+      %Tesla.Env{status: status, body: body}
+    end)
+  end
+
   def create_organization(context, opts \\ []) do
     Tesla.Mock.mock(fn request ->
       %{api_key: api_key} = context

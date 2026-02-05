@@ -55,6 +55,19 @@ defmodule WorkOS.OrganizationsTest do
     end
   end
 
+  describe "get_organization_by_external_id" do
+    test "requests an organization by external_id", context do
+      opts = [external_id: "ext_org_123"]
+      context |> ClientMock.get_organization_by_external_id(assert_fields: opts)
+
+      assert {:ok, %WorkOS.Organizations.Organization{id: id, external_id: external_id}} =
+               WorkOS.Organizations.get_organization_by_external_id(opts |> Keyword.get(:external_id))
+
+      refute is_nil(id)
+      assert external_id == "ext_org_123"
+    end
+  end
+
   describe "create_organization" do
     test "with an idempotency key, includes an idempotency key with request", context do
       opts = [
