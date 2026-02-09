@@ -61,7 +61,10 @@ defmodule WorkOS.OrganizationsTest do
       context |> ClientMock.get_organization_by_external_id(assert_fields: opts)
 
       assert {:ok, %WorkOS.Organizations.Organization{id: id, external_id: external_id}} =
-               WorkOS.Organizations.get_organization_by_external_id(opts |> Keyword.get(:external_id))
+               WorkOS.Organizations.get_organization_by_external_id(
+                 opts
+                 |> Keyword.get(:external_id)
+               )
 
       refute is_nil(id)
       assert external_id == "ext_org_123"

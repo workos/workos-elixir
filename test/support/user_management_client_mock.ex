@@ -97,7 +97,9 @@ defmodule WorkOS.UserManagement.ClientMock do
 
       external_id = opts |> Keyword.get(:assert_fields) |> Keyword.get(:external_id)
       assert request.method == :get
-      assert request.url == "#{WorkOS.base_url()}/user_management/users/external_id/#{external_id}"
+
+      assert request.url ==
+               "#{WorkOS.base_url()}/user_management/users/external_id/#{external_id}"
 
       assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
                {"Authorization", "Bearer #{api_key}"}
