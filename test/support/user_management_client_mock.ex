@@ -11,7 +11,8 @@ defmodule WorkOS.UserManagement.ClientMock do
     "last_name" => "User",
     "created_at" => "2023-07-18T02:07:19.911Z",
     "updated_at" => "2023-07-18T02:07:19.911Z",
-    "email_verified" => true
+    "email_verified" => true,
+    "external_id" => "ext_user_123"
   }
 
   @invitation_mock %{
@@ -79,6 +80,26 @@ defmodule WorkOS.UserManagement.ClientMock do
       user_id = opts |> Keyword.get(:assert_fields) |> Keyword.get(:user_id)
       assert request.method == :get
       assert request.url == "#{WorkOS.base_url()}/user_management/users/#{user_id}"
+
+      assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
+               {"Authorization", "Bearer #{api_key}"}
+
+      success_body = @user_mock
+
+      {status, body} = Keyword.get(opts, :respond_with, {200, success_body})
+      %Tesla.Env{status: status, body: body}
+    end)
+  end
+
+  def get_user_by_external_id(context, opts \\ []) do
+    Tesla.Mock.mock(fn request ->
+      %{api_key: api_key} = context
+
+      external_id = opts |> Keyword.get(:assert_fields) |> Keyword.get(:external_id)
+      assert request.method == :get
+
+      assert request.url ==
+               "#{WorkOS.base_url()}/user_management/users/external_id/#{external_id}"
 
       assert Enum.find(request.headers, &(elem(&1, 0) == "Authorization")) ==
                {"Authorization", "Bearer #{api_key}"}

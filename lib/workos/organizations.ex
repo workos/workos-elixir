@@ -76,6 +76,20 @@ defmodule WorkOS.Organizations do
   end
 
   @doc """
+  Gets an organization by external ID.
+  """
+  @spec get_organization_by_external_id(String.t()) :: WorkOS.Client.response(Organization.t())
+  @spec get_organization_by_external_id(WorkOS.Client.t(), String.t()) ::
+          WorkOS.Client.response(Organization.t())
+  def get_organization_by_external_id(client \\ WorkOS.client(), external_id) do
+    WorkOS.Client.get(client, Organization, "/organizations/external_id/:external_id",
+      opts: [
+        path_params: [external_id: external_id]
+      ]
+    )
+  end
+
+  @doc """
   Creates an organization.
 
   Parameter options:
