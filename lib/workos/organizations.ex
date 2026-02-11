@@ -98,8 +98,9 @@ defmodule WorkOS.Organizations do
     * `:domain_data` - A list of maps containing domain information composed of the following:
       * `:domain` - The domain of the Organization
       * `:state` - The verification state of the domain. "pending" | "verified"
-    * `:allow_profiles_outside_organization` - Whether the Connections within this Organization should allow Profiles that do not have a domain that is present in the set of the Organization’s User Email Domains.
+    * `:allow_profiles_outside_organization` - Whether the Connections within this Organization should allow Profiles that do not have a domain that is present in the set of the Organization's User Email Domains.
     * `:idempotency_key` - A unique string as the value. Each subsequent request matching this unique string will return the same response.
+    * `:external_id` - A unique, external identifier for the Organization.
 
   """
   @spec create_organization(map()) :: WorkOS.Client.response(Organization.t())
@@ -113,7 +114,8 @@ defmodule WorkOS.Organizations do
       %{
         name: opts[:name],
         domain_data: opts[:domain_data],
-        allow_profiles_outside_organization: opts[:allow_profiles_outside_organization]
+        allow_profiles_outside_organization: opts[:allow_profiles_outside_organization],
+        external_id: opts[:external_id]
       },
       headers: [
         {"Idempotency-Key", opts[:idempotency_key]}
@@ -131,7 +133,8 @@ defmodule WorkOS.Organizations do
     * `:domain_data` - A list of maps containing domain information composed of the following:
       * `:domain` - The domain of the Organization
       * `:state` - The verification state of the domain. "pending" | "verified"
-    * `:allow_profiles_outside_organization` - Whether the Connections within this Organization should allow Profiles that do not have a domain that is present in the set of the Organization’s User Email Domains.
+    * `:allow_profiles_outside_organization` - Whether the Connections within this Organization should allow Profiles that do not have a domain that is present in the set of the Organization's User Email Domains.
+    * `:external_id` - A unique, external identifier for the Organization.
 
   """
   @spec update_organization(String.t(), map()) :: WorkOS.Client.response(Organization.t())
@@ -142,7 +145,8 @@ defmodule WorkOS.Organizations do
     WorkOS.Client.put(client, Organization, "/organizations/#{organization_id}", %{
       name: opts[:name],
       domain_data: opts[:domain_data],
-      allow_profiles_outside_organization: !!opts[:allow_profiles_outside_organization]
+      allow_profiles_outside_organization: !!opts[:allow_profiles_outside_organization],
+      external_id: opts[:external_id]
     })
   end
 end
