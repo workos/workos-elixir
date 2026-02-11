@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/workos/workos-elixir/compare/v1.2.0...v1.2.1) (2026-02-11)
+
+
+### Bug Fixes
+
+* add external_id support to create/update operations for Organization ([#90](https://github.com/workos/workos-elixir/issues/90)) ([d616563](https://github.com/workos/workos-elixir/commit/d6165633ba26b65e0f64082c40f871da9a0079a6))
+
 ## [1.2.0](https://github.com/workos/workos-elixir/compare/v1.1.4...v1.2.0) (2026-02-09)
 
 
