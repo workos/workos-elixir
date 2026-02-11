@@ -100,6 +100,22 @@ defmodule WorkOS.OrganizationsTest do
 
       refute is_nil(id)
     end
+
+    test "with external_id, creates an organization with external_id", context do
+      opts = [
+        domain_data: [%{"domain" => "example.com", "state" => "pending"}],
+        name: "Test Organization",
+        external_id: "ext_org_123"
+      ]
+
+      context |> ClientMock.create_organization(assert_fields: opts)
+
+      assert {:ok, %WorkOS.Organizations.Organization{id: id, external_id: external_id}} =
+               WorkOS.Organizations.create_organization(opts |> Enum.into(%{}))
+
+      refute is_nil(id)
+      assert external_id == "ext_org_123"
+    end
   end
 
   describe "update_organization" do
@@ -119,6 +135,26 @@ defmodule WorkOS.OrganizationsTest do
                )
 
       refute is_nil(id)
+    end
+
+    test "with external_id, updates an organization with external_id", context do
+      opts = [
+        organization_id: "org_01EHT88Z8J8795GZNQ4ZP1J81T",
+        domain_data: [%{"domain" => "example.com", "state" => "pending"}],
+        name: "Test Organization 2",
+        external_id: "ext_org_456"
+      ]
+
+      context |> ClientMock.update_organization(assert_fields: opts)
+
+      assert {:ok, %WorkOS.Organizations.Organization{id: id, external_id: external_id}} =
+               WorkOS.Organizations.update_organization(
+                 opts |> Keyword.get(:organization_id),
+                 opts |> Enum.into(%{})
+               )
+
+      refute is_nil(id)
+      assert external_id == "ext_org_456"
     end
   end
 end

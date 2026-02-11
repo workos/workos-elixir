@@ -162,6 +162,7 @@ defmodule WorkOS.Organizations.ClientMock do
         "object" => "organization",
         "name" => body[:name],
         "allow_profiles_outside_organization" => false,
+        "external_id" => body["external_id"],
         "domains" => [
           %{
             "domain" => "example.com",
@@ -201,6 +202,7 @@ defmodule WorkOS.Organizations.ClientMock do
         "object" => "organization",
         "name" => body[:name],
         "allow_profiles_outside_organization" => false,
+        "external_id" => body["external_id"],
         "domains" => [
           %{
             "domain" => "example.com",
