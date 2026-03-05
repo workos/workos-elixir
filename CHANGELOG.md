@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/workos/workos-elixir/compare/v1.2.1...v1.2.2) (2026-03-05)
+
+
+### Bug Fixes
+
+* update renovate rules ([#94](https://github.com/workos/workos-elixir/issues/94)) ([336847e](https://github.com/workos/workos-elixir/commit/336847e69dc5703eb903fa0178f2776808479e0e))
+
 ## [1.2.1](https://github.com/workos/workos-elixir/compare/v1.2.0...v1.2.1) (2026-02-11)
 
 
