@@ -25,7 +25,15 @@ defmodule WorkOS.Client.TeslaClient do
       {Tesla.Middleware.BaseUrl, client.base_url},
       Tesla.Middleware.PathParams,
       Tesla.Middleware.JSON,
-      {Tesla.Middleware.Headers, [{"Authorization", "Bearer #{access_token}"}]}
+      {Tesla.Middleware.Headers,
+       [
+         {"Authorization", "Bearer #{access_token}"},
+         {"User-Agent", user_agent()}
+       ]}
     ])
+  end
+
+  defp user_agent do
+    "workos-elixir/#{Application.spec(:workos, :vsn)}"
   end
 end
