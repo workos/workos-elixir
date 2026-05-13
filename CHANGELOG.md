@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.3](https://github.com/workos/workos-elixir/compare/v1.2.2...v1.2.3) (2026-05-13)
+
+
+### Bug Fixes
+
+* include custom_attributes on SSO Profile struct ([#100](https://github.com/workos/workos-elixir/issues/100)) ([9806424](https://github.com/workos/workos-elixir/commit/9806424c2d88e64bdaa5e0d5c9ab51cdc304aa13))
+
 ## [1.2.2](https://github.com/workos/workos-elixir/compare/v1.2.1...v1.2.2) (2026-05-02)
 
 
