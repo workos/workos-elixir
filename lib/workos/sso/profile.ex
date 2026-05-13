@@ -15,7 +15,8 @@ defmodule WorkOS.SSO.Profile do
           first_name: String.t() | nil,
           last_name: String.t() | nil,
           groups: [String.t()] | nil,
-          raw_attributes: %{String.t() => any()} | nil
+          raw_attributes: %{String.t() => any()} | nil,
+          custom_attributes: %{String.t() => any()} | nil
         }
 
   @enforce_keys [:id, :idp_id, :connection_id, :connection_type, :email]
@@ -29,7 +30,8 @@ defmodule WorkOS.SSO.Profile do
     :first_name,
     :last_name,
     :groups,
-    :raw_attributes
+    :raw_attributes,
+    :custom_attributes
   ]
 
   @impl true
@@ -45,7 +47,8 @@ defmodule WorkOS.SSO.Profile do
       first_name: map["first_name"],
       last_name: map["last_name"],
       groups: map["groups"],
-      raw_attributes: map["raw_attributes"]
+      raw_attributes: map["raw_attributes"],
+      custom_attributes: map["custom_attributes"]
     }
   end
 end

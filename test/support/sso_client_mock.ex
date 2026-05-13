@@ -42,6 +42,9 @@ defmodule WorkOS.SSO.ClientMock do
             "first_name" => "foo",
             "last_name" => "bar",
             "groups" => groups
+          },
+          "custom_attributes" => %{
+            "sid" => "S-1-5-21-1004336348-1177238915-682003330-512"
           }
         }
       }
@@ -74,6 +77,9 @@ defmodule WorkOS.SSO.ClientMock do
           "email" => "foo@test.com",
           "first_name" => "foo",
           "last_name" => "bar"
+        },
+        "custom_attributes" => %{
+          "sid" => "S-1-5-21-1004336348-1177238915-682003330-512"
         }
       }
 

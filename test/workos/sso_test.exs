@@ -145,6 +145,19 @@ defmodule WorkOS.SSOTest do
       refute is_nil(access_token)
       refute is_nil(profile)
     end
+
+    test "casts custom_attributes from the profile response", context do
+      opts = [code: "authorization_code"]
+
+      context |> ClientMock.get_profile_and_token(assert_fields: opts)
+
+      assert {:ok, %WorkOS.SSO.ProfileAndToken{profile: profile}} =
+               WorkOS.SSO.get_profile_and_token(opts |> Keyword.get(:code))
+
+      assert profile.custom_attributes == %{
+               "sid" => "S-1-5-21-1004336348-1177238915-682003330-512"
+             }
+    end
   end
 
   describe "get_profile" do
@@ -157,6 +170,17 @@ defmodule WorkOS.SSOTest do
                WorkOS.SSO.get_profile(opts |> Keyword.get(:access_token))
 
       refute is_nil(id)
+    end
+
+    test "casts custom_attributes from the profile response", context do
+      opts = [access_token: "access_token"]
+
+      context |> ClientMock.get_profile(assert_fields: opts)
+
+      assert {:ok, %WorkOS.SSO.Profile{custom_attributes: custom_attributes}} =
+               WorkOS.SSO.get_profile(opts |> Keyword.get(:access_token))
+
+      assert custom_attributes == %{"sid" => "S-1-5-21-1004336348-1177238915-682003330-512"}
     end
   end
 
