@@ -1,7 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
+    "github>workos/renovate-config"
   ],
   "schedule": [
     "on the 15th day of the month before 12pm"
