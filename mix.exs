@@ -67,7 +67,7 @@ defmodule WorkOS.MixProject do
     [
       {:tesla, "~> 1.4"},
       {:jason, "~> 1.4.1"},
-      {:hackney, "~> 1.9"},
+      {:hackney, "~> 1.21 or ~> 4.0 and >= 4.0.2"},
       {:plug_crypto, "~> 2.0"},
       {:ex_doc, "~> 0.23", only: :dev, runtime: false},
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
