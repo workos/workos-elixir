@@ -67,7 +67,11 @@ defmodule WorkOS.MixProject do
     [
       {:tesla, "~> 1.4"},
       {:jason, "~> 1.4.1"},
-      {:hackney, "~> 1.21 or ~> 4.0 and >= 4.0.2"},
+      # hackney is an optional Tesla adapter: the SDK never wires it up (Tesla
+      # defaults to :httpc), so consumers are free to bring their own HTTP client.
+      # When it is used it must be a patched release (>= 4.0.2 fixes the
+      # CRLF/redirect/DoS advisories; there is no 1.x backport).
+      {:hackney, "~> 1.21 or ~> 4.0 and >= 4.0.2", optional: true},
       {:plug_crypto, "~> 2.0"},
       {:ex_doc, "~> 0.23", only: :dev, runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
