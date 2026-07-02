@@ -67,7 +67,9 @@ defmodule WorkOS.MixProject do
     [
       {:tesla, "~> 1.4"},
       {:jason, "~> 1.4.1"},
-      {:hackney, "~> 1.9"},
+      # hackney is an optional Tesla adapter (the SDK never wires it up; Tesla
+      # defaults to :httpc). Require >= 4.0.2 — the 1.x line has no security backport.
+      {:hackney, ">= 4.0.2", optional: true},
       {:plug_crypto, "~> 2.0"},
       {:ex_doc, "~> 0.23", only: :dev, runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
