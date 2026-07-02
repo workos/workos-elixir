@@ -5,8 +5,6 @@ defmodule WorkOS.SSO do
   @see https://docs.workos.com/sso/overview
   """
 
-  require Logger
-
   alias WorkOS.Empty
   alias WorkOS.SSO.Connection
   alias WorkOS.SSO.Profile

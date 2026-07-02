@@ -9,7 +9,7 @@ defmodule WorkOS.MixProject do
       app: :workos,
       version: @version,
       name: "WorkOS SDK for Elixir",
-      elixir: "~> 1.11",
+      elixir: "~> 1.16",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       description: description(),
@@ -70,8 +70,8 @@ defmodule WorkOS.MixProject do
       {:hackney, "~> 1.21 or ~> 4.0 and >= 4.0.2"},
       {:plug_crypto, "~> 2.0"},
       {:ex_doc, "~> 0.23", only: :dev, runtime: false},
-      {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.0", only: [:test, :dev], runtime: false}
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.4", only: [:test, :dev], runtime: false}
     ]
   end
 

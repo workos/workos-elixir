@@ -1,0 +1,137 @@
+name: Lint
+
+on:
+  push:
+    branches:
+      - main
+      - release/**
+
+  pull_request:
+
+# Cancel superseded runs on the same ref (e.g. rapid pushes to a PR) so we
+# don't burn CI minutes on stale commits.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  MIX_ENV: test
+  # Static analysis only needs to run on a single pair — use the newest one.
+  ELIXIR_VERSION: '1.20'
+  OTP_VERSION: '28'
+
+jobs:
+  lint:
+    name: Format & Credo
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out this repository
+      uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+    - name: Set up Elixir and Erlang/OTP
+      uses: erlef/setup-beam@54075bcc5e249e4758d363f27d099f55d843f124 # v1.24.1
+      id: beam
+      with:
+        elixir-version: ${{ env.ELIXIR_VERSION }}
+        otp-version: ${{ env.OTP_VERSION }}
+
+    # See the note in main.yml: cache deps (compiled) and _build without our own
+    # app code, keyed on the exact patch versions resolved by setup-beam.
+    - name: Restore dependencies and build cache
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      id: mix-cache
+      with:
+        path: |
+          deps
+          _build
+        key: ${{ runner.os }}-otp-${{ steps.beam.outputs.otp-version }}-elixir-${{ steps.beam.outputs.elixir-version }}-mix-${{ env.MIX_ENV }}-${{ hashFiles('**/mix.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-otp-${{ steps.beam.outputs.otp-version }}-elixir-${{ steps.beam.outputs.elixir-version }}-mix-${{ env.MIX_ENV }}-
+
+    - name: Install and compile dependencies
+      if: steps.mix-cache.outputs.cache-hit != 'true'
+      run: |
+        mix deps.get
+        mix deps.compile
+
+    - name: Save dependencies and build cache
+      uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      if: steps.mix-cache.outputs.cache-hit != 'true'
+      with:
+        path: |
+          deps
+          _build
+        key: ${{ steps.mix-cache.outputs.cache-primary-key }}
+
+    - name: Check for unused dependencies
+      run: mix deps.unlock --check-unused
+
+    - name: Check formatting
+      run: mix format --check-formatted
+
+    - name: Compile with warnings as errors
+      run: mix compile --warnings-as-errors
+
+    - name: Run Credo
+      run: mix credo --strict -a
+
+  dialyzer:
+    name: Dialyzer
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out this repository
+      uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+    - name: Set up Elixir and Erlang/OTP
+      uses: erlef/setup-beam@54075bcc5e249e4758d363f27d099f55d843f124 # v1.24.1
+      id: beam
+      with:
+        elixir-version: ${{ env.ELIXIR_VERSION }}
+        otp-version: ${{ env.OTP_VERSION }}
+
+    - name: Restore dependencies and build cache
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      id: mix-cache
+      with:
+        path: |
+          deps
+          _build
+        key: ${{ runner.os }}-otp-${{ steps.beam.outputs.otp-version }}-elixir-${{ steps.beam.outputs.elixir-version }}-mix-${{ env.MIX_ENV }}-${{ hashFiles('**/mix.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-otp-${{ steps.beam.outputs.otp-version }}-elixir-${{ steps.beam.outputs.elixir-version }}-mix-${{ env.MIX_ENV }}-
+
+    - name: Install and compile dependencies
+      if: steps.mix-cache.outputs.cache-hit != 'true'
+      run: |
+        mix deps.get
+        mix deps.compile
+
+    - name: Save dependencies and build cache
+      uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      if: steps.mix-cache.outputs.cache-hit != 'true'
+      with:
+        path: |
+          deps
+          _build
+        key: ${{ steps.mix-cache.outputs.cache-primary-key }}
+
+    # PLTs are expensive to build, so they get their own cache keyed on the
+    # OTP/Elixir patch versions and mix.lock. actions/cache (not the
+    # restore/save split) auto-saves the PLTs in a post-job step.
+    - name: Restore PLT cache
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      id: plt-cache
+      with:
+        path: plts
+        key: ${{ runner.os }}-otp-${{ steps.beam.outputs.otp-version }}-elixir-${{ steps.beam.outputs.elixir-version }}-plts-${{ hashFiles('**/mix.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-otp-${{ steps.beam.outputs.otp-version }}-elixir-${{ steps.beam.outputs.elixir-version }}-plts-
+
+    - name: Create PLTs
+      if: steps.plt-cache.outputs.cache-hit != 'true'
+      run: |
+        mkdir -p plts
+        mix dialyzer --plt
+
+    - name: Run Dialyzer
+      run: mix dialyzer --no-check --halt-exit-status
