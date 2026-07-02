@@ -37,12 +37,12 @@ jobs:
         #   1.18   | 25 - 27
         #   1.19   | 26 - 28
         #   1.20   | 27 - 29
+        #
+        # Static analysis (formatting, Credo, Dialyzer) runs separately in
+        # lint.yml on the newest pair.
         include:
-          # Newest supported pair
           - elixir: '1.20'
             otp: '28'
-            lint: true
-            dialyzer: true
 
           - elixir: '1.19'
             otp: '28'
@@ -101,46 +101,5 @@ jobs:
           _build
         key: ${{ steps.mix-cache.outputs.cache-primary-key }}
 
-    - name: Check for unused dependencies
-      if: matrix.lint
-      run: mix deps.unlock --check-unused
-
-    - name: Check formatting
-      if: matrix.lint
-      run: mix format --check-formatted
-
-    - name: Compile with warnings as errors
-      if: matrix.lint
-      run: mix compile --warnings-as-errors
-
-    - name: Check linter
-      if: matrix.lint
-      run: mix credo --strict -a
-
     - name: Run tests
       run: mix test
-
-    # --- Dialyzer (only on the newest pair) ---
-    #
-    # PLTs are expensive to build, so they get their own cache keyed on the
-    # OTP/Elixir patch versions and mix.lock. actions/cache (not the
-    # restore/save split) auto-saves the PLTs in a post-job step.
-    - name: Restore PLT cache
-      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-      if: matrix.dialyzer
-      id: plt-cache
-      with:
-        path: plts
-        key: ${{ runner.os }}-otp-${{ steps.beam.outputs.otp-version }}-elixir-${{ steps.beam.outputs.elixir-version }}-plts-${{ hashFiles('**/mix.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-otp-${{ steps.beam.outputs.otp-version }}-elixir-${{ steps.beam.outputs.elixir-version }}-plts-
-
-    - name: Create PLTs
-      if: steps.plt-cache.outputs.cache-hit != 'true' && matrix.dialyzer
-      run: |
-        mkdir -p plts
-        mix dialyzer --plt
-
-    - name: Run Dialyzer
-      if: matrix.dialyzer
-      run: mix dialyzer --no-check --halt-exit-status
