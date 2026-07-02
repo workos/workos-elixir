@@ -1,7 +1,7 @@
 defmodule WorkOS.MixProject do
   use Mix.Project
 
-  @version "1.1.4"
+  @version "2.0.0"
   @source_url "https://github.com/workos/workos-elixir"
 
   def project do
@@ -9,7 +9,7 @@ defmodule WorkOS.MixProject do
       app: :workos,
       version: @version,
       name: "WorkOS SDK for Elixir",
-      elixir: "~> 1.11",
+      elixir: "~> 1.16",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       description: description(),
@@ -67,11 +67,13 @@ defmodule WorkOS.MixProject do
     [
       {:tesla, "~> 1.4"},
       {:jason, "~> 1.4.1"},
-      {:hackney, "~> 1.9"},
+      # hackney is an optional Tesla adapter (the SDK never wires it up; Tesla
+      # defaults to :httpc). Require >= 4.0.2 — the 1.x line has no security backport.
+      {:hackney, ">= 4.0.2", optional: true},
       {:plug_crypto, "~> 2.0"},
       {:ex_doc, "~> 0.23", only: :dev, runtime: false},
-      {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.0", only: [:test, :dev], runtime: false}
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.4", only: [:test, :dev], runtime: false}
     ]
   end
 

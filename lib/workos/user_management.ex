@@ -86,6 +86,19 @@ defmodule WorkOS.UserManagement do
   end
 
   @doc """
+  Gets a user by external ID.
+  """
+  @spec get_user_by_external_id(String.t()) :: WorkOS.Client.response(User.t())
+  @spec get_user_by_external_id(WorkOS.Client.t(), String.t()) :: WorkOS.Client.response(User.t())
+  def get_user_by_external_id(client \\ WorkOS.client(), external_id) do
+    WorkOS.Client.get(client, User, "/user_management/users/external_id/:external_id",
+      opts: [
+        path_params: [external_id: external_id]
+      ]
+    )
+  end
+
+  @doc """
   Lists all users.
 
   Parameter options:

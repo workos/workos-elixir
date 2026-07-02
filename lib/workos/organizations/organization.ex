@@ -13,6 +13,7 @@ defmodule WorkOS.Organizations.Organization do
           object: String.t(),
           name: String.t(),
           allow_profiles_outside_organization: boolean(),
+          external_id: String.t() | nil,
           domains: list(Domain.t()) | nil,
           updated_at: String.t(),
           created_at: String.t()
@@ -32,6 +33,7 @@ defmodule WorkOS.Organizations.Organization do
     :object,
     :name,
     :allow_profiles_outside_organization,
+    :external_id,
     :domains,
     :updated_at,
     :created_at
@@ -45,6 +47,7 @@ defmodule WorkOS.Organizations.Organization do
       name: map["name"],
       domains: Castable.cast_list(Domain, map["domains"]),
       allow_profiles_outside_organization: map["allow_profiles_outside_organization"],
+      external_id: map["external_id"],
       updated_at: map["updated_at"],
       created_at: map["created_at"]
     }

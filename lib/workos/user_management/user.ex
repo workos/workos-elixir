@@ -11,6 +11,7 @@ defmodule WorkOS.UserManagement.User do
           email_verified: boolean(),
           first_name: String.t() | nil,
           last_name: String.t() | nil,
+          external_id: String.t() | nil,
           updated_at: String.t(),
           created_at: String.t()
         }
@@ -28,6 +29,7 @@ defmodule WorkOS.UserManagement.User do
     :email_verified,
     :first_name,
     :last_name,
+    :external_id,
     :updated_at,
     :created_at
   ]
@@ -40,6 +42,7 @@ defmodule WorkOS.UserManagement.User do
       email_verified: map["email_verified"],
       first_name: map["first_name"],
       last_name: map["last_name"],
+      external_id: map["external_id"],
       updated_at: map["updated_at"],
       created_at: map["created_at"]
     }
