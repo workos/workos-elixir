@@ -70,8 +70,8 @@ defmodule WorkOS.MixProject do
       {:hackney, "~> 1.9"},
       {:plug_crypto, "~> 2.0"},
       {:ex_doc, "~> 0.23", only: :dev, runtime: false},
-      {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.0", only: [:test, :dev], runtime: false}
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.4", only: [:test, :dev], runtime: false}
     ]
   end
 
