@@ -34,6 +34,7 @@ defmodule WorkOS.UserManagement.ClientMock do
     "id" => "om_01H5JQDV7R7ATEYZDEG0W5PRYS",
     "user_id" => "user_01H5JQDV7R7ATEYZDEG0W5PRYS",
     "organization_id" => "organization_01H5JQDV7R7ATEYZDEG0W5PRYS",
+    "custom_attributes" => %{"department" => "Engineering"},
     "created_at" => "2023-07-18T02:07:19.911Z",
     "updated_at" => "2023-07-18T02:07:19.911Z"
   }

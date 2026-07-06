@@ -532,13 +532,18 @@ defmodule WorkOS.UserManagementTest do
 
       context |> ClientMock.get_organization_membership(assert_fields: opts)
 
-      assert {:ok, %WorkOS.UserManagement.OrganizationMembership{id: id}} =
+      assert {:ok,
+              %WorkOS.UserManagement.OrganizationMembership{
+                id: id,
+                custom_attributes: custom_attributes
+              }} =
                WorkOS.UserManagement.get_organization_membership(
                  opts
                  |> Keyword.get(:organization_membership_id)
                )
 
       refute is_nil(id)
+      assert custom_attributes == %{"department" => "Engineering"}
     end
   end
 
