@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/workos/workos-elixir/compare/v2.0.0...v2.1.0) (2026-07-08)
+
+
+### Features
+
+* Add custom_attributes field to OrganizationMembership ([#82](https://github.com/workos/workos-elixir/issues/82)) ([3af9d66](https://github.com/workos/workos-elixir/commit/3af9d66649ec542d933b3304f7f3b3e43d416edb))
+
 ## [2.0.0](https://github.com/workos/workos-elixir/compare/v1.2.3...v2.0.0) (2026-07-02)
 
 
