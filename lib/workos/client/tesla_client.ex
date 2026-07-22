@@ -21,7 +21,7 @@ defmodule WorkOS.Client.TeslaClient do
   @spec new(WorkOS.Client.t(), String.t()) :: Tesla.Client.t()
   def new(client, access_token) do
     Tesla.client([
-      Tesla.Middleware.Logger,
+      {Tesla.Middleware.Logger, filter_headers: ["authorization"], debug: false},
       {Tesla.Middleware.BaseUrl, client.base_url},
       Tesla.Middleware.PathParams,
       Tesla.Middleware.JSON,
