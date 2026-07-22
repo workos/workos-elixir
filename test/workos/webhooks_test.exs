@@ -12,62 +12,62 @@ defmodule WorkOS.WebhooksTest do
   @signature_hash :crypto.mac(:hmac, :sha256, @secret, @unhashed_string)
                   |> Base.encode16(case: :lower)
   @expectated_data_map %{
-    id: "directory_user_01FAEAJCR3ZBZ30D8BD1924TVG",
-    state: "active",
-    emails: [
+    "id" => "directory_user_01FAEAJCR3ZBZ30D8BD1924TVG",
+    "state" => "active",
+    "emails" => [
       %{
-        type: "work",
-        value: "blair@foo-corp.com",
-        primary: true
+        "type" => "work",
+        "value" => "blair@foo-corp.com",
+        "primary" => true
       }
     ],
-    idp_id: "00u1e8mutl6wlH3lL4x7",
-    object: "directory_user",
-    username: "blair@foo-corp.com",
-    last_name: "Lunchford",
-    first_name: "Blair",
-    job_title: "Software Engineer",
-    directory_id: "directory_01F9M7F68PZP8QXP8G7X5QRHS7",
-    raw_attributes: %{
-      name: %{
-        givenName: "Blair",
-        familyName: "Lunchford",
-        middleName: "Elizabeth",
-        honorificPrefix: "Ms."
+    "idp_id" => "00u1e8mutl6wlH3lL4x7",
+    "object" => "directory_user",
+    "username" => "blair@foo-corp.com",
+    "last_name" => "Lunchford",
+    "first_name" => "Blair",
+    "job_title" => "Software Engineer",
+    "directory_id" => "directory_01F9M7F68PZP8QXP8G7X5QRHS7",
+    "raw_attributes" => %{
+      "name" => %{
+        "givenName" => "Blair",
+        "familyName" => "Lunchford",
+        "middleName" => "Elizabeth",
+        "honorificPrefix" => "Ms."
       },
-      title: "Software Engineer",
-      active: true,
-      emails: [
+      "title" => "Software Engineer",
+      "active" => true,
+      "emails" => [
         %{
-          type: "work",
-          value: "blair@foo-corp.com",
-          primary: true
+          "type" => "work",
+          "value" => "blair@foo-corp.com",
+          "primary" => true
         }
       ],
-      groups: [],
-      locale: "en-US",
-      schemas: [
+      "groups" => [],
+      "locale" => "en-US",
+      "schemas" => [
         "urn:ietf:params:scim:schemas:core:2.0:User",
         "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User"
       ],
-      userName: "blair@foo-corp.com",
-      addresses: [
+      "userName" => "blair@foo-corp.com",
+      "addresses" => [
         %{
-          region: "CA",
-          primary: true,
-          locality: "San Francisco",
-          postalCode: "94016"
+          "region" => "CA",
+          "primary" => true,
+          "locality" => "San Francisco",
+          "postalCode" => "94016"
         }
       ],
-      externalId: "00u1e8mutl6wlH3lL4x7",
-      displayName: "Blair Lunchford",
-      "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User": %{
-        manager: %{
-          value: "2",
-          displayName: "Kate Chapman"
+      "externalId" => "00u1e8mutl6wlH3lL4x7",
+      "displayName" => "Blair Lunchford",
+      "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User" => %{
+        "manager" => %{
+          "value" => "2",
+          "displayName" => "Kate Chapman"
         },
-        division: "Engineering",
-        department: "Customer Success"
+        "division" => "Engineering",
+        "department" => "Customer Success"
       }
     }
   }
@@ -96,6 +96,36 @@ defmodule WorkOS.WebhooksTest do
       assert webhook.data == @expectated_data_map
       assert webhook.event == "dsync.user.created"
       assert webhook.id == "wh_123"
+    end
+
+    test "does not intern payload keys as atoms (atom-table exhaustion guard)" do
+      before = :erlang.system_info(:atom_count)
+
+      for batch <- 1..25 do
+        keys = for i <- 1..1_000, into: %{}, do: {"attr_#{batch}_#{i}", "x"}
+
+        payload =
+          Jason.encode!(%{
+            "id" => "wh_#{batch}",
+            "event" => "dsync.user.updated",
+            "data" => %{"raw_attributes" => keys}
+          })
+
+        timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+
+        signature_hash =
+          :crypto.mac(:hmac, :sha256, @secret, "#{timestamp}.#{payload}")
+          |> Base.encode16(case: :lower)
+
+        {:ok, event} =
+          Webhooks.construct_event(payload, "t=#{timestamp}, v1=#{signature_hash}", @secret)
+
+        assert is_map(event.data["raw_attributes"])
+      end
+
+      # 25 events x 1000 unique keys = 25000 keys. Before the fix each unique key
+      # was interned as a permanent atom; here the count must stay effectively flat.
+      assert :erlang.system_info(:atom_count) - before < 1_000
     end
   end
 
