@@ -67,6 +67,9 @@ defmodule WorkOS.MixProject do
     [
       {:tesla, "~> 1.4"},
       {:jason, "~> 1.4.1"},
+      # CA trust store fallback for OTP < 25, which lacks
+      # `:public_key.cacerts_get/0` (used to verify TLS by default).
+      {:certifi, "~> 2.9"},
       # hackney is an optional Tesla adapter (the SDK never wires it up; Tesla
       # defaults to :httpc). Require >= 4.0.2 — the 1.x line has no security backport.
       {:hackney, ">= 4.0.2", optional: true},

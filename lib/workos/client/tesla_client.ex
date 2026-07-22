@@ -51,12 +51,22 @@ defmodule WorkOS.Client.TeslaClient do
   defp ssl_options do
     [
       verify: :verify_peer,
-      cacerts: :public_key.cacerts_get(),
-      depth: 3,
+      cacerts: ca_certificates(),
       customize_hostname_check: [
         match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
       ]
     ]
+  end
+
+  # OTP 25+ exposes the OS trust store via `:public_key.cacerts_get/0`. Older
+  # runtimes (OTP 24 is still permitted by `elixir ~> 1.16`) fall back to the
+  # bundled certifi CA store.
+  defp ca_certificates do
+    if function_exported?(:public_key, :cacerts_get, 0) do
+      :public_key.cacerts_get()
+    else
+      :certifi.cacerts()
+    end
   end
 
   defp user_agent do
