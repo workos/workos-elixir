@@ -50,6 +50,352 @@ defmodule WorkOS.UserManagement do
   end
 
   @doc """
+  Authenticate with password
+
+  Authenticate
+
+  Authenticate a user with a specified [authentication method](https://workos.com/docs/reference/authkit/authentication).
+
+  Sets `grant_type` (`"password"`) automatically.
+
+  Reads `client_id`/`client_secret` from the client configuration unless passed explicitly.
+
+  ## Parameters
+
+    * `params` — request body map. Required: `:email`, `:password`. Optional: `:invitation_token`, `:ip_address`, `:device_id`, `:user_agent`, `:signals_id`, `:radar_auth_attempt_id`.
+    * `opts` — per-request options (see `WorkOS.Client.request/5`)
+  """
+  @spec authenticate_with_password(WorkOS.Client.t(), map(), keyword()) ::
+          {:ok, WorkOS.AuthenticateResponse.t()} | {:error, WorkOS.Error.error()}
+  def authenticate_with_password(client, params \\ %{}, opts \\ []) do
+    params =
+      params
+      |> WorkOS.Client.merge_defaults(%{"grant_type" => "password"})
+      |> WorkOS.Client.put_inferred("client_id", client.client_id)
+      |> WorkOS.Client.put_inferred("client_secret", client.api_key)
+
+    with {:ok, body} <-
+           WorkOS.Client.request(client, :post, "/user_management/authenticate", params, opts) do
+      {:ok, WorkOS.Cast.nested(body, &WorkOS.AuthenticateResponse.from_map/1)}
+    end
+  end
+
+  @doc """
+  Authenticate with code
+
+  Authenticate
+
+  Authenticate a user with a specified [authentication method](https://workos.com/docs/reference/authkit/authentication).
+
+  Sets `grant_type` (`"authorization_code"`) automatically.
+
+  Reads `client_id`/`client_secret` from the client configuration unless passed explicitly.
+
+  ## Parameters
+
+    * `params` — request body map. Required: `:code`. Optional: `:code_verifier`, `:invitation_token`, `:ip_address`, `:device_id`, `:user_agent`, `:signals_id`.
+    * `opts` — per-request options (see `WorkOS.Client.request/5`)
+  """
+  @spec authenticate_with_code(WorkOS.Client.t(), map(), keyword()) ::
+          {:ok, WorkOS.AuthenticateResponse.t()} | {:error, WorkOS.Error.error()}
+  def authenticate_with_code(client, params \\ %{}, opts \\ []) do
+    params =
+      params
+      |> WorkOS.Client.merge_defaults(%{"grant_type" => "authorization_code"})
+      |> WorkOS.Client.put_inferred("client_id", client.client_id)
+      |> WorkOS.Client.put_inferred("client_secret", client.api_key)
+
+    with {:ok, body} <-
+           WorkOS.Client.request(client, :post, "/user_management/authenticate", params, opts) do
+      {:ok, WorkOS.Cast.nested(body, &WorkOS.AuthenticateResponse.from_map/1)}
+    end
+  end
+
+  @doc """
+  Authenticate with refresh token
+
+  Authenticate
+
+  Authenticate a user with a specified [authentication method](https://workos.com/docs/reference/authkit/authentication).
+
+  Sets `grant_type` (`"refresh_token"`) automatically.
+
+  Reads `client_id`/`client_secret` from the client configuration unless passed explicitly.
+
+  ## Parameters
+
+    * `params` — request body map. Required: `:refresh_token`. Optional: `:organization_id`, `:ip_address`, `:device_id`, `:user_agent`.
+    * `opts` — per-request options (see `WorkOS.Client.request/5`)
+  """
+  @spec authenticate_with_refresh_token(WorkOS.Client.t(), map(), keyword()) ::
+          {:ok, WorkOS.AuthenticateResponse.t()} | {:error, WorkOS.Error.error()}
+  def authenticate_with_refresh_token(client, params \\ %{}, opts \\ []) do
+    params =
+      params
+      |> WorkOS.Client.merge_defaults(%{"grant_type" => "refresh_token"})
+      |> WorkOS.Client.put_inferred("client_id", client.client_id)
+      |> WorkOS.Client.put_inferred("client_secret", client.api_key)
+
+    with {:ok, body} <-
+           WorkOS.Client.request(client, :post, "/user_management/authenticate", params, opts) do
+      {:ok, WorkOS.Cast.nested(body, &WorkOS.AuthenticateResponse.from_map/1)}
+    end
+  end
+
+  @doc """
+  Authenticate with magic auth
+
+  Authenticate
+
+  Authenticate a user with a specified [authentication method](https://workos.com/docs/reference/authkit/authentication).
+
+  Sets `grant_type` (`"urn:workos:oauth:grant-type:magic-auth:code"`) automatically.
+
+  Reads `client_id`/`client_secret` from the client configuration unless passed explicitly.
+
+  ## Parameters
+
+    * `params` — request body map. Required: `:code`, `:email`. Optional: `:invitation_token`, `:ip_address`, `:device_id`, `:user_agent`, `:radar_auth_attempt_id`.
+    * `opts` — per-request options (see `WorkOS.Client.request/5`)
+  """
+  @spec authenticate_with_magic_auth(WorkOS.Client.t(), map(), keyword()) ::
+          {:ok, WorkOS.AuthenticateResponse.t()} | {:error, WorkOS.Error.error()}
+  def authenticate_with_magic_auth(client, params \\ %{}, opts \\ []) do
+    params =
+      params
+      |> WorkOS.Client.merge_defaults(%{
+        "grant_type" => "urn:workos:oauth:grant-type:magic-auth:code"
+      })
+      |> WorkOS.Client.put_inferred("client_id", client.client_id)
+      |> WorkOS.Client.put_inferred("client_secret", client.api_key)
+
+    with {:ok, body} <-
+           WorkOS.Client.request(client, :post, "/user_management/authenticate", params, opts) do
+      {:ok, WorkOS.Cast.nested(body, &WorkOS.AuthenticateResponse.from_map/1)}
+    end
+  end
+
+  @doc """
+  Authenticate with email verification
+
+  Authenticate
+
+  Authenticate a user with a specified [authentication method](https://workos.com/docs/reference/authkit/authentication).
+
+  Sets `grant_type` (`"urn:workos:oauth:grant-type:email-verification:code"`) automatically.
+
+  Reads `client_id`/`client_secret` from the client configuration unless passed explicitly.
+
+  ## Parameters
+
+    * `params` — request body map. Required: `:code`, `:pending_authentication_token`. Optional: `:ip_address`, `:device_id`, `:user_agent`.
+    * `opts` — per-request options (see `WorkOS.Client.request/5`)
+  """
+  @spec authenticate_with_email_verification(WorkOS.Client.t(), map(), keyword()) ::
+          {:ok, WorkOS.AuthenticateResponse.t()} | {:error, WorkOS.Error.error()}
+  def authenticate_with_email_verification(client, params \\ %{}, opts \\ []) do
+    params =
+      params
+      |> WorkOS.Client.merge_defaults(%{
+        "grant_type" => "urn:workos:oauth:grant-type:email-verification:code"
+      })
+      |> WorkOS.Client.put_inferred("client_id", client.client_id)
+      |> WorkOS.Client.put_inferred("client_secret", client.api_key)
+
+    with {:ok, body} <-
+           WorkOS.Client.request(client, :post, "/user_management/authenticate", params, opts) do
+      {:ok, WorkOS.Cast.nested(body, &WorkOS.AuthenticateResponse.from_map/1)}
+    end
+  end
+
+  @doc """
+  Authenticate with totp
+
+  Authenticate
+
+  Authenticate a user with a specified [authentication method](https://workos.com/docs/reference/authkit/authentication).
+
+  Sets `grant_type` (`"urn:workos:oauth:grant-type:mfa-totp"`) automatically.
+
+  Reads `client_id`/`client_secret` from the client configuration unless passed explicitly.
+
+  ## Parameters
+
+    * `params` — request body map. Required: `:code`, `:pending_authentication_token`, `:authentication_challenge_id`. Optional: `:ip_address`, `:device_id`, `:user_agent`.
+    * `opts` — per-request options (see `WorkOS.Client.request/5`)
+  """
+  @spec authenticate_with_totp(WorkOS.Client.t(), map(), keyword()) ::
+          {:ok, WorkOS.AuthenticateResponse.t()} | {:error, WorkOS.Error.error()}
+  def authenticate_with_totp(client, params \\ %{}, opts \\ []) do
+    params =
+      params
+      |> WorkOS.Client.merge_defaults(%{"grant_type" => "urn:workos:oauth:grant-type:mfa-totp"})
+      |> WorkOS.Client.put_inferred("client_id", client.client_id)
+      |> WorkOS.Client.put_inferred("client_secret", client.api_key)
+
+    with {:ok, body} <-
+           WorkOS.Client.request(client, :post, "/user_management/authenticate", params, opts) do
+      {:ok, WorkOS.Cast.nested(body, &WorkOS.AuthenticateResponse.from_map/1)}
+    end
+  end
+
+  @doc """
+  Authenticate with organization selection
+
+  Authenticate
+
+  Authenticate a user with a specified [authentication method](https://workos.com/docs/reference/authkit/authentication).
+
+  Sets `grant_type` (`"urn:workos:oauth:grant-type:organization-selection"`) automatically.
+
+  Reads `client_id`/`client_secret` from the client configuration unless passed explicitly.
+
+  ## Parameters
+
+    * `params` — request body map. Required: `:pending_authentication_token`, `:organization_id`. Optional: `:ip_address`, `:device_id`, `:user_agent`.
+    * `opts` — per-request options (see `WorkOS.Client.request/5`)
+  """
+  @spec authenticate_with_organization_selection(WorkOS.Client.t(), map(), keyword()) ::
+          {:ok, WorkOS.AuthenticateResponse.t()} | {:error, WorkOS.Error.error()}
+  def authenticate_with_organization_selection(client, params \\ %{}, opts \\ []) do
+    params =
+      params
+      |> WorkOS.Client.merge_defaults(%{
+        "grant_type" => "urn:workos:oauth:grant-type:organization-selection"
+      })
+      |> WorkOS.Client.put_inferred("client_id", client.client_id)
+      |> WorkOS.Client.put_inferred("client_secret", client.api_key)
+
+    with {:ok, body} <-
+           WorkOS.Client.request(client, :post, "/user_management/authenticate", params, opts) do
+      {:ok, WorkOS.Cast.nested(body, &WorkOS.AuthenticateResponse.from_map/1)}
+    end
+  end
+
+  @doc """
+  Authenticate with device code
+
+  Authenticate
+
+  Authenticate a user with a specified [authentication method](https://workos.com/docs/reference/authkit/authentication).
+
+  Sets `grant_type` (`"urn:ietf:params:oauth:grant-type:device_code"`) automatically.
+
+  Reads `client_id` from the client configuration unless passed explicitly.
+
+  ## Parameters
+
+    * `params` — request body map. Required: `:device_code`. Optional: `:ip_address`, `:device_id`, `:user_agent`.
+    * `opts` — per-request options (see `WorkOS.Client.request/5`)
+  """
+  @spec authenticate_with_device_code(WorkOS.Client.t(), map(), keyword()) ::
+          {:ok, WorkOS.AuthenticateResponse.t()} | {:error, WorkOS.Error.error()}
+  def authenticate_with_device_code(client, params \\ %{}, opts \\ []) do
+    params =
+      params
+      |> WorkOS.Client.merge_defaults(%{
+        "grant_type" => "urn:ietf:params:oauth:grant-type:device_code"
+      })
+      |> WorkOS.Client.put_inferred("client_id", client.client_id)
+
+    with {:ok, body} <-
+           WorkOS.Client.request(client, :post, "/user_management/authenticate", params, opts) do
+      {:ok, WorkOS.Cast.nested(body, &WorkOS.AuthenticateResponse.from_map/1)}
+    end
+  end
+
+  @doc """
+  Authenticate with radar email challenge
+
+  Authenticate
+
+  Authenticate a user with a specified [authentication method](https://workos.com/docs/reference/authkit/authentication).
+
+  Sets `grant_type` (`"urn:workos:oauth:grant-type:radar-email-challenge:code"`) automatically.
+
+  Reads `client_id`/`client_secret` from the client configuration unless passed explicitly.
+
+  ## Parameters
+
+    * `params` — request body map. Required: `:code`, `:radar_challenge_id`, `:pending_authentication_token`. Optional: `:ip_address`, `:device_id`, `:user_agent`.
+    * `opts` — per-request options (see `WorkOS.Client.request/5`)
+  """
+  @spec authenticate_with_radar_email_challenge(WorkOS.Client.t(), map(), keyword()) ::
+          {:ok, WorkOS.AuthenticateResponse.t()} | {:error, WorkOS.Error.error()}
+  def authenticate_with_radar_email_challenge(client, params \\ %{}, opts \\ []) do
+    params =
+      params
+      |> WorkOS.Client.merge_defaults(%{
+        "grant_type" => "urn:workos:oauth:grant-type:radar-email-challenge:code"
+      })
+      |> WorkOS.Client.put_inferred("client_id", client.client_id)
+      |> WorkOS.Client.put_inferred("client_secret", client.api_key)
+
+    with {:ok, body} <-
+           WorkOS.Client.request(client, :post, "/user_management/authenticate", params, opts) do
+      {:ok, WorkOS.Cast.nested(body, &WorkOS.AuthenticateResponse.from_map/1)}
+    end
+  end
+
+  @doc """
+  Authenticate with radar sms challenge
+
+  Authenticate
+
+  Authenticate a user with a specified [authentication method](https://workos.com/docs/reference/authkit/authentication).
+
+  Sets `grant_type` (`"urn:workos:oauth:grant-type:radar-sms-challenge:code"`) automatically.
+
+  Reads `client_id`/`client_secret` from the client configuration unless passed explicitly.
+
+  ## Parameters
+
+    * `params` — request body map. Required: `:code`, `:verification_id`, `:phone_number`, `:pending_authentication_token`. Optional: `:ip_address`, `:device_id`, `:user_agent`.
+    * `opts` — per-request options (see `WorkOS.Client.request/5`)
+  """
+  @spec authenticate_with_radar_sms_challenge(WorkOS.Client.t(), map(), keyword()) ::
+          {:ok, WorkOS.AuthenticateResponse.t()} | {:error, WorkOS.Error.error()}
+  def authenticate_with_radar_sms_challenge(client, params \\ %{}, opts \\ []) do
+    params =
+      params
+      |> WorkOS.Client.merge_defaults(%{
+        "grant_type" => "urn:workos:oauth:grant-type:radar-sms-challenge:code"
+      })
+      |> WorkOS.Client.put_inferred("client_id", client.client_id)
+      |> WorkOS.Client.put_inferred("client_secret", client.api_key)
+
+    with {:ok, body} <-
+           WorkOS.Client.request(client, :post, "/user_management/authenticate", params, opts) do
+      {:ok, WorkOS.Cast.nested(body, &WorkOS.AuthenticateResponse.from_map/1)}
+    end
+  end
+
+  @doc """
+  Get an authorization URL
+
+  Generates an OAuth 2.0 authorization URL to authenticate a user with AuthKit or SSO.
+
+  Returns the fully-qualified redirect URL — no HTTP request is made.
+
+  Sets `response_type` (`"code"`) automatically.
+
+  Reads `client_id` from the client configuration unless passed explicitly.
+
+  ## Parameters
+
+    * `params` — query parameters: `:code_challenge_method`, `:code_challenge`, `:domain_hint`, `:connection_id`, `:provider_query_params`, `:provider_scopes`, `:invitation_token`, `:max_age`, `:screen_hint`, `:login_hint`, `:provider`, `:prompt`, `:state`, `:organization_id`, `:redirect_uri`
+  """
+  @spec get_authorization_url(WorkOS.Client.t(), map()) :: String.t()
+  def get_authorization_url(client, params \\ %{}) do
+    params =
+      params
+      |> WorkOS.Client.merge_defaults(%{"response_type" => "code"})
+      |> WorkOS.Client.put_inferred("client_id", client.client_id)
+
+    WorkOS.Client.build_url(client, "/user_management/authorize", params)
+  end
+
+  @doc """
   Get device authorization URL
 
   Initiates the CLI Auth flow by requesting a device code and verification URLs. This endpoint implements the OAuth 2.0 Device Authorization Flow ([RFC 8628](https://datatracker.ietf.org/doc/html/rfc8628)) and is designed for command-line applications or other devices with limited input capabilities.
@@ -110,6 +456,22 @@ defmodule WorkOS.UserManagement do
            ) do
       {:ok, WorkOS.Cast.nested(body, &WorkOS.RadarChallenge.from_map/1)}
     end
+  end
+
+  @doc """
+  Logout
+
+  Logout a user from the current [session](https://workos.com/docs/reference/authkit/session).
+
+  Returns the fully-qualified redirect URL — no HTTP request is made.
+
+  ## Parameters
+
+    * `params` — query parameters: `:session_id`, `:return_to`
+  """
+  @spec get_logout_url(WorkOS.Client.t(), map()) :: String.t()
+  def get_logout_url(client, params \\ %{}) do
+    WorkOS.Client.build_url(client, "/user_management/sessions/logout", params)
   end
 
   @doc """

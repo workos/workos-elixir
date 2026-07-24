@@ -62,6 +62,23 @@ defmodule WorkOS.SSOTest do
     assert {:ok, %WorkOS.SSOTokenResponse{}} = WorkOS.SSO.get_profile_and_token(client)
   end
 
+  test "get_authorization_url builds a redirect URL without an HTTP request", %{client: client} do
+    url = WorkOS.SSO.get_authorization_url(client)
+
+    assert is_binary(url)
+    assert String.starts_with?(url, client.base_url)
+    assert url =~ "/sso/authorize"
+    assert url =~ URI.encode_query(%{"response_type" => "code"})
+  end
+
+  test "get_logout_url builds a redirect URL without an HTTP request", %{client: client} do
+    url = WorkOS.SSO.get_logout_url(client)
+
+    assert is_binary(url)
+    assert String.starts_with?(url, client.base_url)
+    assert url =~ "/sso/logout"
+  end
+
   test "surfaces API errors as tagged tuples", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
       conn

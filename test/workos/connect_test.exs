@@ -13,12 +13,12 @@ defmodule WorkOS.ConnectTest do
     {:ok, client: client}
   end
 
-  test "complete_oauth_2 succeeds", %{client: client} do
+  test "complete_oauth2 succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
-      Req.Test.json(conn, WorkOS.TestFixtures.fixture("connect/complete_oauth_2"))
+      Req.Test.json(conn, WorkOS.TestFixtures.fixture("connect/complete_oauth2"))
     end)
 
-    assert {:ok, %WorkOS.ExternalAuthCompleteResponse{}} = WorkOS.Connect.complete_oauth_2(client)
+    assert {:ok, %WorkOS.ExternalAuthCompleteResponse{}} = WorkOS.Connect.complete_oauth2(client)
   end
 
   test "list_applications succeeds", %{client: client} do
@@ -36,6 +36,36 @@ defmodule WorkOS.ConnectTest do
     end)
 
     assert {:ok, %WorkOS.ConnectApplication{}} = WorkOS.Connect.create_application(client)
+  end
+
+  test "create_oauth_application succeeds", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      {:ok, req_body, conn} = Plug.Conn.read_body(conn)
+      req_body = JSON.decode!(req_body)
+      assert req_body["application_type"] == "oauth"
+      Req.Test.json(conn, WorkOS.TestFixtures.fixture("connect/create_oauth_application"))
+    end)
+
+    assert {:ok, %WorkOS.ConnectApplication{}} =
+             WorkOS.Connect.create_oauth_application(client, %{
+               name: "test_name",
+               is_first_party: true
+             })
+  end
+
+  test "create_m2m_application succeeds", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      {:ok, req_body, conn} = Plug.Conn.read_body(conn)
+      req_body = JSON.decode!(req_body)
+      assert req_body["application_type"] == "m2m"
+      Req.Test.json(conn, WorkOS.TestFixtures.fixture("connect/create_m2m_application"))
+    end)
+
+    assert {:ok, %WorkOS.ConnectApplication{}} =
+             WorkOS.Connect.create_m2m_application(client, %{
+               name: "test_name",
+               organization_id: "test_organization_id"
+             })
   end
 
   test "get_application succeeds", %{client: client} do
@@ -96,6 +126,6 @@ defmodule WorkOS.ConnectTest do
       |> Req.Test.json(%{"message" => "Unauthorized"})
     end)
 
-    assert {:error, %WorkOS.ApiError{status: 401}} = WorkOS.Connect.complete_oauth_2(client)
+    assert {:error, %WorkOS.ApiError{status: 401}} = WorkOS.Connect.complete_oauth2(client)
   end
 end

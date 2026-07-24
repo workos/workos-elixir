@@ -802,9 +802,11 @@
     "test/support/fixtures/authorization/update_resource.json",
     "test/support/fixtures/authorization/update_resource_by_external_id.json",
     "test/support/fixtures/client_api/create_token.json",
-    "test/support/fixtures/connect/complete_oauth_2.json",
+    "test/support/fixtures/connect/complete_oauth2.json",
     "test/support/fixtures/connect/create_application.json",
     "test/support/fixtures/connect/create_application_client_secret.json",
+    "test/support/fixtures/connect/create_m2m_application.json",
+    "test/support/fixtures/connect/create_oauth_application.json",
     "test/support/fixtures/connect/get_application.json",
     "test/support/fixtures/connect/list_application_client_secrets.json",
     "test/support/fixtures/connect/list_applications.json",
@@ -873,6 +875,16 @@
     "test/support/fixtures/sso/get_profile_and_token.json",
     "test/support/fixtures/sso/list_connections.json",
     "test/support/fixtures/user_management/accept_invitation.json",
+    "test/support/fixtures/user_management/authenticate_with_code.json",
+    "test/support/fixtures/user_management/authenticate_with_device_code.json",
+    "test/support/fixtures/user_management/authenticate_with_email_verification.json",
+    "test/support/fixtures/user_management/authenticate_with_magic_auth.json",
+    "test/support/fixtures/user_management/authenticate_with_organization_selection.json",
+    "test/support/fixtures/user_management/authenticate_with_password.json",
+    "test/support/fixtures/user_management/authenticate_with_radar_email_challenge.json",
+    "test/support/fixtures/user_management/authenticate_with_radar_sms_challenge.json",
+    "test/support/fixtures/user_management/authenticate_with_refresh_token.json",
+    "test/support/fixtures/user_management/authenticate_with_totp.json",
     "test/support/fixtures/user_management/confirm_email_change.json",
     "test/support/fixtures/user_management/confirm_password_reset.json",
     "test/support/fixtures/user_management/create_authenticate.json",
@@ -986,7 +998,7 @@
       "service": "multi_factor_auth"
     },
     "POST /authkit/oauth2/complete": {
-      "sdkMethod": "complete_oauth_2",
+      "sdkMethod": "complete_oauth2",
       "service": "connect"
     },
     "GET /authorization/groups/{group_id}/role_assignments": {

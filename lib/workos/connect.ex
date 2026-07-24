@@ -24,9 +24,9 @@ defmodule WorkOS.Connect do
     * `params` — request body map
     * `opts` — per-request options (see `WorkOS.Client.request/5`)
   """
-  @spec complete_oauth_2(WorkOS.Client.t(), map(), keyword()) ::
+  @spec complete_oauth2(WorkOS.Client.t(), map(), keyword()) ::
           {:ok, WorkOS.ExternalAuthCompleteResponse.t()} | {:error, WorkOS.Error.error()}
-  def complete_oauth_2(client, params \\ %{}, opts \\ []) do
+  def complete_oauth2(client, params \\ %{}, opts \\ []) do
     with {:ok, body} <-
            WorkOS.Client.request(client, :post, "/authkit/oauth2/complete", params, opts) do
       {:ok, WorkOS.Cast.nested(body, &WorkOS.ExternalAuthCompleteResponse.from_map/1)}
@@ -73,6 +73,60 @@ defmodule WorkOS.Connect do
   @spec create_application(WorkOS.Client.t(), map(), keyword()) ::
           {:ok, WorkOS.ConnectApplication.t()} | {:error, WorkOS.Error.error()}
   def create_application(client, params \\ %{}, opts \\ []) do
+    with {:ok, body} <-
+           WorkOS.Client.request(client, :post, "/connect/applications", params, opts) do
+      {:ok, WorkOS.Cast.nested(body, &WorkOS.ConnectApplication.from_map/1)}
+    end
+  end
+
+  @doc """
+  Create oauth application
+
+  Create a Connect Application
+
+  Create a new Connect Application. Supports both OAuth and Machine-to-Machine (M2M) application types.
+
+  Sets `application_type` (`"oauth"`) automatically.
+
+  ## Parameters
+
+    * `params` — request body map. Required: `:name`, `:is_first_party`. Optional: `:description`, `:scopes`, `:redirect_uris`, `:uses_pkce`, `:organization_id`.
+    * `opts` — per-request options (see `WorkOS.Client.request/5`)
+  """
+  @spec create_oauth_application(WorkOS.Client.t(), map(), keyword()) ::
+          {:ok, WorkOS.ConnectApplication.t()} | {:error, WorkOS.Error.error()}
+  def create_oauth_application(client, params \\ %{}, opts \\ []) do
+    params =
+      params
+      |> WorkOS.Client.merge_defaults(%{"application_type" => "oauth"})
+
+    with {:ok, body} <-
+           WorkOS.Client.request(client, :post, "/connect/applications", params, opts) do
+      {:ok, WorkOS.Cast.nested(body, &WorkOS.ConnectApplication.from_map/1)}
+    end
+  end
+
+  @doc """
+  Create m2m application
+
+  Create a Connect Application
+
+  Create a new Connect Application. Supports both OAuth and Machine-to-Machine (M2M) application types.
+
+  Sets `application_type` (`"m2m"`) automatically.
+
+  ## Parameters
+
+    * `params` — request body map. Required: `:name`, `:organization_id`. Optional: `:description`, `:scopes`.
+    * `opts` — per-request options (see `WorkOS.Client.request/5`)
+  """
+  @spec create_m2m_application(WorkOS.Client.t(), map(), keyword()) ::
+          {:ok, WorkOS.ConnectApplication.t()} | {:error, WorkOS.Error.error()}
+  def create_m2m_application(client, params \\ %{}, opts \\ []) do
+    params =
+      params
+      |> WorkOS.Client.merge_defaults(%{"application_type" => "m2m"})
+
     with {:ok, body} <-
            WorkOS.Client.request(client, :post, "/connect/applications", params, opts) do
       {:ok, WorkOS.Cast.nested(body, &WorkOS.ConnectApplication.from_map/1)}

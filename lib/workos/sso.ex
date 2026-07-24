@@ -79,6 +79,49 @@ defmodule WorkOS.SSO do
   end
 
   @doc """
+  Initiate SSO
+
+  Initiates the single sign-on flow.
+
+  Returns the fully-qualified redirect URL — no HTTP request is made.
+
+  Sets `response_type` (`"code"`) automatically.
+
+  Reads `client_id` from the client configuration unless passed explicitly.
+
+  ## Parameters
+
+    * `params` — query parameters: `:provider_scopes`, `:provider_query_params`, `:domain`, `:provider`, `:redirect_uri`, `:state`, `:connection`, `:organization`, `:domain_hint`, `:login_hint`, `:nonce`, `:prompt`
+  """
+  @spec get_authorization_url(WorkOS.Client.t(), map()) :: String.t()
+  def get_authorization_url(client, params \\ %{}) do
+    params =
+      params
+      |> WorkOS.Client.merge_defaults(%{"response_type" => "code"})
+      |> WorkOS.Client.put_inferred("client_id", client.client_id)
+
+    WorkOS.Client.build_url(client, "/sso/authorize", params)
+  end
+
+  @doc """
+  Logout Redirect
+
+  Logout allows to sign out a user from your application by triggering the identity provider sign out flow. This `GET` endpoint should be a redirection, since the identity provider user will be identified in the browser session.
+
+  Before redirecting to this endpoint, you need to generate a short-lived logout token using the [Logout Authorize](https://workos.com/docs/reference/sso/logout/authorize) endpoint.
+
+  Returns the fully-qualified redirect URL — no HTTP request is made.
+
+  ## Parameters
+
+    * `params` — query parameters: `:token`
+  """
+  @spec get_logout_url(WorkOS.Client.t(), map()) :: String.t()
+  def get_logout_url(client, params \\ %{}) do
+    WorkOS.Client.build_url(client, "/sso/logout", params)
+  end
+
+  @doc """
   Logout Authorize
 
   You should call this endpoint from your server to generate a logout token which is required for the [Logout Redirect](https://workos.com/docs/reference/sso/logout) endpoint.
@@ -119,6 +162,10 @@ defmodule WorkOS.SSO do
 
   Get an access token along with the user [Profile](https://workos.com/docs/reference/sso/profile) using the code passed to your [Redirect URI](https://workos.com/docs/reference/sso/get-authorization-url/redirect-uri).
 
+  Sets `grant_type` (`"authorization_code"`) automatically.
+
+  Reads `client_id`/`client_secret` from the client configuration unless passed explicitly.
+
   ## Parameters
 
     * `params` — request body map
@@ -127,6 +174,12 @@ defmodule WorkOS.SSO do
   @spec get_profile_and_token(WorkOS.Client.t(), map(), keyword()) ::
           {:ok, WorkOS.SSOTokenResponse.t()} | {:error, WorkOS.Error.error()}
   def get_profile_and_token(client, params \\ %{}, opts \\ []) do
+    params =
+      params
+      |> WorkOS.Client.merge_defaults(%{"grant_type" => "authorization_code"})
+      |> WorkOS.Client.put_inferred("client_id", client.client_id)
+      |> WorkOS.Client.put_inferred("client_secret", client.api_key)
+
     with {:ok, body} <- WorkOS.Client.request(client, :post, "/sso/token", params, opts) do
       {:ok, WorkOS.Cast.nested(body, &WorkOS.SSOTokenResponse.from_map/1)}
     end

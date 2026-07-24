@@ -13,6 +13,8 @@ defmodule WorkOS.Client do
   ## Options for `new/1`
 
     * `:api_key` — API key (required unless the env var is set)
+    * `:client_id` — client ID used by authentication flows and URL builders
+      (falls back to the `WORKOS_CLIENT_ID` environment variable)
     * `:base_url` — override the API base URL
     * `:timeout` — receive timeout in milliseconds
     * `:max_retries` — maximum retry attempts for retryable failures
@@ -22,10 +24,11 @@ defmodule WorkOS.Client do
 
   import Bitwise
 
-  defstruct [:api_key, :base_url, :timeout, :max_retries, :req_options]
+  defstruct [:api_key, :client_id, :base_url, :timeout, :max_retries, :req_options]
 
   @type t :: %__MODULE__{
           api_key: String.t(),
+          client_id: String.t() | nil,
           base_url: String.t(),
           timeout: pos_integer(),
           max_retries: non_neg_integer(),
@@ -33,6 +36,7 @@ defmodule WorkOS.Client do
         }
 
   @api_key_env "WORKOS_API_KEY"
+  @client_id_env "WORKOS_CLIENT_ID"
   @default_base_url "https://api.workos.com"
   @default_timeout_ms 60_000
   @default_max_retries 3
@@ -58,6 +62,7 @@ defmodule WorkOS.Client do
 
     %__MODULE__{
       api_key: api_key,
+      client_id: opts[:client_id] || System.get_env(@client_id_env),
       base_url: String.trim_trailing(opts[:base_url] || @default_base_url, "/"),
       timeout: opts[:timeout] || @default_timeout_ms,
       max_retries: opts[:max_retries] || @default_max_retries,
@@ -118,6 +123,42 @@ defmodule WorkOS.Client do
 
   defp handle_response({:error, %{__exception__: true} = exception}),
     do: {:error, %WorkOS.TransportError{message: Exception.message(exception), reason: exception}}
+
+  @doc """
+  Builds a fully-qualified URL for browser-redirect flows. No HTTP request
+  is made. `params` become the query string; nil values are dropped.
+  """
+  @spec build_url(t(), String.t(), map()) :: String.t()
+  def build_url(%__MODULE__{} = client, path, params \\ %{}) do
+    query =
+      params
+      |> Map.new(fn {k, v} -> {to_string(k), v} end)
+      |> Enum.reject(fn {_k, v} -> is_nil(v) end)
+      |> Enum.map(fn {k, v} -> {k, query_value(v)} end)
+      |> URI.encode_query()
+
+    case query do
+      "" -> client.base_url <> path
+      query -> client.base_url <> path <> "?" <> query
+    end
+  end
+
+  defp query_value(value) when is_list(value), do: Enum.map_join(value, ",", &to_string/1)
+  defp query_value(value) when is_map(value), do: JSON.encode!(value)
+  defp query_value(value), do: to_string(value)
+
+  @doc false
+  @spec merge_defaults(map(), map()) :: map()
+  def merge_defaults(params, defaults) do
+    params
+    |> Map.new(fn {k, v} -> {to_string(k), v} end)
+    |> Map.merge(defaults)
+  end
+
+  @doc false
+  @spec put_inferred(map(), String.t(), term()) :: map()
+  def put_inferred(params, _key, nil), do: params
+  def put_inferred(params, key, value), do: Map.put_new(params, key, value)
 
   defp put_query(req_options, query) when map_size(query) == 0, do: req_options
   defp put_query(req_options, query), do: Keyword.put(req_options, :params, Map.to_list(query))

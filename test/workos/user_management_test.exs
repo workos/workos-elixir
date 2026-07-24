@@ -31,6 +31,187 @@ defmodule WorkOS.UserManagementTest do
              WorkOS.UserManagement.create_authenticate(client)
   end
 
+  test "authenticate_with_password succeeds", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      {:ok, req_body, conn} = Plug.Conn.read_body(conn)
+      req_body = JSON.decode!(req_body)
+      assert req_body["grant_type"] == "password"
+
+      Req.Test.json(
+        conn,
+        WorkOS.TestFixtures.fixture("user_management/authenticate_with_password")
+      )
+    end)
+
+    assert {:ok, %WorkOS.AuthenticateResponse{}} =
+             WorkOS.UserManagement.authenticate_with_password(client, %{
+               email: "test_email",
+               password: "test_password"
+             })
+  end
+
+  test "authenticate_with_code succeeds", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      {:ok, req_body, conn} = Plug.Conn.read_body(conn)
+      req_body = JSON.decode!(req_body)
+      assert req_body["grant_type"] == "authorization_code"
+      Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/authenticate_with_code"))
+    end)
+
+    assert {:ok, %WorkOS.AuthenticateResponse{}} =
+             WorkOS.UserManagement.authenticate_with_code(client, %{code: "test_code"})
+  end
+
+  test "authenticate_with_refresh_token succeeds", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      {:ok, req_body, conn} = Plug.Conn.read_body(conn)
+      req_body = JSON.decode!(req_body)
+      assert req_body["grant_type"] == "refresh_token"
+
+      Req.Test.json(
+        conn,
+        WorkOS.TestFixtures.fixture("user_management/authenticate_with_refresh_token")
+      )
+    end)
+
+    assert {:ok, %WorkOS.AuthenticateResponse{}} =
+             WorkOS.UserManagement.authenticate_with_refresh_token(client, %{
+               refresh_token: "test_refresh_token"
+             })
+  end
+
+  test "authenticate_with_magic_auth succeeds", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      {:ok, req_body, conn} = Plug.Conn.read_body(conn)
+      req_body = JSON.decode!(req_body)
+      assert req_body["grant_type"] == "urn:workos:oauth:grant-type:magic-auth:code"
+
+      Req.Test.json(
+        conn,
+        WorkOS.TestFixtures.fixture("user_management/authenticate_with_magic_auth")
+      )
+    end)
+
+    assert {:ok, %WorkOS.AuthenticateResponse{}} =
+             WorkOS.UserManagement.authenticate_with_magic_auth(client, %{
+               code: "test_code",
+               email: "test_email"
+             })
+  end
+
+  test "authenticate_with_email_verification succeeds", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      {:ok, req_body, conn} = Plug.Conn.read_body(conn)
+      req_body = JSON.decode!(req_body)
+      assert req_body["grant_type"] == "urn:workos:oauth:grant-type:email-verification:code"
+
+      Req.Test.json(
+        conn,
+        WorkOS.TestFixtures.fixture("user_management/authenticate_with_email_verification")
+      )
+    end)
+
+    assert {:ok, %WorkOS.AuthenticateResponse{}} =
+             WorkOS.UserManagement.authenticate_with_email_verification(client, %{
+               code: "test_code",
+               pending_authentication_token: "test_pending_authentication_token"
+             })
+  end
+
+  test "authenticate_with_totp succeeds", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      {:ok, req_body, conn} = Plug.Conn.read_body(conn)
+      req_body = JSON.decode!(req_body)
+      assert req_body["grant_type"] == "urn:workos:oauth:grant-type:mfa-totp"
+      Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/authenticate_with_totp"))
+    end)
+
+    assert {:ok, %WorkOS.AuthenticateResponse{}} =
+             WorkOS.UserManagement.authenticate_with_totp(client, %{
+               code: "test_code",
+               pending_authentication_token: "test_pending_authentication_token",
+               authentication_challenge_id: "test_authentication_challenge_id"
+             })
+  end
+
+  test "authenticate_with_organization_selection succeeds", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      {:ok, req_body, conn} = Plug.Conn.read_body(conn)
+      req_body = JSON.decode!(req_body)
+      assert req_body["grant_type"] == "urn:workos:oauth:grant-type:organization-selection"
+
+      Req.Test.json(
+        conn,
+        WorkOS.TestFixtures.fixture("user_management/authenticate_with_organization_selection")
+      )
+    end)
+
+    assert {:ok, %WorkOS.AuthenticateResponse{}} =
+             WorkOS.UserManagement.authenticate_with_organization_selection(client, %{
+               pending_authentication_token: "test_pending_authentication_token",
+               organization_id: "test_organization_id"
+             })
+  end
+
+  test "authenticate_with_device_code succeeds", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      {:ok, req_body, conn} = Plug.Conn.read_body(conn)
+      req_body = JSON.decode!(req_body)
+      assert req_body["grant_type"] == "urn:ietf:params:oauth:grant-type:device_code"
+
+      Req.Test.json(
+        conn,
+        WorkOS.TestFixtures.fixture("user_management/authenticate_with_device_code")
+      )
+    end)
+
+    assert {:ok, %WorkOS.AuthenticateResponse{}} =
+             WorkOS.UserManagement.authenticate_with_device_code(client, %{
+               device_code: "test_device_code"
+             })
+  end
+
+  test "authenticate_with_radar_email_challenge succeeds", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      {:ok, req_body, conn} = Plug.Conn.read_body(conn)
+      req_body = JSON.decode!(req_body)
+      assert req_body["grant_type"] == "urn:workos:oauth:grant-type:radar-email-challenge:code"
+
+      Req.Test.json(
+        conn,
+        WorkOS.TestFixtures.fixture("user_management/authenticate_with_radar_email_challenge")
+      )
+    end)
+
+    assert {:ok, %WorkOS.AuthenticateResponse{}} =
+             WorkOS.UserManagement.authenticate_with_radar_email_challenge(client, %{
+               code: "test_code",
+               radar_challenge_id: "test_radar_challenge_id",
+               pending_authentication_token: "test_pending_authentication_token"
+             })
+  end
+
+  test "authenticate_with_radar_sms_challenge succeeds", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      {:ok, req_body, conn} = Plug.Conn.read_body(conn)
+      req_body = JSON.decode!(req_body)
+      assert req_body["grant_type"] == "urn:workos:oauth:grant-type:radar-sms-challenge:code"
+
+      Req.Test.json(
+        conn,
+        WorkOS.TestFixtures.fixture("user_management/authenticate_with_radar_sms_challenge")
+      )
+    end)
+
+    assert {:ok, %WorkOS.AuthenticateResponse{}} =
+             WorkOS.UserManagement.authenticate_with_radar_sms_challenge(client, %{
+               code: "test_code",
+               verification_id: "test_verification_id",
+               phone_number: "test_phone_number",
+               pending_authentication_token: "test_pending_authentication_token"
+             })
+  end
+
   test "create_device succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/create_device"))
@@ -383,6 +564,23 @@ defmodule WorkOS.UserManagementTest do
 
     assert {:ok, %WorkOS.UserApiKeyWithValue{}} =
              WorkOS.UserManagement.create_user_api_key(client, "test_user_id")
+  end
+
+  test "get_authorization_url builds a redirect URL without an HTTP request", %{client: client} do
+    url = WorkOS.UserManagement.get_authorization_url(client)
+
+    assert is_binary(url)
+    assert String.starts_with?(url, client.base_url)
+    assert url =~ "/user_management/authorize"
+    assert url =~ URI.encode_query(%{"response_type" => "code"})
+  end
+
+  test "get_logout_url builds a redirect URL without an HTTP request", %{client: client} do
+    url = WorkOS.UserManagement.get_logout_url(client)
+
+    assert is_binary(url)
+    assert String.starts_with?(url, client.base_url)
+    assert url =~ "/user_management/sessions/logout"
   end
 
   test "surfaces API errors as tagged tuples", %{client: client} do

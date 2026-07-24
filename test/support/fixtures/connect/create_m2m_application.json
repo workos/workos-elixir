@@ -1,0 +1,12 @@
+{
+  "object": "connect_application",
+  "id": "id",
+  "client_id": "client_id",
+  "description": "description",
+  "name": "name",
+  "scopes": [
+    "scopes"
+  ],
+  "created_at": "2024-01-01T00:00:00.000Z",
+  "updated_at": "2024-01-01T00:00:00.000Z"
+}
