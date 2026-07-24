@@ -1,0 +1,19 @@
+{
+  "object": "list",
+  "data": [
+    {
+      "slug": "slug",
+      "object": "role",
+      "id": "id",
+      "name": "name",
+      "description": "description",
+      "type": "EnvironmentRole",
+      "resource_type_slug": "resource_type_slug",
+      "permissions": [
+        "permissions"
+      ],
+      "created_at": "2024-01-01T00:00:00.000Z",
+      "updated_at": "2024-01-01T00:00:00.000Z"
+    }
+  ]
+}

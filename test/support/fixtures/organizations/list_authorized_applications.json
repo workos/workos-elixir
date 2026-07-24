@@ -1,0 +1,36 @@
+{
+  "data": [
+    {
+      "object": "list",
+      "data": [
+        {
+          "object": "authorized_connect_application",
+          "id": "id",
+          "granted_scopes": [
+            "granted_scopes"
+          ],
+          "oauth_resource": "oauth_resource",
+          "application": {
+            "object": "connect_application",
+            "id": "id",
+            "client_id": "client_id",
+            "description": "description",
+            "name": "name",
+            "scopes": [],
+            "created_at": "2024-01-01T00:00:00.000Z",
+            "updated_at": "2024-01-01T00:00:00.000Z"
+          },
+          "user_id": "user_id"
+        }
+      ],
+      "list_metadata": {
+        "before": "before",
+        "after": "after"
+      }
+    }
+  ],
+  "list_metadata": {
+    "before": null,
+    "after": null
+  }
+}

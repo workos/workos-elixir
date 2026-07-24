@@ -1,0 +1,11 @@
+{
+  "object": "permission",
+  "id": "id",
+  "slug": "slug",
+  "name": "name",
+  "description": "description",
+  "system": true,
+  "resource_type_slug": "resource_type_slug",
+  "created_at": "2024-01-01T00:00:00.000Z",
+  "updated_at": "2024-01-01T00:00:00.000Z"
+}

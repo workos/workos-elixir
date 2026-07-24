@@ -1,0 +1,47 @@
+{
+  "data": [
+    {
+      "object": "list",
+      "data": [
+        {
+          "object": "directory_user",
+          "id": "id",
+          "directory_id": "directory_id",
+          "organization_id": "organization_id",
+          "idp_id": "idp_id",
+          "email": "email",
+          "first_name": "first_name",
+          "last_name": "last_name",
+          "name": "name",
+          "emails": [
+            {}
+          ],
+          "job_title": "job_title",
+          "username": "username",
+          "state": "active",
+          "raw_attributes": {},
+          "custom_attributes": {},
+          "role": {
+            "slug": "slug"
+          },
+          "roles": [
+            {}
+          ],
+          "created_at": "2024-01-01T00:00:00.000Z",
+          "updated_at": "2024-01-01T00:00:00.000Z",
+          "groups": [
+            {}
+          ]
+        }
+      ],
+      "list_metadata": {
+        "before": "before",
+        "after": "after"
+      }
+    }
+  ],
+  "list_metadata": {
+    "before": null,
+    "after": null
+  }
+}

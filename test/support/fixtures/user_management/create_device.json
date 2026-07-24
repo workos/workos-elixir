@@ -1,0 +1,8 @@
+{
+  "device_code": "device_code",
+  "user_code": "user_code",
+  "verification_uri": "verification_uri",
+  "verification_uri_complete": "verification_uri_complete",
+  "expires_in": 1,
+  "interval": 1
+}

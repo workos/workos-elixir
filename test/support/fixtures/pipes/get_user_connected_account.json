@@ -1,0 +1,14 @@
+{
+  "object": "connected_account",
+  "id": "id",
+  "user_id": "user_id",
+  "organization_id": "organization_id",
+  "scopes": [
+    "scopes"
+  ],
+  "auth_method": "oauth",
+  "api_key_last_4": "api_key_last_4",
+  "state": "connected",
+  "created_at": "created_at",
+  "updated_at": "updated_at"
+}

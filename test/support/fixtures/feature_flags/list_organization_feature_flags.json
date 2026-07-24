@@ -1,0 +1,36 @@
+{
+  "data": [
+    {
+      "object": "list",
+      "data": [
+        {
+          "object": "feature_flag",
+          "id": "id",
+          "slug": "slug",
+          "name": "name",
+          "description": "description",
+          "owner": {
+            "email": "email",
+            "first_name": "first_name",
+            "last_name": "last_name"
+          },
+          "tags": [
+            "tags"
+          ],
+          "enabled": true,
+          "default_value": true,
+          "created_at": "2024-01-01T00:00:00.000Z",
+          "updated_at": "2024-01-01T00:00:00.000Z"
+        }
+      ],
+      "list_metadata": {
+        "before": "before",
+        "after": "after"
+      }
+    }
+  ],
+  "list_metadata": {
+    "before": null,
+    "after": null
+  }
+}

@@ -1,0 +1,1785 @@
+{
+  "version": 2,
+  "language": "elixir",
+  "files": [
+    "lib/workos.ex",
+    "lib/workos/access_token_agent_registration_credential_issued_data_detail.ex",
+    "lib/workos/action_authentication_denied.ex",
+    "lib/workos/action_authentication_denied_data.ex",
+    "lib/workos/action_user_registration_denied.ex",
+    "lib/workos/action_user_registration_denied_data.ex",
+    "lib/workos/actor.ex",
+    "lib/workos/add_role_permission.ex",
+    "lib/workos/admin_portal.ex",
+    "lib/workos/agent_admin_link_claim_attempt_to_external_user_request.ex",
+    "lib/workos/agent_admin_link_claim_attempt_to_external_user_request_user.ex",
+    "lib/workos/agent_admin_validate_credential_request.ex",
+    "lib/workos/agent_admin_validate_credential_request_type.ex",
+    "lib/workos/agent_credential_validation.ex",
+    "lib/workos/agent_registration.ex",
+    "lib/workos/agent_registration_agent_identity.ex",
+    "lib/workos/agent_registration_claim.ex",
+    "lib/workos/agent_registration_claim_attempt_created.ex",
+    "lib/workos/agent_registration_claim_attempt_created_data.ex",
+    "lib/workos/agent_registration_claim_claim_completion.ex",
+    "lib/workos/agent_registration_claim_completed.ex",
+    "lib/workos/agent_registration_claim_completed_data.ex",
+    "lib/workos/agent_registration_claim_completed_data_claimed_by.ex",
+    "lib/workos/agent_registration_created.ex",
+    "lib/workos/agent_registration_created_data.ex",
+    "lib/workos/agent_registration_created_data_agent_identity.ex",
+    "lib/workos/agent_registration_created_data_kind.ex",
+    "lib/workos/agent_registration_created_data_method.ex",
+    "lib/workos/agent_registration_created_data_status.ex",
+    "lib/workos/agent_registration_credential_issued.ex",
+    "lib/workos/agent_registration_credential_issued_data.ex",
+    "lib/workos/agent_registration_credential_issued_data_detail.ex",
+    "lib/workos/agent_registration_deleted.ex",
+    "lib/workos/agent_registration_deleted_data.ex",
+    "lib/workos/agent_registration_expired.ex",
+    "lib/workos/agent_registration_expired_data.ex",
+    "lib/workos/agent_registration_kind.ex",
+    "lib/workos/agent_registration_organization_switched.ex",
+    "lib/workos/agent_registration_organization_switched_data.ex",
+    "lib/workos/agent_registration_revoked.ex",
+    "lib/workos/agent_registration_revoked_data.ex",
+    "lib/workos/agent_registration_status.ex",
+    "lib/workos/agents.ex",
+    "lib/workos/api_key.ex",
+    "lib/workos/api_key_created.ex",
+    "lib/workos/api_key_created_data.ex",
+    "lib/workos/api_key_created_data_owner.ex",
+    "lib/workos/api_key_installation.ex",
+    "lib/workos/api_key_owner.ex",
+    "lib/workos/api_key_revoked.ex",
+    "lib/workos/api_key_revoked_data.ex",
+    "lib/workos/api_key_revoked_data_owner.ex",
+    "lib/workos/api_key_updated.ex",
+    "lib/workos/api_key_updated_data.ex",
+    "lib/workos/api_key_updated_data_owner.ex",
+    "lib/workos/api_key_updated_data_previous_attribute.ex",
+    "lib/workos/api_key_validation_response.ex",
+    "lib/workos/api_keys.ex",
+    "lib/workos/application_credentials_list_item.ex",
+    "lib/workos/applications_registration_types.ex",
+    "lib/workos/assign_role.ex",
+    "lib/workos/audit_log_action.ex",
+    "lib/workos/audit_log_configuration.ex",
+    "lib/workos/audit_log_configuration_log_stream.ex",
+    "lib/workos/audit_log_configuration_log_stream_state.ex",
+    "lib/workos/audit_log_configuration_log_stream_type.ex",
+    "lib/workos/audit_log_configuration_state.ex",
+    "lib/workos/audit_log_event.ex",
+    "lib/workos/audit_log_event_actor.ex",
+    "lib/workos/audit_log_event_context.ex",
+    "lib/workos/audit_log_event_create_response.ex",
+    "lib/workos/audit_log_event_ingestion.ex",
+    "lib/workos/audit_log_event_target.ex",
+    "lib/workos/audit_log_export.ex",
+    "lib/workos/audit_log_export_creation.ex",
+    "lib/workos/audit_log_export_state.ex",
+    "lib/workos/audit_log_schema.ex",
+    "lib/workos/audit_log_schema_actor.ex",
+    "lib/workos/audit_log_schema_actor_input.ex",
+    "lib/workos/audit_log_schema_input.ex",
+    "lib/workos/audit_log_schema_target.ex",
+    "lib/workos/audit_log_schema_target_input.ex",
+    "lib/workos/audit_logs.ex",
+    "lib/workos/audit_logs_retention.ex",
+    "lib/workos/auth_method_mismatch_error.ex",
+    "lib/workos/authenticate_response.ex",
+    "lib/workos/authenticate_response_authentication_method.ex",
+    "lib/workos/authenticate_response_impersonator.ex",
+    "lib/workos/authenticate_response_oauth_token.ex",
+    "lib/workos/authentication_challenge.ex",
+    "lib/workos/authentication_challenge_verify_response.ex",
+    "lib/workos/authentication_challenges_verify_request.ex",
+    "lib/workos/authentication_email_verification_failed.ex",
+    "lib/workos/authentication_email_verification_failed_data.ex",
+    "lib/workos/authentication_email_verification_failed_data_error.ex",
+    "lib/workos/authentication_email_verification_succeeded.ex",
+    "lib/workos/authentication_email_verification_succeeded_data.ex",
+    "lib/workos/authentication_factor.ex",
+    "lib/workos/authentication_factor_enrolled.ex",
+    "lib/workos/authentication_factor_enrolled_sms.ex",
+    "lib/workos/authentication_factor_enrolled_totp.ex",
+    "lib/workos/authentication_factor_enrolled_type.ex",
+    "lib/workos/authentication_factor_sms.ex",
+    "lib/workos/authentication_factor_totp.ex",
+    "lib/workos/authentication_factor_type.ex",
+    "lib/workos/authentication_factors_create_request.ex",
+    "lib/workos/authentication_factors_create_request_type.ex",
+    "lib/workos/authentication_magic_auth_failed.ex",
+    "lib/workos/authentication_magic_auth_failed_data.ex",
+    "lib/workos/authentication_magic_auth_failed_data_error.ex",
+    "lib/workos/authentication_magic_auth_succeeded.ex",
+    "lib/workos/authentication_magic_auth_succeeded_data.ex",
+    "lib/workos/authentication_mfa_failed.ex",
+    "lib/workos/authentication_mfa_failed_data.ex",
+    "lib/workos/authentication_mfa_failed_data_error.ex",
+    "lib/workos/authentication_mfa_succeeded.ex",
+    "lib/workos/authentication_mfa_succeeded_data.ex",
+    "lib/workos/authentication_oauth_failed.ex",
+    "lib/workos/authentication_oauth_failed_data.ex",
+    "lib/workos/authentication_oauth_failed_data_error.ex",
+    "lib/workos/authentication_oauth_succeeded.ex",
+    "lib/workos/authentication_oauth_succeeded_data.ex",
+    "lib/workos/authentication_passkey_failed.ex",
+    "lib/workos/authentication_passkey_failed_data.ex",
+    "lib/workos/authentication_passkey_failed_data_error.ex",
+    "lib/workos/authentication_passkey_succeeded.ex",
+    "lib/workos/authentication_passkey_succeeded_data.ex",
+    "lib/workos/authentication_password_failed.ex",
+    "lib/workos/authentication_password_failed_data.ex",
+    "lib/workos/authentication_password_failed_data_error.ex",
+    "lib/workos/authentication_password_succeeded.ex",
+    "lib/workos/authentication_password_succeeded_data.ex",
+    "lib/workos/authentication_radar_risk_detected.ex",
+    "lib/workos/authentication_radar_risk_detected_data.ex",
+    "lib/workos/authentication_radar_risk_detected_data_action.ex",
+    "lib/workos/authentication_reauthentication_succeeded.ex",
+    "lib/workos/authentication_reauthentication_succeeded_data.ex",
+    "lib/workos/authentication_sso_failed.ex",
+    "lib/workos/authentication_sso_failed_data.ex",
+    "lib/workos/authentication_sso_failed_data_error.ex",
+    "lib/workos/authentication_sso_failed_data_sso.ex",
+    "lib/workos/authentication_sso_started.ex",
+    "lib/workos/authentication_sso_started_data.ex",
+    "lib/workos/authentication_sso_started_data_sso.ex",
+    "lib/workos/authentication_sso_succeeded.ex",
+    "lib/workos/authentication_sso_succeeded_data.ex",
+    "lib/workos/authentication_sso_succeeded_data_sso.ex",
+    "lib/workos/authentication_sso_timed_out.ex",
+    "lib/workos/authentication_sso_timed_out_data.ex",
+    "lib/workos/authentication_sso_timed_out_data_error.ex",
+    "lib/workos/authentication_sso_timed_out_data_sso.ex",
+    "lib/workos/authorization.ex",
+    "lib/workos/authorization_assignment.ex",
+    "lib/workos/authorization_check.ex",
+    "lib/workos/authorization_code_session_authenticate_request.ex",
+    "lib/workos/authorization_permission.ex",
+    "lib/workos/authorization_permission_list.ex",
+    "lib/workos/authorization_permission_list_list_metadata.ex",
+    "lib/workos/authorization_resource.ex",
+    "lib/workos/authorization_resource_list.ex",
+    "lib/workos/authorization_resource_list_list_metadata.ex",
+    "lib/workos/authorized_connect_application_list.ex",
+    "lib/workos/authorized_connect_application_list_data.ex",
+    "lib/workos/authorized_connect_application_list_list_metadata.ex",
+    "lib/workos/cast.ex",
+    "lib/workos/challenge_authentication_factor.ex",
+    "lib/workos/check_authorization.ex",
+    "lib/workos/claim_view_response.ex",
+    "lib/workos/claim_view_response_organization.ex",
+    "lib/workos/claim_view_response_status.ex",
+    "lib/workos/client.ex",
+    "lib/workos/client_api.ex",
+    "lib/workos/client_api_token.ex",
+    "lib/workos/client_api_token_response.ex",
+    "lib/workos/configure_data_integration_body.ex",
+    "lib/workos/confirm_email_change.ex",
+    "lib/workos/connect.ex",
+    "lib/workos/connect_application.ex",
+    "lib/workos/connect_application_list.ex",
+    "lib/workos/connect_application_list_list_metadata.ex",
+    "lib/workos/connect_application_m2m.ex",
+    "lib/workos/connect_application_oauth.ex",
+    "lib/workos/connect_application_oauth_redirect_uris.ex",
+    "lib/workos/connect_application_redirect_uri.ex",
+    "lib/workos/connected_account.ex",
+    "lib/workos/connected_account_auth_method.ex",
+    "lib/workos/connected_account_input.ex",
+    "lib/workos/connected_account_input_state.ex",
+    "lib/workos/connected_account_state.ex",
+    "lib/workos/connection.ex",
+    "lib/workos/connection_activated.ex",
+    "lib/workos/connection_activated_data.ex",
+    "lib/workos/connection_activated_data_connection_type.ex",
+    "lib/workos/connection_activated_data_domain.ex",
+    "lib/workos/connection_activated_data_state.ex",
+    "lib/workos/connection_activated_data_status.ex",
+    "lib/workos/connection_deactivated.ex",
+    "lib/workos/connection_deactivated_data.ex",
+    "lib/workos/connection_deactivated_data_connection_type.ex",
+    "lib/workos/connection_deactivated_data_domain.ex",
+    "lib/workos/connection_deactivated_data_state.ex",
+    "lib/workos/connection_deactivated_data_status.ex",
+    "lib/workos/connection_deleted.ex",
+    "lib/workos/connection_deleted_data.ex",
+    "lib/workos/connection_deleted_data_connection_type.ex",
+    "lib/workos/connection_deleted_data_state.ex",
+    "lib/workos/connection_domain.ex",
+    "lib/workos/connection_list.ex",
+    "lib/workos/connection_list_list_metadata.ex",
+    "lib/workos/connection_saml_certificate_renewal_required.ex",
+    "lib/workos/connection_saml_certificate_renewal_required_data.ex",
+    "lib/workos/connection_saml_certificate_renewal_required_data_certificate.ex",
+    "lib/workos/connection_saml_certificate_renewal_required_data_certificate_certificate_type.ex",
+    "lib/workos/connection_saml_certificate_renewal_required_data_connection.ex",
+    "lib/workos/connection_saml_certificate_renewed.ex",
+    "lib/workos/connection_saml_certificate_renewed_data.ex",
+    "lib/workos/connection_saml_certificate_renewed_data_certificate.ex",
+    "lib/workos/connection_saml_certificate_renewed_data_certificate_certificate_type.ex",
+    "lib/workos/connection_saml_certificate_renewed_data_connection.ex",
+    "lib/workos/connection_state.ex",
+    "lib/workos/connection_status.ex",
+    "lib/workos/connection_type.ex",
+    "lib/workos/connections_connection_type.ex",
+    "lib/workos/cors_origin_response.ex",
+    "lib/workos/create_application_secret.ex",
+    "lib/workos/create_authorization_permission.ex",
+    "lib/workos/create_authorization_resource.ex",
+    "lib/workos/create_cors_origin.ex",
+    "lib/workos/create_data_integration.ex",
+    "lib/workos/create_data_integration_auth_methods.ex",
+    "lib/workos/create_data_key_request.ex",
+    "lib/workos/create_data_key_response.ex",
+    "lib/workos/create_group.ex",
+    "lib/workos/create_group_membership.ex",
+    "lib/workos/create_group_role_assignment.ex",
+    "lib/workos/create_m2m_application.ex",
+    "lib/workos/create_magic_code_and_return.ex",
+    "lib/workos/create_oauth_application.ex",
+    "lib/workos/create_object_request.ex",
+    "lib/workos/create_organization_api_key.ex",
+    "lib/workos/create_organization_domain.ex",
+    "lib/workos/create_organization_role.ex",
+    "lib/workos/create_password_reset.ex",
+    "lib/workos/create_password_reset_token.ex",
+    "lib/workos/create_redirect_uri.ex",
+    "lib/workos/create_role.ex",
+    "lib/workos/create_user.ex",
+    "lib/workos/create_user_api_key.ex",
+    "lib/workos/create_user_invite_options.ex",
+    "lib/workos/create_user_invite_options_locale.ex",
+    "lib/workos/create_user_organization_membership.ex",
+    "lib/workos/create_user_password_hash_type.ex",
+    "lib/workos/create_webhook_endpoint.ex",
+    "lib/workos/create_webhook_endpoint_events.ex",
+    "lib/workos/custom_provider_definition.ex",
+    "lib/workos/custom_provider_definition_authenticate_via.ex",
+    "lib/workos/data_integration.ex",
+    "lib/workos/data_integration_access_token_response.ex",
+    "lib/workos/data_integration_access_token_response_access_token.ex",
+    "lib/workos/data_integration_access_token_response_error.ex",
+    "lib/workos/data_integration_auth_methods.ex",
+    "lib/workos/data_integration_authorize_url_response.ex",
+    "lib/workos/data_integration_configuration_list_response.ex",
+    "lib/workos/data_integration_configuration_response.ex",
+    "lib/workos/data_integration_credential.ex",
+    "lib/workos/data_integration_credential_type.ex",
+    "lib/workos/data_integration_credentials.ex",
+    "lib/workos/data_integration_credentials_credentials_type.ex",
+    "lib/workos/data_integration_credentials_input.ex",
+    "lib/workos/data_integration_credentials_input_type.ex",
+    "lib/workos/data_integration_credentials_response.ex",
+    "lib/workos/data_integration_credentials_response_credential.ex",
+    "lib/workos/data_integration_credentials_response_error.ex",
+    "lib/workos/data_integration_custom_provider.ex",
+    "lib/workos/data_integration_custom_provider_authenticate_via.ex",
+    "lib/workos/data_integration_installation.ex",
+    "lib/workos/data_integration_list.ex",
+    "lib/workos/data_integration_list_list_metadata.ex",
+    "lib/workos/data_integration_state.ex",
+    "lib/workos/data_integrations_get_data_integration_authorize_url_request.ex",
+    "lib/workos/data_integrations_get_user_token_request.ex",
+    "lib/workos/data_integrations_list_response.ex",
+    "lib/workos/data_integrations_list_response_data.ex",
+    "lib/workos/data_integrations_list_response_data_auth_methods.ex",
+    "lib/workos/data_integrations_list_response_data_connected_account.ex",
+    "lib/workos/data_integrations_list_response_data_connected_account_auth_method.ex",
+    "lib/workos/data_integrations_list_response_data_connected_account_state.ex",
+    "lib/workos/data_integrations_list_response_data_ownership.ex",
+    "lib/workos/data_integrations_upsert_api_key_request.ex",
+    "lib/workos/data_integrations_vend_credentials_request.ex",
+    "lib/workos/decrypt_request.ex",
+    "lib/workos/decrypt_response.ex",
+    "lib/workos/delete_group_role_assignments_by_criteria.ex",
+    "lib/workos/delete_object_response.ex",
+    "lib/workos/device_authorization_response.ex",
+    "lib/workos/device_code_session_authenticate_request.ex",
+    "lib/workos/directory.ex",
+    "lib/workos/directory_group.ex",
+    "lib/workos/directory_group_list.ex",
+    "lib/workos/directory_group_list_list_metadata.ex",
+    "lib/workos/directory_list.ex",
+    "lib/workos/directory_list_list_metadata.ex",
+    "lib/workos/directory_metadata.ex",
+    "lib/workos/directory_metadata_user.ex",
+    "lib/workos/directory_state.ex",
+    "lib/workos/directory_sync.ex",
+    "lib/workos/directory_type.ex",
+    "lib/workos/directory_user.ex",
+    "lib/workos/directory_user_email.ex",
+    "lib/workos/directory_user_list.ex",
+    "lib/workos/directory_user_list_list_metadata.ex",
+    "lib/workos/directory_user_state.ex",
+    "lib/workos/directory_user_with_groups.ex",
+    "lib/workos/directory_user_with_groups_email.ex",
+    "lib/workos/directory_user_with_groups_state.ex",
+    "lib/workos/dsync_activated.ex",
+    "lib/workos/dsync_activated_data.ex",
+    "lib/workos/dsync_activated_data_domain.ex",
+    "lib/workos/dsync_activated_data_state.ex",
+    "lib/workos/dsync_activated_data_type.ex",
+    "lib/workos/dsync_deleted.ex",
+    "lib/workos/dsync_deleted_data.ex",
+    "lib/workos/dsync_deleted_data_state.ex",
+    "lib/workos/dsync_deleted_data_type.ex",
+    "lib/workos/dsync_group_created.ex",
+    "lib/workos/dsync_group_deleted.ex",
+    "lib/workos/dsync_group_updated.ex",
+    "lib/workos/dsync_group_updated_data.ex",
+    "lib/workos/dsync_group_user_added.ex",
+    "lib/workos/dsync_group_user_added_data.ex",
+    "lib/workos/dsync_group_user_removed.ex",
+    "lib/workos/dsync_group_user_removed_data.ex",
+    "lib/workos/dsync_token_created.ex",
+    "lib/workos/dsync_token_created_data.ex",
+    "lib/workos/dsync_token_revoked.ex",
+    "lib/workos/dsync_token_revoked_data.ex",
+    "lib/workos/dsync_user_created.ex",
+    "lib/workos/dsync_user_deleted.ex",
+    "lib/workos/dsync_user_updated.ex",
+    "lib/workos/dsync_user_updated_data.ex",
+    "lib/workos/dsync_user_updated_data_email.ex",
+    "lib/workos/dsync_user_updated_data_state.ex",
+    "lib/workos/email_change.ex",
+    "lib/workos/email_change_confirmation.ex",
+    "lib/workos/email_change_confirmation_user.ex",
+    "lib/workos/email_verification.ex",
+    "lib/workos/email_verification_code_session_authenticate_request.ex",
+    "lib/workos/email_verification_created.ex",
+    "lib/workos/email_verification_created_data.ex",
+    "lib/workos/enroll_user_authentication_factor.ex",
+    "lib/workos/error_response.ex",
+    "lib/workos/errors.ex",
+    "lib/workos/event_context.ex",
+    "lib/workos/event_context_actor.ex",
+    "lib/workos/event_context_actor_source.ex",
+    "lib/workos/event_context_google_analytics_session.ex",
+    "lib/workos/event_list.ex",
+    "lib/workos/event_list_list_metadata.ex",
+    "lib/workos/event_schema.ex",
+    "lib/workos/events.ex",
+    "lib/workos/expire_api_key.ex",
+    "lib/workos/external_auth_complete_response.ex",
+    "lib/workos/feature_flag.ex",
+    "lib/workos/feature_flag_owner.ex",
+    "lib/workos/feature_flags.ex",
+    "lib/workos/flag.ex",
+    "lib/workos/flag_created.ex",
+    "lib/workos/flag_created_context.ex",
+    "lib/workos/flag_created_context_actor.ex",
+    "lib/workos/flag_created_context_actor_source.ex",
+    "lib/workos/flag_created_data.ex",
+    "lib/workos/flag_created_data_owner.ex",
+    "lib/workos/flag_deleted.ex",
+    "lib/workos/flag_deleted_context.ex",
+    "lib/workos/flag_deleted_context_actor.ex",
+    "lib/workos/flag_deleted_context_actor_source.ex",
+    "lib/workos/flag_deleted_data.ex",
+    "lib/workos/flag_deleted_data_owner.ex",
+    "lib/workos/flag_list.ex",
+    "lib/workos/flag_list_list_metadata.ex",
+    "lib/workos/flag_owner.ex",
+    "lib/workos/flag_rule_updated.ex",
+    "lib/workos/flag_rule_updated_context.ex",
+    "lib/workos/flag_rule_updated_context_access_type.ex",
+    "lib/workos/flag_rule_updated_context_actor.ex",
+    "lib/workos/flag_rule_updated_context_actor_source.ex",
+    "lib/workos/flag_rule_updated_context_configured_target.ex",
+    "lib/workos/flag_rule_updated_context_configured_target_organization.ex",
+    "lib/workos/flag_rule_updated_context_configured_target_user.ex",
+    "lib/workos/flag_rule_updated_context_previous_attribute.ex",
+    "lib/workos/flag_rule_updated_context_previous_attribute_context.ex",
+    "lib/workos/flag_rule_updated_context_previous_attribute_context_access_type.ex",
+    "lib/workos/flag_rule_updated_context_previous_attribute_context_configured_target.ex",
+    "lib/workos/flag_rule_updated_context_previous_attribute_context_configured_target_organization.ex",
+    "lib/workos/flag_rule_updated_context_previous_attribute_context_configured_target_user.ex",
+    "lib/workos/flag_rule_updated_context_previous_attribute_data.ex",
+    "lib/workos/flag_rule_updated_data.ex",
+    "lib/workos/flag_rule_updated_data_owner.ex",
+    "lib/workos/flag_updated.ex",
+    "lib/workos/flag_updated_context.ex",
+    "lib/workos/flag_updated_context_actor.ex",
+    "lib/workos/flag_updated_context_actor_source.ex",
+    "lib/workos/flag_updated_context_previous_attribute.ex",
+    "lib/workos/flag_updated_context_previous_attribute_data.ex",
+    "lib/workos/flag_updated_data.ex",
+    "lib/workos/flag_updated_data_owner.ex",
+    "lib/workos/generate_link.ex",
+    "lib/workos/generate_link_intent.ex",
+    "lib/workos/group.ex",
+    "lib/workos/group_created.ex",
+    "lib/workos/group_deleted.ex",
+    "lib/workos/group_list.ex",
+    "lib/workos/group_list_list_metadata.ex",
+    "lib/workos/group_member_added.ex",
+    "lib/workos/group_member_added_data.ex",
+    "lib/workos/group_member_removed.ex",
+    "lib/workos/group_member_removed_data.ex",
+    "lib/workos/group_role_assignment.ex",
+    "lib/workos/group_role_assignment_list.ex",
+    "lib/workos/group_role_assignment_resource.ex",
+    "lib/workos/group_updated.ex",
+    "lib/workos/groups.ex",
+    "lib/workos/invitation.ex",
+    "lib/workos/invitation_accepted.ex",
+    "lib/workos/invitation_accepted_data.ex",
+    "lib/workos/invitation_accepted_data_state.ex",
+    "lib/workos/invitation_created.ex",
+    "lib/workos/invitation_created_data.ex",
+    "lib/workos/invitation_created_data_state.ex",
+    "lib/workos/invitation_resent.ex",
+    "lib/workos/invitation_resent_data.ex",
+    "lib/workos/invitation_resent_data_state.ex",
+    "lib/workos/invitation_revoked.ex",
+    "lib/workos/invitation_revoked_data.ex",
+    "lib/workos/invitation_revoked_data_state.ex",
+    "lib/workos/invitation_state.ex",
+    "lib/workos/jwks_response.ex",
+    "lib/workos/jwks_response_keys.ex",
+    "lib/workos/jwt_template_response.ex",
+    "lib/workos/list_metadata.ex",
+    "lib/workos/magic_auth.ex",
+    "lib/workos/magic_auth_code_session_authenticate_request.ex",
+    "lib/workos/magic_auth_created.ex",
+    "lib/workos/magic_auth_created_data.ex",
+    "lib/workos/magic_auth_send_magic_auth_code_and_return_response.ex",
+    "lib/workos/mfa_totp_session_authenticate_request.ex",
+    "lib/workos/multi_factor_auth.ex",
+    "lib/workos/new_connect_application_secret.ex",
+    "lib/workos/object_list_response.ex",
+    "lib/workos/object_metadata.ex",
+    "lib/workos/object_summary.ex",
+    "lib/workos/object_version.ex",
+    "lib/workos/object_without_value.ex",
+    "lib/workos/organization.ex",
+    "lib/workos/organization_api_key.ex",
+    "lib/workos/organization_api_key_list.ex",
+    "lib/workos/organization_api_key_list_list_metadata.ex",
+    "lib/workos/organization_api_key_owner.ex",
+    "lib/workos/organization_api_key_with_value.ex",
+    "lib/workos/organization_api_key_with_value_owner.ex",
+    "lib/workos/organization_authorized_connect_application_list.ex",
+    "lib/workos/organization_authorized_connect_application_list_data.ex",
+    "lib/workos/organization_authorized_connect_application_list_list_metadata.ex",
+    "lib/workos/organization_created.ex",
+    "lib/workos/organization_created_data.ex",
+    "lib/workos/organization_created_data_domain.ex",
+    "lib/workos/organization_created_data_domain_state.ex",
+    "lib/workos/organization_created_data_domain_verification_strategy.ex",
+    "lib/workos/organization_deleted.ex",
+    "lib/workos/organization_deleted_data.ex",
+    "lib/workos/organization_deleted_data_domain.ex",
+    "lib/workos/organization_deleted_data_domain_state.ex",
+    "lib/workos/organization_deleted_data_domain_verification_strategy.ex",
+    "lib/workos/organization_domain.ex",
+    "lib/workos/organization_domain_created.ex",
+    "lib/workos/organization_domain_created_data.ex",
+    "lib/workos/organization_domain_created_data_state.ex",
+    "lib/workos/organization_domain_created_data_verification_strategy.ex",
+    "lib/workos/organization_domain_data.ex",
+    "lib/workos/organization_domain_data_state.ex",
+    "lib/workos/organization_domain_deleted.ex",
+    "lib/workos/organization_domain_deleted_data.ex",
+    "lib/workos/organization_domain_deleted_data_state.ex",
+    "lib/workos/organization_domain_deleted_data_verification_strategy.ex",
+    "lib/workos/organization_domain_state.ex",
+    "lib/workos/organization_domain_updated.ex",
+    "lib/workos/organization_domain_updated_data.ex",
+    "lib/workos/organization_domain_updated_data_state.ex",
+    "lib/workos/organization_domain_updated_data_verification_strategy.ex",
+    "lib/workos/organization_domain_verification_failed.ex",
+    "lib/workos/organization_domain_verification_failed_data.ex",
+    "lib/workos/organization_domain_verification_failed_data_organization_domain.ex",
+    "lib/workos/organization_domain_verification_failed_data_organization_domain_state.ex",
+    "lib/workos/organization_domain_verification_failed_data_organization_domain_verification_strategy.ex",
+    "lib/workos/organization_domain_verification_failed_data_reason.ex",
+    "lib/workos/organization_domain_verification_strategy.ex",
+    "lib/workos/organization_domain_verified.ex",
+    "lib/workos/organization_domain_verified_data.ex",
+    "lib/workos/organization_domain_verified_data_state.ex",
+    "lib/workos/organization_domain_verified_data_verification_strategy.ex",
+    "lib/workos/organization_domains.ex",
+    "lib/workos/organization_input.ex",
+    "lib/workos/organization_list.ex",
+    "lib/workos/organization_list_list_metadata.ex",
+    "lib/workos/organization_membership.ex",
+    "lib/workos/organization_membership_created.ex",
+    "lib/workos/organization_membership_created_data.ex",
+    "lib/workos/organization_membership_created_data_status.ex",
+    "lib/workos/organization_membership_deleted.ex",
+    "lib/workos/organization_membership_deleted_data.ex",
+    "lib/workos/organization_membership_deleted_data_status.ex",
+    "lib/workos/organization_membership_service.ex",
+    "lib/workos/organization_membership_status.ex",
+    "lib/workos/organization_membership_updated.ex",
+    "lib/workos/organization_membership_updated_data.ex",
+    "lib/workos/organization_membership_updated_data_status.ex",
+    "lib/workos/organization_role_created.ex",
+    "lib/workos/organization_role_created_data.ex",
+    "lib/workos/organization_role_deleted.ex",
+    "lib/workos/organization_role_deleted_data.ex",
+    "lib/workos/organization_role_updated.ex",
+    "lib/workos/organization_role_updated_data.ex",
+    "lib/workos/organization_selection_session_authenticate_request.ex",
+    "lib/workos/organization_updated.ex",
+    "lib/workos/organization_updated_data.ex",
+    "lib/workos/organization_updated_data_domain.ex",
+    "lib/workos/organization_updated_data_domain_state.ex",
+    "lib/workos/organization_updated_data_domain_verification_strategy.ex",
+    "lib/workos/organizations.ex",
+    "lib/workos/page.ex",
+    "lib/workos/pagination_order.ex",
+    "lib/workos/password_reset.ex",
+    "lib/workos/password_reset_created.ex",
+    "lib/workos/password_reset_created_data.ex",
+    "lib/workos/password_reset_succeeded.ex",
+    "lib/workos/password_reset_succeeded_data.ex",
+    "lib/workos/password_session_authenticate_request.ex",
+    "lib/workos/permission.ex",
+    "lib/workos/permission_created.ex",
+    "lib/workos/permission_created_data.ex",
+    "lib/workos/permission_deleted.ex",
+    "lib/workos/permission_deleted_data.ex",
+    "lib/workos/permission_updated.ex",
+    "lib/workos/permission_updated_data.ex",
+    "lib/workos/pipe_connected_account.ex",
+    "lib/workos/pipe_connected_account_state.ex",
+    "lib/workos/pipes.ex",
+    "lib/workos/pipes_connected_account_connected.ex",
+    "lib/workos/pipes_connected_account_connection_failed.ex",
+    "lib/workos/pipes_connected_account_connection_failed_data.ex",
+    "lib/workos/pipes_connected_account_disconnected.ex",
+    "lib/workos/pipes_connected_account_reauthorization_needed.ex",
+    "lib/workos/pipes_provider.ex",
+    "lib/workos/portal_link_response.ex",
+    "lib/workos/profile.ex",
+    "lib/workos/profile_connection_type.ex",
+    "lib/workos/radar.ex",
+    "lib/workos/radar_challenge.ex",
+    "lib/workos/radar_challenge_created.ex",
+    "lib/workos/radar_challenge_created_data.ex",
+    "lib/workos/radar_email_challenge_code_session_authenticate_request.ex",
+    "lib/workos/radar_list_action.ex",
+    "lib/workos/radar_list_entry_already_present_response.ex",
+    "lib/workos/radar_list_type.ex",
+    "lib/workos/radar_sms_challenge_code_session_authenticate_request.ex",
+    "lib/workos/radar_standalone_assess_request.ex",
+    "lib/workos/radar_standalone_assess_request_action.ex",
+    "lib/workos/radar_standalone_assess_request_auth_method.ex",
+    "lib/workos/radar_standalone_delete_radar_list_entry_request.ex",
+    "lib/workos/radar_standalone_response.ex",
+    "lib/workos/radar_standalone_response_blocklist_type.ex",
+    "lib/workos/radar_standalone_response_control.ex",
+    "lib/workos/radar_standalone_response_verdict.ex",
+    "lib/workos/radar_standalone_update_radar_attempt_request.ex",
+    "lib/workos/radar_standalone_update_radar_list_request.ex",
+    "lib/workos/redirect_uri.ex",
+    "lib/workos/redirect_uri_input.ex",
+    "lib/workos/refresh_token_session_authenticate_request.ex",
+    "lib/workos/rekey_request.ex",
+    "lib/workos/remove_role.ex",
+    "lib/workos/replace_group_role_assignment_entry.ex",
+    "lib/workos/replace_group_role_assignments.ex",
+    "lib/workos/resend_user_invite_options.ex",
+    "lib/workos/resend_user_invite_options_locale.ex",
+    "lib/workos/reset_password_response.ex",
+    "lib/workos/revoke_session.ex",
+    "lib/workos/role.ex",
+    "lib/workos/role_created.ex",
+    "lib/workos/role_created_data.ex",
+    "lib/workos/role_deleted.ex",
+    "lib/workos/role_deleted_data.ex",
+    "lib/workos/role_list.ex",
+    "lib/workos/role_type.ex",
+    "lib/workos/role_updated.ex",
+    "lib/workos/role_updated_data.ex",
+    "lib/workos/send_email_change.ex",
+    "lib/workos/send_radar_sms_challenge.ex",
+    "lib/workos/send_radar_sms_challenge_response.ex",
+    "lib/workos/send_verification_email_response.ex",
+    "lib/workos/session_created.ex",
+    "lib/workos/session_created_data.ex",
+    "lib/workos/session_created_data_auth_method.ex",
+    "lib/workos/session_created_data_impersonator.ex",
+    "lib/workos/session_created_data_status.ex",
+    "lib/workos/session_revoked.ex",
+    "lib/workos/session_revoked_data.ex",
+    "lib/workos/session_revoked_data_auth_method.ex",
+    "lib/workos/session_revoked_data_impersonator.ex",
+    "lib/workos/session_revoked_data_status.ex",
+    "lib/workos/set_role_permissions.ex",
+    "lib/workos/slim_role.ex",
+    "lib/workos/sso.ex",
+    "lib/workos/sso_authorize_url_response.ex",
+    "lib/workos/sso_device_authorization_request.ex",
+    "lib/workos/sso_logout_authorize_request.ex",
+    "lib/workos/sso_logout_authorize_response.ex",
+    "lib/workos/sso_provider.ex",
+    "lib/workos/sso_token_response.ex",
+    "lib/workos/sso_token_response_oauth_token.ex",
+    "lib/workos/token_query.ex",
+    "lib/workos/update_audit_logs_retention.ex",
+    "lib/workos/update_authorization_permission.ex",
+    "lib/workos/update_authorization_resource.ex",
+    "lib/workos/update_custom_provider_definition.ex",
+    "lib/workos/update_custom_provider_definition_authenticate_via.ex",
+    "lib/workos/update_data_integration.ex",
+    "lib/workos/update_group.ex",
+    "lib/workos/update_jwt_template.ex",
+    "lib/workos/update_oauth_application.ex",
+    "lib/workos/update_object_request.ex",
+    "lib/workos/update_organization.ex",
+    "lib/workos/update_organization_role.ex",
+    "lib/workos/update_role.ex",
+    "lib/workos/update_user.ex",
+    "lib/workos/update_user_organization_membership.ex",
+    "lib/workos/update_user_password_hash_type.ex",
+    "lib/workos/update_webhook_endpoint.ex",
+    "lib/workos/update_webhook_endpoint_events.ex",
+    "lib/workos/update_webhook_endpoint_status.ex",
+    "lib/workos/user.ex",
+    "lib/workos/user_api_key.ex",
+    "lib/workos/user_api_key_created_data_owner.ex",
+    "lib/workos/user_api_key_list.ex",
+    "lib/workos/user_api_key_list_list_metadata.ex",
+    "lib/workos/user_api_key_owner.ex",
+    "lib/workos/user_api_key_revoked_data_owner.ex",
+    "lib/workos/user_api_key_updated_data_owner.ex",
+    "lib/workos/user_api_key_with_value.ex",
+    "lib/workos/user_api_key_with_value_owner.ex",
+    "lib/workos/user_authentication_factor_enroll_response.ex",
+    "lib/workos/user_authentication_factor_list.ex",
+    "lib/workos/user_authentication_factor_list_list_metadata.ex",
+    "lib/workos/user_consent_option.ex",
+    "lib/workos/user_consent_option_choice.ex",
+    "lib/workos/user_create_response.ex",
+    "lib/workos/user_created.ex",
+    "lib/workos/user_deleted.ex",
+    "lib/workos/user_identities_get_item.ex",
+    "lib/workos/user_identities_get_item_provider.ex",
+    "lib/workos/user_invite.ex",
+    "lib/workos/user_invite_list.ex",
+    "lib/workos/user_invite_list_list_metadata.ex",
+    "lib/workos/user_invite_state.ex",
+    "lib/workos/user_list.ex",
+    "lib/workos/user_list_list_metadata.ex",
+    "lib/workos/user_management.ex",
+    "lib/workos/user_management_authentication_provider.ex",
+    "lib/workos/user_management_authentication_screen_hint.ex",
+    "lib/workos/user_management_login_request.ex",
+    "lib/workos/user_management_organization_membership_statuses.ex",
+    "lib/workos/user_object.ex",
+    "lib/workos/user_organization_membership.ex",
+    "lib/workos/user_organization_membership_base_list.ex",
+    "lib/workos/user_organization_membership_base_list_data.ex",
+    "lib/workos/user_organization_membership_base_list_data_status.ex",
+    "lib/workos/user_organization_membership_base_list_list_metadata.ex",
+    "lib/workos/user_organization_membership_list.ex",
+    "lib/workos/user_organization_membership_list_list_metadata.ex",
+    "lib/workos/user_organization_membership_status.ex",
+    "lib/workos/user_role_assignment.ex",
+    "lib/workos/user_role_assignment_list.ex",
+    "lib/workos/user_role_assignment_list_list_metadata.ex",
+    "lib/workos/user_role_assignment_resource.ex",
+    "lib/workos/user_role_assignment_source.ex",
+    "lib/workos/user_role_assignment_source_type.ex",
+    "lib/workos/user_sessions_auth_method.ex",
+    "lib/workos/user_sessions_impersonator.ex",
+    "lib/workos/user_sessions_list_item.ex",
+    "lib/workos/user_sessions_status.ex",
+    "lib/workos/user_updated.ex",
+    "lib/workos/validate_api_key.ex",
+    "lib/workos/vault.ex",
+    "lib/workos/vault_byok_key_deleted.ex",
+    "lib/workos/vault_byok_key_deleted_data.ex",
+    "lib/workos/vault_byok_key_provider.ex",
+    "lib/workos/vault_byok_key_verification_completed.ex",
+    "lib/workos/vault_byok_key_verification_completed_data.ex",
+    "lib/workos/vault_data_created.ex",
+    "lib/workos/vault_data_created_data.ex",
+    "lib/workos/vault_data_created_data_actor_source.ex",
+    "lib/workos/vault_data_deleted.ex",
+    "lib/workos/vault_data_deleted_data.ex",
+    "lib/workos/vault_data_deleted_data_actor_source.ex",
+    "lib/workos/vault_data_read.ex",
+    "lib/workos/vault_data_read_data.ex",
+    "lib/workos/vault_data_read_data_actor_source.ex",
+    "lib/workos/vault_data_updated.ex",
+    "lib/workos/vault_data_updated_data.ex",
+    "lib/workos/vault_data_updated_data_actor_source.ex",
+    "lib/workos/vault_dek_decrypted.ex",
+    "lib/workos/vault_dek_decrypted_data.ex",
+    "lib/workos/vault_dek_decrypted_data_actor_source.ex",
+    "lib/workos/vault_dek_read.ex",
+    "lib/workos/vault_dek_read_data.ex",
+    "lib/workos/vault_dek_read_data_actor_source.ex",
+    "lib/workos/vault_kek_created.ex",
+    "lib/workos/vault_kek_created_data.ex",
+    "lib/workos/vault_kek_created_data_actor_source.ex",
+    "lib/workos/vault_kek_deleted.ex",
+    "lib/workos/vault_kek_deleted_data.ex",
+    "lib/workos/vault_kek_deleted_data_actor_source.ex",
+    "lib/workos/vault_metadata_read.ex",
+    "lib/workos/vault_metadata_read_data.ex",
+    "lib/workos/vault_metadata_read_data_actor_source.ex",
+    "lib/workos/vault_names_listed.ex",
+    "lib/workos/vault_names_listed_data.ex",
+    "lib/workos/vault_names_listed_data_actor_source.ex",
+    "lib/workos/vault_object.ex",
+    "lib/workos/vault_order.ex",
+    "lib/workos/verify_email_address.ex",
+    "lib/workos/verify_email_response.ex",
+    "lib/workos/version_list_response.ex",
+    "lib/workos/waitlist_user.ex",
+    "lib/workos/waitlist_user_approved.ex",
+    "lib/workos/waitlist_user_created.ex",
+    "lib/workos/waitlist_user_denied.ex",
+    "lib/workos/waitlist_user_state.ex",
+    "lib/workos/webhook_endpoint.ex",
+    "lib/workos/webhook_endpoint_list.ex",
+    "lib/workos/webhook_endpoint_list_list_metadata.ex",
+    "lib/workos/webhook_endpoint_status.ex",
+    "lib/workos/webhooks.ex",
+    "lib/workos/widget_session_token.ex",
+    "lib/workos/widget_session_token_response.ex",
+    "lib/workos/widget_session_token_scopes.ex",
+    "lib/workos/widgets.ex",
+    "test/support/fixtures/admin_portal/generate_link.json",
+    "test/support/fixtures/agents/create_validate.json",
+    "test/support/fixtures/agents/get_registration.json",
+    "test/support/fixtures/agents/update_attempts.json",
+    "test/support/fixtures/api_keys/create_api_key_expire.json",
+    "test/support/fixtures/api_keys/create_organization_api_key.json",
+    "test/support/fixtures/api_keys/create_validation.json",
+    "test/support/fixtures/api_keys/list_organization_api_keys.json",
+    "test/support/fixtures/audit_logs/create_event.json",
+    "test/support/fixtures/audit_logs/create_export.json",
+    "test/support/fixtures/audit_logs/create_schema.json",
+    "test/support/fixtures/audit_logs/get_export.json",
+    "test/support/fixtures/audit_logs/get_organization_audit_logs_retention.json",
+    "test/support/fixtures/audit_logs/list_action_schemas.json",
+    "test/support/fixtures/audit_logs/list_actions.json",
+    "test/support/fixtures/audit_logs/update_organization_audit_logs_retention.json",
+    "test/support/fixtures/authorization/add_environment_role_permission.json",
+    "test/support/fixtures/authorization/add_organization_role_permission.json",
+    "test/support/fixtures/authorization/assign_role.json",
+    "test/support/fixtures/authorization/check.json",
+    "test/support/fixtures/authorization/create_environment_role.json",
+    "test/support/fixtures/authorization/create_group_role_assignment.json",
+    "test/support/fixtures/authorization/create_organization_role.json",
+    "test/support/fixtures/authorization/create_permission.json",
+    "test/support/fixtures/authorization/create_resource.json",
+    "test/support/fixtures/authorization/get_environment_role.json",
+    "test/support/fixtures/authorization/get_group_role_assignment.json",
+    "test/support/fixtures/authorization/get_organization_role.json",
+    "test/support/fixtures/authorization/get_permission.json",
+    "test/support/fixtures/authorization/get_resource.json",
+    "test/support/fixtures/authorization/get_resource_by_external_id.json",
+    "test/support/fixtures/authorization/list_effective_permissions.json",
+    "test/support/fixtures/authorization/list_effective_permissions_by_external_id.json",
+    "test/support/fixtures/authorization/list_environment_roles.json",
+    "test/support/fixtures/authorization/list_group_role_assignments.json",
+    "test/support/fixtures/authorization/list_memberships_for_resource.json",
+    "test/support/fixtures/authorization/list_memberships_for_resource_by_external_id.json",
+    "test/support/fixtures/authorization/list_organization_roles.json",
+    "test/support/fixtures/authorization/list_permissions.json",
+    "test/support/fixtures/authorization/list_resources.json",
+    "test/support/fixtures/authorization/list_resources_for_membership.json",
+    "test/support/fixtures/authorization/list_role_assignments.json",
+    "test/support/fixtures/authorization/list_role_assignments_for_resource.json",
+    "test/support/fixtures/authorization/list_role_assignments_for_resource_by_external_id.json",
+    "test/support/fixtures/authorization/remove_organization_role_permission.json",
+    "test/support/fixtures/authorization/set_environment_role_permissions.json",
+    "test/support/fixtures/authorization/set_organization_role_permissions.json",
+    "test/support/fixtures/authorization/update_environment_role.json",
+    "test/support/fixtures/authorization/update_group_role_assignments.json",
+    "test/support/fixtures/authorization/update_organization_role.json",
+    "test/support/fixtures/authorization/update_permission.json",
+    "test/support/fixtures/authorization/update_resource.json",
+    "test/support/fixtures/authorization/update_resource_by_external_id.json",
+    "test/support/fixtures/client_api/create_token.json",
+    "test/support/fixtures/connect/complete_oauth_2.json",
+    "test/support/fixtures/connect/create_application.json",
+    "test/support/fixtures/connect/create_application_client_secret.json",
+    "test/support/fixtures/connect/get_application.json",
+    "test/support/fixtures/connect/list_application_client_secrets.json",
+    "test/support/fixtures/connect/list_applications.json",
+    "test/support/fixtures/connect/update_application.json",
+    "test/support/fixtures/directory_sync/get_directory.json",
+    "test/support/fixtures/directory_sync/get_group.json",
+    "test/support/fixtures/directory_sync/get_user.json",
+    "test/support/fixtures/directory_sync/list_directories.json",
+    "test/support/fixtures/directory_sync/list_groups.json",
+    "test/support/fixtures/directory_sync/list_users.json",
+    "test/support/fixtures/events/list_events.json",
+    "test/support/fixtures/feature_flags/disable_feature_flag.json",
+    "test/support/fixtures/feature_flags/enable_feature_flag.json",
+    "test/support/fixtures/feature_flags/get_feature_flag.json",
+    "test/support/fixtures/feature_flags/list_feature_flags.json",
+    "test/support/fixtures/feature_flags/list_organization_feature_flags.json",
+    "test/support/fixtures/feature_flags/list_user_feature_flags.json",
+    "test/support/fixtures/groups/create_group_organization_membership.json",
+    "test/support/fixtures/groups/create_organization_group.json",
+    "test/support/fixtures/groups/get_organization_group.json",
+    "test/support/fixtures/groups/list_group_organization_memberships.json",
+    "test/support/fixtures/groups/list_organization_groups.json",
+    "test/support/fixtures/groups/update_organization_group.json",
+    "test/support/fixtures/multi_factor_auth/challenge_factor.json",
+    "test/support/fixtures/multi_factor_auth/create_user_auth_factor.json",
+    "test/support/fixtures/multi_factor_auth/enroll_factor.json",
+    "test/support/fixtures/multi_factor_auth/get_factor.json",
+    "test/support/fixtures/multi_factor_auth/list_user_auth_factors.json",
+    "test/support/fixtures/multi_factor_auth/verify_challenge.json",
+    "test/support/fixtures/organization_domains/create_organization_domain.json",
+    "test/support/fixtures/organization_domains/get_organization_domain.json",
+    "test/support/fixtures/organization_domains/verify_organization_domain.json",
+    "test/support/fixtures/organization_membership/create_organization_membership.json",
+    "test/support/fixtures/organization_membership/deactivate_organization_membership.json",
+    "test/support/fixtures/organization_membership/get_organization_membership.json",
+    "test/support/fixtures/organization_membership/list_organization_membership_groups.json",
+    "test/support/fixtures/organization_membership/list_organization_memberships.json",
+    "test/support/fixtures/organization_membership/reactivate_organization_membership.json",
+    "test/support/fixtures/organization_membership/update_organization_membership.json",
+    "test/support/fixtures/organizations/create_organization.json",
+    "test/support/fixtures/organizations/get_audit_log_configuration.json",
+    "test/support/fixtures/organizations/get_organization.json",
+    "test/support/fixtures/organizations/get_organization_by_external_id.json",
+    "test/support/fixtures/organizations/list_authorized_applications.json",
+    "test/support/fixtures/organizations/list_organizations.json",
+    "test/support/fixtures/organizations/update_organization.json",
+    "test/support/fixtures/pipes/authorize_data_integration.json",
+    "test/support/fixtures/pipes/create_data_integration.json",
+    "test/support/fixtures/pipes/create_data_integration_credential.json",
+    "test/support/fixtures/pipes/create_user_connected_account.json",
+    "test/support/fixtures/pipes/get_access_token.json",
+    "test/support/fixtures/pipes/get_data_integration.json",
+    "test/support/fixtures/pipes/get_user_connected_account.json",
+    "test/support/fixtures/pipes/list_data_integrations.json",
+    "test/support/fixtures/pipes/list_user_data_providers.json",
+    "test/support/fixtures/pipes/update_data_integration.json",
+    "test/support/fixtures/pipes/update_data_integration_api_key.json",
+    "test/support/fixtures/pipes/update_user_connected_account.json",
+    "test/support/fixtures/pipes_provider/list_organization_data_integration_configurations.json",
+    "test/support/fixtures/pipes_provider/update_organization_data_integration_configuration.json",
+    "test/support/fixtures/radar/add_list_entry.json",
+    "test/support/fixtures/radar/create_attempt.json",
+    "test/support/fixtures/sso/authorize_logout.json",
+    "test/support/fixtures/sso/get_connection.json",
+    "test/support/fixtures/sso/get_profile.json",
+    "test/support/fixtures/sso/get_profile_and_token.json",
+    "test/support/fixtures/sso/list_connections.json",
+    "test/support/fixtures/user_management/accept_invitation.json",
+    "test/support/fixtures/user_management/confirm_email_change.json",
+    "test/support/fixtures/user_management/confirm_password_reset.json",
+    "test/support/fixtures/user_management/create_authenticate.json",
+    "test/support/fixtures/user_management/create_cors_origin.json",
+    "test/support/fixtures/user_management/create_device.json",
+    "test/support/fixtures/user_management/create_magic_auth.json",
+    "test/support/fixtures/user_management/create_radar_challenge.json",
+    "test/support/fixtures/user_management/create_redirect_uri.json",
+    "test/support/fixtures/user_management/create_user.json",
+    "test/support/fixtures/user_management/create_user_api_key.json",
+    "test/support/fixtures/user_management/find_invitation_by_token.json",
+    "test/support/fixtures/user_management/get_email_verification.json",
+    "test/support/fixtures/user_management/get_invitation.json",
+    "test/support/fixtures/user_management/get_jwks.json",
+    "test/support/fixtures/user_management/get_magic_auth.json",
+    "test/support/fixtures/user_management/get_password_reset.json",
+    "test/support/fixtures/user_management/get_radar_challenge.json",
+    "test/support/fixtures/user_management/get_user.json",
+    "test/support/fixtures/user_management/get_user_by_external_id.json",
+    "test/support/fixtures/user_management/get_user_identities.json",
+    "test/support/fixtures/user_management/list_cors_origins.json",
+    "test/support/fixtures/user_management/list_invitations.json",
+    "test/support/fixtures/user_management/list_jwt_template.json",
+    "test/support/fixtures/user_management/list_redirect_uris.json",
+    "test/support/fixtures/user_management/list_sessions.json",
+    "test/support/fixtures/user_management/list_user_api_keys.json",
+    "test/support/fixtures/user_management/list_user_authorized_applications.json",
+    "test/support/fixtures/user_management/list_users.json",
+    "test/support/fixtures/user_management/resend_invitation.json",
+    "test/support/fixtures/user_management/reset_password.json",
+    "test/support/fixtures/user_management/revoke_invitation.json",
+    "test/support/fixtures/user_management/send_email_change.json",
+    "test/support/fixtures/user_management/send_invitation.json",
+    "test/support/fixtures/user_management/send_verification_email.json",
+    "test/support/fixtures/user_management/update_jwt_template.json",
+    "test/support/fixtures/user_management/update_user.json",
+    "test/support/fixtures/user_management/verify_email.json",
+    "test/support/fixtures/vault/create_data_key.json",
+    "test/support/fixtures/vault/create_decrypt.json",
+    "test/support/fixtures/vault/create_kv.json",
+    "test/support/fixtures/vault/create_rekey.json",
+    "test/support/fixtures/vault/delete_kv.json",
+    "test/support/fixtures/vault/get_kv.json",
+    "test/support/fixtures/vault/get_name.json",
+    "test/support/fixtures/vault/list_kv.json",
+    "test/support/fixtures/vault/list_kv_metadata.json",
+    "test/support/fixtures/vault/list_kv_versions.json",
+    "test/support/fixtures/vault/update_kv.json",
+    "test/support/fixtures/webhooks/create_webhook_endpoint.json",
+    "test/support/fixtures/webhooks/list_webhook_endpoints.json",
+    "test/support/fixtures/webhooks/update_webhook_endpoint.json",
+    "test/support/fixtures/widgets/create_token.json",
+    "test/support/test_fixtures.ex",
+    "test/test_helper.exs",
+    "test/workos/admin_portal_test.exs",
+    "test/workos/agents_test.exs",
+    "test/workos/api_keys_test.exs",
+    "test/workos/audit_logs_test.exs",
+    "test/workos/authorization_test.exs",
+    "test/workos/client_api_test.exs",
+    "test/workos/client_runtime_test.exs",
+    "test/workos/connect_test.exs",
+    "test/workos/directory_sync_test.exs",
+    "test/workos/events_test.exs",
+    "test/workos/feature_flags_test.exs",
+    "test/workos/groups_test.exs",
+    "test/workos/multi_factor_auth_test.exs",
+    "test/workos/organization_domains_test.exs",
+    "test/workos/organization_membership_service_test.exs",
+    "test/workos/organizations_test.exs",
+    "test/workos/pipes_provider_test.exs",
+    "test/workos/pipes_test.exs",
+    "test/workos/radar_test.exs",
+    "test/workos/sso_test.exs",
+    "test/workos/user_management_test.exs",
+    "test/workos/vault_test.exs",
+    "test/workos/webhooks_test.exs",
+    "test/workos/widgets_test.exs"
+  ],
+  "operations": {
+    "PATCH /agents/claims/attempts": {
+      "sdkMethod": "update_attempts",
+      "service": "agents"
+    },
+    "POST /agents/credentials/validate": {
+      "sdkMethod": "create_validate",
+      "service": "agents"
+    },
+    "GET /agents/registrations/{id}": {
+      "sdkMethod": "get_registration",
+      "service": "agents"
+    },
+    "POST /auth/challenges/{id}/verify": {
+      "sdkMethod": "verify_challenge",
+      "service": "multi_factor_auth"
+    },
+    "POST /auth/factors/enroll": {
+      "sdkMethod": "enroll_factor",
+      "service": "multi_factor_auth"
+    },
+    "GET /auth/factors/{id}": {
+      "sdkMethod": "get_factor",
+      "service": "multi_factor_auth"
+    },
+    "DELETE /auth/factors/{id}": {
+      "sdkMethod": "delete_factor",
+      "service": "multi_factor_auth"
+    },
+    "POST /auth/factors/{id}/challenge": {
+      "sdkMethod": "challenge_factor",
+      "service": "multi_factor_auth"
+    },
+    "POST /authkit/oauth2/complete": {
+      "sdkMethod": "complete_oauth_2",
+      "service": "connect"
+    },
+    "GET /authorization/groups/{group_id}/role_assignments": {
+      "sdkMethod": "list_group_role_assignments",
+      "service": "authorization"
+    },
+    "POST /authorization/groups/{group_id}/role_assignments": {
+      "sdkMethod": "create_group_role_assignment",
+      "service": "authorization"
+    },
+    "PUT /authorization/groups/{group_id}/role_assignments": {
+      "sdkMethod": "update_group_role_assignments",
+      "service": "authorization"
+    },
+    "DELETE /authorization/groups/{group_id}/role_assignments": {
+      "sdkMethod": "delete_group_role_assignments",
+      "service": "authorization"
+    },
+    "GET /authorization/groups/{group_id}/role_assignments/{role_assignment_id}": {
+      "sdkMethod": "get_group_role_assignment",
+      "service": "authorization"
+    },
+    "DELETE /authorization/groups/{group_id}/role_assignments/{role_assignment_id}": {
+      "sdkMethod": "delete_group_role_assignment",
+      "service": "authorization"
+    },
+    "POST /authorization/organization_memberships/{organization_membership_id}/check": {
+      "sdkMethod": "check",
+      "service": "authorization"
+    },
+    "GET /authorization/organization_memberships/{organization_membership_id}/resources": {
+      "sdkMethod": "list_resources_for_membership",
+      "service": "authorization"
+    },
+    "GET /authorization/organization_memberships/{organization_membership_id}/resources/{resource_id}/permissions": {
+      "sdkMethod": "list_effective_permissions",
+      "service": "authorization"
+    },
+    "GET /authorization/organization_memberships/{organization_membership_id}/resources/{resource_type_slug}/{external_id}/permissions": {
+      "sdkMethod": "list_effective_permissions_by_external_id",
+      "service": "authorization"
+    },
+    "GET /authorization/organization_memberships/{organization_membership_id}/role_assignments": {
+      "sdkMethod": "list_role_assignments",
+      "service": "authorization"
+    },
+    "POST /authorization/organization_memberships/{organization_membership_id}/role_assignments": {
+      "sdkMethod": "assign_role",
+      "service": "authorization"
+    },
+    "DELETE /authorization/organization_memberships/{organization_membership_id}/role_assignments": {
+      "sdkMethod": "remove_role",
+      "service": "authorization"
+    },
+    "DELETE /authorization/organization_memberships/{organization_membership_id}/role_assignments/{role_assignment_id}": {
+      "sdkMethod": "remove_role_assignment",
+      "service": "authorization"
+    },
+    "GET /authorization/organizations/{organizationId}/roles": {
+      "sdkMethod": "list_organization_roles",
+      "service": "authorization"
+    },
+    "POST /authorization/organizations/{organizationId}/roles": {
+      "sdkMethod": "create_organization_role",
+      "service": "authorization"
+    },
+    "GET /authorization/organizations/{organizationId}/roles/{slug}": {
+      "sdkMethod": "get_organization_role",
+      "service": "authorization"
+    },
+    "PATCH /authorization/organizations/{organizationId}/roles/{slug}": {
+      "sdkMethod": "update_organization_role",
+      "service": "authorization"
+    },
+    "DELETE /authorization/organizations/{organizationId}/roles/{slug}": {
+      "sdkMethod": "delete_organization_role",
+      "service": "authorization"
+    },
+    "POST /authorization/organizations/{organizationId}/roles/{slug}/permissions": {
+      "sdkMethod": "add_organization_role_permission",
+      "service": "authorization"
+    },
+    "PUT /authorization/organizations/{organizationId}/roles/{slug}/permissions": {
+      "sdkMethod": "set_organization_role_permissions",
+      "service": "authorization"
+    },
+    "DELETE /authorization/organizations/{organizationId}/roles/{slug}/permissions/{permissionSlug}": {
+      "sdkMethod": "remove_organization_role_permission",
+      "service": "authorization"
+    },
+    "GET /authorization/organizations/{organization_id}/resources/{resource_type_slug}/{external_id}": {
+      "sdkMethod": "get_resource_by_external_id",
+      "service": "authorization"
+    },
+    "PATCH /authorization/organizations/{organization_id}/resources/{resource_type_slug}/{external_id}": {
+      "sdkMethod": "update_resource_by_external_id",
+      "service": "authorization"
+    },
+    "DELETE /authorization/organizations/{organization_id}/resources/{resource_type_slug}/{external_id}": {
+      "sdkMethod": "delete_resource_by_external_id",
+      "service": "authorization"
+    },
+    "GET /authorization/organizations/{organization_id}/resources/{resource_type_slug}/{external_id}/organization_memberships": {
+      "sdkMethod": "list_memberships_for_resource_by_external_id",
+      "service": "authorization"
+    },
+    "GET /authorization/organizations/{organization_id}/resources/{resource_type_slug}/{external_id}/role_assignments": {
+      "sdkMethod": "list_role_assignments_for_resource_by_external_id",
+      "service": "authorization"
+    },
+    "GET /authorization/resources": {
+      "sdkMethod": "list_resources",
+      "service": "authorization"
+    },
+    "POST /authorization/resources": {
+      "sdkMethod": "create_resource",
+      "service": "authorization"
+    },
+    "GET /authorization/resources/{resource_id}": {
+      "sdkMethod": "get_resource",
+      "service": "authorization"
+    },
+    "PATCH /authorization/resources/{resource_id}": {
+      "sdkMethod": "update_resource",
+      "service": "authorization"
+    },
+    "DELETE /authorization/resources/{resource_id}": {
+      "sdkMethod": "delete_resource",
+      "service": "authorization"
+    },
+    "GET /authorization/resources/{resource_id}/organization_memberships": {
+      "sdkMethod": "list_memberships_for_resource",
+      "service": "authorization"
+    },
+    "GET /authorization/resources/{resource_id}/role_assignments": {
+      "sdkMethod": "list_role_assignments_for_resource",
+      "service": "authorization"
+    },
+    "GET /authorization/roles": {
+      "sdkMethod": "list_environment_roles",
+      "service": "authorization"
+    },
+    "POST /authorization/roles": {
+      "sdkMethod": "create_environment_role",
+      "service": "authorization"
+    },
+    "GET /authorization/roles/{slug}": {
+      "sdkMethod": "get_environment_role",
+      "service": "authorization"
+    },
+    "PATCH /authorization/roles/{slug}": {
+      "sdkMethod": "update_environment_role",
+      "service": "authorization"
+    },
+    "POST /authorization/roles/{slug}/permissions": {
+      "sdkMethod": "add_environment_role_permission",
+      "service": "authorization"
+    },
+    "PUT /authorization/roles/{slug}/permissions": {
+      "sdkMethod": "set_environment_role_permissions",
+      "service": "authorization"
+    },
+    "GET /authorization/permissions": {
+      "sdkMethod": "list_permissions",
+      "service": "authorization"
+    },
+    "POST /authorization/permissions": {
+      "sdkMethod": "create_permission",
+      "service": "authorization"
+    },
+    "GET /authorization/permissions/{slug}": {
+      "sdkMethod": "get_permission",
+      "service": "authorization"
+    },
+    "PATCH /authorization/permissions/{slug}": {
+      "sdkMethod": "update_permission",
+      "service": "authorization"
+    },
+    "DELETE /authorization/permissions/{slug}": {
+      "sdkMethod": "delete_permission",
+      "service": "authorization"
+    },
+    "POST /client/token": {
+      "sdkMethod": "create_token",
+      "service": "client_api"
+    },
+    "GET /connect/applications": {
+      "sdkMethod": "list_applications",
+      "service": "connect"
+    },
+    "POST /connect/applications": {
+      "sdkMethod": "create_application",
+      "service": "connect"
+    },
+    "GET /connect/applications/{id}": {
+      "sdkMethod": "get_application",
+      "service": "connect"
+    },
+    "PUT /connect/applications/{id}": {
+      "sdkMethod": "update_application",
+      "service": "connect"
+    },
+    "DELETE /connect/applications/{id}": {
+      "sdkMethod": "delete_application",
+      "service": "connect"
+    },
+    "GET /connect/applications/{id}/client_secrets": {
+      "sdkMethod": "list_application_client_secrets",
+      "service": "connect"
+    },
+    "POST /connect/applications/{id}/client_secrets": {
+      "sdkMethod": "create_application_client_secret",
+      "service": "connect"
+    },
+    "DELETE /connect/client_secrets/{id}": {
+      "sdkMethod": "delete_client_secret",
+      "service": "connect"
+    },
+    "GET /connections": {
+      "sdkMethod": "list_connections",
+      "service": "sso"
+    },
+    "GET /connections/{id}": {
+      "sdkMethod": "get_connection",
+      "service": "sso"
+    },
+    "DELETE /connections/{id}": {
+      "sdkMethod": "delete_connection",
+      "service": "sso"
+    },
+    "GET /data-integrations": {
+      "sdkMethod": "list_data_integrations",
+      "service": "pipes"
+    },
+    "POST /data-integrations": {
+      "sdkMethod": "create_data_integration",
+      "service": "pipes"
+    },
+    "GET /data-integrations/{slug}": {
+      "sdkMethod": "get_data_integration",
+      "service": "pipes"
+    },
+    "PUT /data-integrations/{slug}": {
+      "sdkMethod": "update_data_integration",
+      "service": "pipes"
+    },
+    "DELETE /data-integrations/{slug}": {
+      "sdkMethod": "delete_data_integration",
+      "service": "pipes"
+    },
+    "PUT /data-integrations/{slug}/api-key": {
+      "sdkMethod": "update_data_integration_api_key",
+      "service": "pipes"
+    },
+    "POST /data-integrations/{slug}/authorize": {
+      "sdkMethod": "authorize_data_integration",
+      "service": "pipes"
+    },
+    "POST /data-integrations/{slug}/credentials": {
+      "sdkMethod": "create_data_integration_credential",
+      "service": "pipes"
+    },
+    "POST /data-integrations/{provider}/token": {
+      "sdkMethod": "get_access_token",
+      "service": "pipes"
+    },
+    "GET /directories": {
+      "sdkMethod": "list_directories",
+      "service": "directory_sync"
+    },
+    "GET /directories/{id}": {
+      "sdkMethod": "get_directory",
+      "service": "directory_sync"
+    },
+    "DELETE /directories/{id}": {
+      "sdkMethod": "delete_directory",
+      "service": "directory_sync"
+    },
+    "GET /directory_groups": {
+      "sdkMethod": "list_groups",
+      "service": "directory_sync"
+    },
+    "GET /directory_groups/{id}": {
+      "sdkMethod": "get_group",
+      "service": "directory_sync"
+    },
+    "GET /directory_users": {
+      "sdkMethod": "list_users",
+      "service": "directory_sync"
+    },
+    "GET /directory_users/{id}": {
+      "sdkMethod": "get_user",
+      "service": "directory_sync"
+    },
+    "GET /events": {
+      "sdkMethod": "list_events",
+      "service": "events"
+    },
+    "GET /feature-flags": {
+      "sdkMethod": "list_feature_flags",
+      "service": "feature_flags"
+    },
+    "GET /feature-flags/{slug}": {
+      "sdkMethod": "get_feature_flag",
+      "service": "feature_flags"
+    },
+    "PUT /feature-flags/{slug}/disable": {
+      "sdkMethod": "disable_feature_flag",
+      "service": "feature_flags"
+    },
+    "PUT /feature-flags/{slug}/enable": {
+      "sdkMethod": "enable_feature_flag",
+      "service": "feature_flags"
+    },
+    "POST /feature-flags/{slug}/targets/{resourceId}": {
+      "sdkMethod": "add_flag_target",
+      "service": "feature_flags"
+    },
+    "DELETE /feature-flags/{slug}/targets/{resourceId}": {
+      "sdkMethod": "remove_flag_target",
+      "service": "feature_flags"
+    },
+    "POST /organization_domains": {
+      "sdkMethod": "create_organization_domain",
+      "service": "organization_domains"
+    },
+    "GET /organization_domains/{id}": {
+      "sdkMethod": "get_organization_domain",
+      "service": "organization_domains"
+    },
+    "DELETE /organization_domains/{id}": {
+      "sdkMethod": "delete_organization_domain",
+      "service": "organization_domains"
+    },
+    "POST /organization_domains/{id}/verify": {
+      "sdkMethod": "verify_organization_domain",
+      "service": "organization_domains"
+    },
+    "GET /organizations": {
+      "sdkMethod": "list_organizations",
+      "service": "organizations"
+    },
+    "POST /organizations": {
+      "sdkMethod": "create_organization",
+      "service": "organizations"
+    },
+    "GET /organizations/external_id/{external_id}": {
+      "sdkMethod": "get_organization_by_external_id",
+      "service": "organizations"
+    },
+    "GET /organizations/{id}": {
+      "sdkMethod": "get_organization",
+      "service": "organizations"
+    },
+    "PUT /organizations/{id}": {
+      "sdkMethod": "update_organization",
+      "service": "organizations"
+    },
+    "DELETE /organizations/{id}": {
+      "sdkMethod": "delete_organization",
+      "service": "organizations"
+    },
+    "GET /organizations/{id}/audit_log_configuration": {
+      "sdkMethod": "get_audit_log_configuration",
+      "service": "organizations"
+    },
+    "GET /organizations/{id}/audit_logs_retention": {
+      "sdkMethod": "get_organization_audit_logs_retention",
+      "service": "audit_logs"
+    },
+    "PUT /organizations/{id}/audit_logs_retention": {
+      "sdkMethod": "update_organization_audit_logs_retention",
+      "service": "audit_logs"
+    },
+    "GET /organizations/{organizationId}/api_keys": {
+      "sdkMethod": "list_organization_api_keys",
+      "service": "api_keys"
+    },
+    "POST /organizations/{organizationId}/api_keys": {
+      "sdkMethod": "create_organization_api_key",
+      "service": "api_keys"
+    },
+    "GET /organizations/{organizationId}/data_integration_configurations": {
+      "sdkMethod": "list_organization_data_integration_configurations",
+      "service": "pipes_provider"
+    },
+    "PUT /organizations/{organizationId}/data_integration_configurations/{slug}": {
+      "sdkMethod": "update_organization_data_integration_configuration",
+      "service": "pipes_provider"
+    },
+    "GET /organizations/{organizationId}/feature-flags": {
+      "sdkMethod": "list_organization_feature_flags",
+      "service": "feature_flags"
+    },
+    "GET /organizations/{organizationId}/groups": {
+      "sdkMethod": "list_organization_groups",
+      "service": "groups"
+    },
+    "POST /organizations/{organizationId}/groups": {
+      "sdkMethod": "create_organization_group",
+      "service": "groups"
+    },
+    "GET /organizations/{organizationId}/groups/{groupId}": {
+      "sdkMethod": "get_organization_group",
+      "service": "groups"
+    },
+    "PATCH /organizations/{organizationId}/groups/{groupId}": {
+      "sdkMethod": "update_organization_group",
+      "service": "groups"
+    },
+    "DELETE /organizations/{organizationId}/groups/{groupId}": {
+      "sdkMethod": "delete_organization_group",
+      "service": "groups"
+    },
+    "GET /organizations/{organizationId}/groups/{groupId}/organization-memberships": {
+      "sdkMethod": "list_group_organization_memberships",
+      "service": "groups"
+    },
+    "POST /organizations/{organizationId}/groups/{groupId}/organization-memberships": {
+      "sdkMethod": "create_group_organization_membership",
+      "service": "groups"
+    },
+    "DELETE /organizations/{organizationId}/groups/{groupId}/organization-memberships/{omId}": {
+      "sdkMethod": "delete_group_organization_membership",
+      "service": "groups"
+    },
+    "GET /organizations/{organization_id}/authorized_applications": {
+      "sdkMethod": "list_authorized_applications",
+      "service": "organizations"
+    },
+    "POST /portal/generate_link": {
+      "sdkMethod": "generate_link",
+      "service": "admin_portal"
+    },
+    "POST /radar/attempts": {
+      "sdkMethod": "create_attempt",
+      "service": "radar"
+    },
+    "PUT /radar/attempts/{id}": {
+      "sdkMethod": "update_attempt",
+      "service": "radar"
+    },
+    "POST /radar/lists/{type}/{action}": {
+      "sdkMethod": "add_list_entry",
+      "service": "radar"
+    },
+    "DELETE /radar/lists/{type}/{action}": {
+      "sdkMethod": "remove_list_entry",
+      "service": "radar"
+    },
+    "POST /sso/logout/authorize": {
+      "sdkMethod": "authorize_logout",
+      "service": "sso"
+    },
+    "GET /sso/profile": {
+      "sdkMethod": "get_profile",
+      "service": "sso"
+    },
+    "POST /sso/token": {
+      "sdkMethod": "get_profile_and_token",
+      "service": "sso"
+    },
+    "GET /sso/jwks/{clientId}": {
+      "sdkMethod": "get_jwks",
+      "service": "user_management"
+    },
+    "POST /user_management/authenticate": {
+      "sdkMethod": "create_authenticate",
+      "service": "user_management"
+    },
+    "POST /user_management/authorize/device": {
+      "sdkMethod": "create_device",
+      "service": "user_management"
+    },
+    "POST /user_management/radar_challenges": {
+      "sdkMethod": "create_radar_challenge",
+      "service": "user_management"
+    },
+    "GET /user_management/radar_challenges/{id}": {
+      "sdkMethod": "get_radar_challenge",
+      "service": "user_management"
+    },
+    "POST /user_management/sessions/revoke": {
+      "sdkMethod": "revoke_session",
+      "service": "user_management"
+    },
+    "GET /user_management/cors_origins": {
+      "sdkMethod": "list_cors_origins",
+      "service": "user_management"
+    },
+    "POST /user_management/cors_origins": {
+      "sdkMethod": "create_cors_origin",
+      "service": "user_management"
+    },
+    "GET /user_management/email_verification/{id}": {
+      "sdkMethod": "get_email_verification",
+      "service": "user_management"
+    },
+    "POST /user_management/password_reset": {
+      "sdkMethod": "reset_password",
+      "service": "user_management"
+    },
+    "POST /user_management/password_reset/confirm": {
+      "sdkMethod": "confirm_password_reset",
+      "service": "user_management"
+    },
+    "GET /user_management/password_reset/{id}": {
+      "sdkMethod": "get_password_reset",
+      "service": "user_management"
+    },
+    "GET /user_management/users": {
+      "sdkMethod": "list_users",
+      "service": "user_management"
+    },
+    "POST /user_management/users": {
+      "sdkMethod": "create_user",
+      "service": "user_management"
+    },
+    "GET /user_management/users/external_id/{external_id}": {
+      "sdkMethod": "get_user_by_external_id",
+      "service": "user_management"
+    },
+    "GET /user_management/users/{id}": {
+      "sdkMethod": "get_user",
+      "service": "user_management"
+    },
+    "PUT /user_management/users/{id}": {
+      "sdkMethod": "update_user",
+      "service": "user_management"
+    },
+    "DELETE /user_management/users/{id}": {
+      "sdkMethod": "delete_user",
+      "service": "user_management"
+    },
+    "POST /user_management/users/{id}/email_change/confirm": {
+      "sdkMethod": "confirm_email_change",
+      "service": "user_management"
+    },
+    "POST /user_management/users/{id}/email_change/send": {
+      "sdkMethod": "send_email_change",
+      "service": "user_management"
+    },
+    "POST /user_management/users/{id}/email_verification/confirm": {
+      "sdkMethod": "verify_email",
+      "service": "user_management"
+    },
+    "POST /user_management/users/{id}/email_verification/send": {
+      "sdkMethod": "send_verification_email",
+      "service": "user_management"
+    },
+    "GET /user_management/users/{id}/identities": {
+      "sdkMethod": "get_user_identities",
+      "service": "user_management"
+    },
+    "GET /user_management/users/{id}/sessions": {
+      "sdkMethod": "list_sessions",
+      "service": "user_management"
+    },
+    "GET /user_management/invitations": {
+      "sdkMethod": "list_invitations",
+      "service": "user_management"
+    },
+    "POST /user_management/invitations": {
+      "sdkMethod": "send_invitation",
+      "service": "user_management"
+    },
+    "GET /user_management/invitations/by_token/{token}": {
+      "sdkMethod": "find_invitation_by_token",
+      "service": "user_management"
+    },
+    "GET /user_management/invitations/{id}": {
+      "sdkMethod": "get_invitation",
+      "service": "user_management"
+    },
+    "POST /user_management/invitations/{id}/accept": {
+      "sdkMethod": "accept_invitation",
+      "service": "user_management"
+    },
+    "POST /user_management/invitations/{id}/resend": {
+      "sdkMethod": "resend_invitation",
+      "service": "user_management"
+    },
+    "POST /user_management/invitations/{id}/revoke": {
+      "sdkMethod": "revoke_invitation",
+      "service": "user_management"
+    },
+    "GET /user_management/jwt_template": {
+      "sdkMethod": "list_jwt_template",
+      "service": "user_management"
+    },
+    "PUT /user_management/jwt_template": {
+      "sdkMethod": "update_jwt_template",
+      "service": "user_management"
+    },
+    "POST /user_management/magic_auth": {
+      "sdkMethod": "create_magic_auth",
+      "service": "user_management"
+    },
+    "GET /user_management/magic_auth/{id}": {
+      "sdkMethod": "get_magic_auth",
+      "service": "user_management"
+    },
+    "GET /user_management/organization_memberships": {
+      "sdkMethod": "list_organization_memberships",
+      "service": "organization_membership_service"
+    },
+    "POST /user_management/organization_memberships": {
+      "sdkMethod": "create_organization_membership",
+      "service": "organization_membership_service"
+    },
+    "GET /user_management/organization_memberships/{id}": {
+      "sdkMethod": "get_organization_membership",
+      "service": "organization_membership_service"
+    },
+    "PUT /user_management/organization_memberships/{id}": {
+      "sdkMethod": "update_organization_membership",
+      "service": "organization_membership_service"
+    },
+    "DELETE /user_management/organization_memberships/{id}": {
+      "sdkMethod": "delete_organization_membership",
+      "service": "organization_membership_service"
+    },
+    "PUT /user_management/organization_memberships/{id}/deactivate": {
+      "sdkMethod": "deactivate_organization_membership",
+      "service": "organization_membership_service"
+    },
+    "PUT /user_management/organization_memberships/{id}/reactivate": {
+      "sdkMethod": "reactivate_organization_membership",
+      "service": "organization_membership_service"
+    },
+    "GET /user_management/organization_memberships/{omId}/groups": {
+      "sdkMethod": "list_organization_membership_groups",
+      "service": "organization_membership_service"
+    },
+    "GET /user_management/redirect_uris": {
+      "sdkMethod": "list_redirect_uris",
+      "service": "user_management"
+    },
+    "POST /user_management/redirect_uris": {
+      "sdkMethod": "create_redirect_uri",
+      "service": "user_management"
+    },
+    "DELETE /user_management/redirect_uris/{id}": {
+      "sdkMethod": "delete_redirect_uris",
+      "service": "user_management"
+    },
+    "GET /user_management/users/{userId}/feature-flags": {
+      "sdkMethod": "list_user_feature_flags",
+      "service": "feature_flags"
+    },
+    "GET /user_management/users/{user_id}/authorized_applications": {
+      "sdkMethod": "list_user_authorized_applications",
+      "service": "user_management"
+    },
+    "DELETE /user_management/users/{user_id}/authorized_applications/{application_id}": {
+      "sdkMethod": "delete_user_authorized_application",
+      "service": "user_management"
+    },
+    "GET /user_management/users/{user_id}/connected_accounts/{slug}": {
+      "sdkMethod": "get_user_connected_account",
+      "service": "pipes"
+    },
+    "POST /user_management/users/{user_id}/connected_accounts/{slug}": {
+      "sdkMethod": "create_user_connected_account",
+      "service": "pipes"
+    },
+    "PUT /user_management/users/{user_id}/connected_accounts/{slug}": {
+      "sdkMethod": "update_user_connected_account",
+      "service": "pipes"
+    },
+    "DELETE /user_management/users/{user_id}/connected_accounts/{slug}": {
+      "sdkMethod": "delete_user_connected_account",
+      "service": "pipes"
+    },
+    "GET /user_management/users/{user_id}/data_providers": {
+      "sdkMethod": "list_user_data_providers",
+      "service": "pipes"
+    },
+    "GET /user_management/users/{userlandUserId}/auth_factors": {
+      "sdkMethod": "list_user_auth_factors",
+      "service": "multi_factor_auth"
+    },
+    "POST /user_management/users/{userlandUserId}/auth_factors": {
+      "sdkMethod": "create_user_auth_factor",
+      "service": "multi_factor_auth"
+    },
+    "POST /vault/v1/keys/data-key": {
+      "sdkMethod": "create_data_key",
+      "service": "vault"
+    },
+    "POST /vault/v1/keys/decrypt": {
+      "sdkMethod": "create_decrypt",
+      "service": "vault"
+    },
+    "POST /vault/v1/keys/rekey": {
+      "sdkMethod": "create_rekey",
+      "service": "vault"
+    },
+    "GET /vault/v1/kv": {
+      "sdkMethod": "list_kv",
+      "service": "vault"
+    },
+    "POST /vault/v1/kv": {
+      "sdkMethod": "create_kv",
+      "service": "vault"
+    },
+    "GET /vault/v1/kv/name/{name}": {
+      "sdkMethod": "get_name",
+      "service": "vault"
+    },
+    "GET /vault/v1/kv/{id}": {
+      "sdkMethod": "get_kv",
+      "service": "vault"
+    },
+    "PUT /vault/v1/kv/{id}": {
+      "sdkMethod": "update_kv",
+      "service": "vault"
+    },
+    "DELETE /vault/v1/kv/{id}": {
+      "sdkMethod": "delete_kv",
+      "service": "vault"
+    },
+    "GET /vault/v1/kv/{id}/metadata": {
+      "sdkMethod": "list_kv_metadata",
+      "service": "vault"
+    },
+    "GET /vault/v1/kv/{id}/versions": {
+      "sdkMethod": "list_kv_versions",
+      "service": "vault"
+    },
+    "GET /webhook_endpoints": {
+      "sdkMethod": "list_webhook_endpoints",
+      "service": "webhooks"
+    },
+    "POST /webhook_endpoints": {
+      "sdkMethod": "create_webhook_endpoint",
+      "service": "webhooks"
+    },
+    "PATCH /webhook_endpoints/{id}": {
+      "sdkMethod": "update_webhook_endpoint",
+      "service": "webhooks"
+    },
+    "DELETE /webhook_endpoints/{id}": {
+      "sdkMethod": "delete_webhook_endpoint",
+      "service": "webhooks"
+    },
+    "POST /widgets/token": {
+      "sdkMethod": "create_token",
+      "service": "widgets"
+    },
+    "POST /api_keys/validations": {
+      "sdkMethod": "create_validation",
+      "service": "api_keys"
+    },
+    "DELETE /api_keys/{id}": {
+      "sdkMethod": "delete_api_key",
+      "service": "api_keys"
+    },
+    "POST /api_keys/{id}/expire": {
+      "sdkMethod": "create_api_key_expire",
+      "service": "api_keys"
+    },
+    "GET /user_management/users/{userId}/api_keys": {
+      "sdkMethod": "list_user_api_keys",
+      "service": "user_management"
+    },
+    "POST /user_management/users/{userId}/api_keys": {
+      "sdkMethod": "create_user_api_key",
+      "service": "user_management"
+    },
+    "GET /audit_logs/actions": {
+      "sdkMethod": "list_actions",
+      "service": "audit_logs"
+    },
+    "GET /audit_logs/actions/{actionName}/schemas": {
+      "sdkMethod": "list_action_schemas",
+      "service": "audit_logs"
+    },
+    "POST /audit_logs/actions/{actionName}/schemas": {
+      "sdkMethod": "create_schema",
+      "service": "audit_logs"
+    },
+    "POST /audit_logs/events": {
+      "sdkMethod": "create_event",
+      "service": "audit_logs"
+    },
+    "POST /audit_logs/exports": {
+      "sdkMethod": "create_export",
+      "service": "audit_logs"
+    },
+    "GET /audit_logs/exports/{auditLogExportId}": {
+      "sdkMethod": "get_export",
+      "service": "audit_logs"
+    }
+  }
+}

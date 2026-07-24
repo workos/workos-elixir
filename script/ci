@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+echo "==> Fetching dependencies..."
+mix deps.get
+
+echo "==> Compiling (warnings as errors)..."
+mix compile --warnings-as-errors
+
+echo "==> Checking formatting..."
+mix format --check-formatted
+
+echo "==> credo (lint)..."
+mix credo --all
+
+echo "==> dialyzer (typecheck)..."
+mix dialyzer
+
+echo "==> Running tests..."
+mix test
+
+echo "==> All checks passed."

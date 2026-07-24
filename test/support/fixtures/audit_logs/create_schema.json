@@ -1,0 +1,15 @@
+{
+  "object": "audit_log_schema",
+  "version": 1,
+  "actor": {
+    "metadata": {}
+  },
+  "targets": [
+    {
+      "type": "type",
+      "metadata": {}
+    }
+  ],
+  "metadata": {},
+  "created_at": "2024-01-01T00:00:00.000Z"
+}

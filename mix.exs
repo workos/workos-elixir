@@ -1,7 +1,7 @@
 defmodule WorkOS.MixProject do
   use Mix.Project
 
-  @version "1.2.3"
+  @version "2.0.0"
   @source_url "https://github.com/workos/workos-elixir"
 
   def project do
@@ -9,14 +9,13 @@ defmodule WorkOS.MixProject do
       app: :workos,
       version: @version,
       name: "WorkOS SDK for Elixir",
-      elixir: "~> 1.16",
+      elixir: "~> 1.18",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       description: description(),
       package: package(),
       docs: docs(),
       deps: deps(),
-      source_ref: "#{@version}",
       dialyzer: [
         flags: [:unmatched_returns, :error_handling, :extra_return],
         plt_file: {:no_warn, "plts/dialyzer.plt"},
@@ -33,7 +32,7 @@ defmodule WorkOS.MixProject do
     """
   end
 
-  defp package() do
+  defp package do
     [
       description: description(),
       licenses: ["MIT"],
@@ -51,94 +50,31 @@ defmodule WorkOS.MixProject do
     ]
   end
 
-  # Run "mix help compile.app" to learn about applications.
   def application do
-    [
-      extra_applications: [:logger]
-    ]
+    [extra_applications: [:logger, :crypto]]
   end
 
-  # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
 
-  # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:tesla, "~> 1.4"},
-      {:jason, "~> 1.4.1"},
-      {:hackney, "~> 1.9"},
-      {:plug_crypto, "~> 2.0"},
-      {:ex_doc, "~> 0.23", only: :dev, runtime: false},
+      {:req, "~> 0.5"},
+      {:plug, "~> 1.16", only: :test},
+      {:ex_doc, "~> 0.34", only: :dev, runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.4", only: [:test, :dev], runtime: false}
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false}
     ]
   end
 
-  defp docs() do
+  defp docs do
     [
       extras: [
         "README.md": [title: "Overview"]
       ],
       main: "readme",
       source_url: @source_url,
-      source_ref: "v#{@version}",
-      groups_for_modules: groups_for_modules()
-    ]
-  end
-
-  defp groups_for_modules() do
-    [
-      "Core API": [
-        WorkOS.AuditLogs,
-        WorkOS.DirectorySync,
-        WorkOS.Events,
-        WorkOS.OrganizationDomains,
-        WorkOS.Organizations,
-        WorkOS.Passwordless,
-        WorkOS.Portal,
-        WorkOS.SSO,
-        WorkOS.UserManagement,
-        WorkOS.Webhooks
-      ],
-      "Response Structs": [
-        WorkOS.AuditLogs.Export,
-        WorkOS.DirectorySync.Directory,
-        WorkOS.DirectorySync.Directory.Group,
-        WorkOS.DirectorySync.Directory.User,
-        WorkOS.Events.Event,
-        WorkOS.Organizations.Organization,
-        WorkOS.Organizations.Organization.Domain,
-        WorkOS.OrganizationDomains.OrganizationDomain,
-        WorkOS.Passwordless.Session,
-        WorkOS.Passwordless.Session.Send,
-        WorkOS.Portal.Link,
-        WorkOS.SSO.Connection,
-        WorkOS.SSO.Connection.Domain,
-        WorkOS.SSO.Profile,
-        WorkOS.SSO.ProfileAndToken,
-        WorkOS.UserManagement.Authentication,
-        WorkOS.UserManagement.EmailVerification.SendVerificationEmail,
-        WorkOS.UserManagement.EmailVerification.VerifyEmail,
-        WorkOS.UserManagement.EnrollAuthFactor,
-        WorkOS.UserManagement.Invitation,
-        WorkOS.UserManagement.MagicAuth.SendMagicAuthCode,
-        WorkOS.UserManagement.MultiFactor.AuthenticationChallenge,
-        WorkOS.UserManagement.MultiFactor.AuthenticationFactor,
-        WorkOS.UserManagement.MultiFactor.EnrollAuthFactor,
-        WorkOS.UserManagement.MultiFactor.SMS,
-        WorkOS.UserManagement.MultiFactor.TOTP,
-        WorkOS.UserManagement.OrganizationMembership,
-        WorkOS.UserManagement.ResetPassword,
-        WorkOS.Webhooks.Event,
-        WorkOS.Empty,
-        WorkOS.Error,
-        WorkOS.List
-      ],
-      "API Client": [
-        WorkOS.Client,
-        WorkOS.Client.TeslaClient
-      ]
+      source_ref: "v#{@version}"
     ]
   end
 end

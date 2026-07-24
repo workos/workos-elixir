@@ -1,0 +1,20 @@
+{
+  "object": "data_integration_configuration",
+  "id": "id",
+  "organization_id": "organization_id",
+  "slug": "slug",
+  "name": "name",
+  "enabled": true,
+  "scopes": [
+    "scopes"
+  ],
+  "created_at": "created_at",
+  "updated_at": "updated_at",
+  "credentials": {
+    "credentials_type": "shared",
+    "has_credentials": true,
+    "client_id": "client_id",
+    "client_secret_last_four": "client_secret_last_four",
+    "redirect_uri": "redirect_uri"
+  }
+}
