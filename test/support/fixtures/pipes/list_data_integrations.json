@@ -29,6 +29,7 @@
             "organization_id": "organization_id",
             "api_key_last_4": "api_key_last_4"
           },
+          "config": {},
           "custom_provider": {
             "name": "name",
             "authorization_url": "authorization_url",

@@ -18,6 +18,7 @@ defmodule WorkOS.DataIntegration do
     :auth_methods,
     :credentials,
     :installation,
+    :config,
     :custom_provider,
     :created_at,
     :updated_at
@@ -36,6 +37,7 @@ defmodule WorkOS.DataIntegration do
           auth_methods: [WorkOS.DataIntegrationAuthMethods.t()],
           credentials: WorkOS.DataIntegrationCredential.t(),
           installation: WorkOS.DataIntegrationInstallation.t() | nil,
+          config: %{optional(String.t()) => String.t()},
           custom_provider: WorkOS.DataIntegrationCustomProvider.t() | nil,
           created_at: String.t(),
           updated_at: String.t()
@@ -60,6 +62,7 @@ defmodule WorkOS.DataIntegration do
         WorkOS.Cast.nested(map["credentials"], &WorkOS.DataIntegrationCredential.from_map/1),
       installation:
         WorkOS.Cast.nested(map["installation"], &WorkOS.DataIntegrationInstallation.from_map/1),
+      config: map["config"],
       custom_provider:
         WorkOS.Cast.nested(
           map["custom_provider"],
@@ -89,6 +92,7 @@ defmodule WorkOS.DataIntegration do
         WorkOS.Cast.dump_struct(struct.credentials, &WorkOS.DataIntegrationCredential.to_map/1),
       "installation" =>
         WorkOS.Cast.dump_struct(struct.installation, &WorkOS.DataIntegrationInstallation.to_map/1),
+      "config" => struct.config,
       "custom_provider" =>
         WorkOS.Cast.dump_struct(
           struct.custom_provider,

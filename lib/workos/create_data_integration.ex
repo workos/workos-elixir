@@ -11,6 +11,7 @@ defmodule WorkOS.CreateDataIntegration do
     :enabled,
     :scopes,
     :auth_methods,
+    :config,
     :credentials,
     :api_key,
     :custom_provider
@@ -22,6 +23,7 @@ defmodule WorkOS.CreateDataIntegration do
           enabled: boolean() | nil,
           scopes: [String.t()] | nil,
           auth_methods: [WorkOS.CreateDataIntegrationAuthMethods.t()] | nil,
+          config: %{optional(String.t()) => String.t()} | nil,
           credentials: WorkOS.DataIntegrationCredentialsInput.t() | nil,
           api_key: WorkOS.ApiKeyInstallation.t() | nil,
           custom_provider: WorkOS.CustomProviderDefinition.t() | nil
@@ -37,6 +39,7 @@ defmodule WorkOS.CreateDataIntegration do
       scopes: map["scopes"],
       auth_methods:
         WorkOS.Cast.list(map["auth_methods"], &WorkOS.CreateDataIntegrationAuthMethods.cast/1),
+      config: map["config"],
       credentials:
         WorkOS.Cast.nested(map["credentials"], &WorkOS.DataIntegrationCredentialsInput.from_map/1),
       api_key: WorkOS.Cast.nested(map["api_key"], &WorkOS.ApiKeyInstallation.from_map/1),
@@ -55,6 +58,7 @@ defmodule WorkOS.CreateDataIntegration do
       "scopes" => struct.scopes,
       "auth_methods" =>
         WorkOS.Cast.list(struct.auth_methods, &WorkOS.CreateDataIntegrationAuthMethods.dump/1),
+      "config" => struct.config,
       "credentials" =>
         WorkOS.Cast.dump_struct(
           struct.credentials,
