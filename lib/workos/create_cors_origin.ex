@@ -2,7 +2,7 @@
 
 defmodule WorkOS.CreateCORSOrigin do
   @moduledoc """
-  CreateCorsOrigin model.
+  CreateCORSOrigin model.
   """
 
   defstruct [

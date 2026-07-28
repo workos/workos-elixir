@@ -2,7 +2,7 @@
 
 defmodule WorkOS.AuthenticationMFASucceeded do
   @moduledoc """
-  AuthenticationMfaSucceeded model.
+  AuthenticationMFASucceeded model.
   """
 
   defstruct [

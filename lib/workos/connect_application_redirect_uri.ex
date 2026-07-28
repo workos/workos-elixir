@@ -2,7 +2,7 @@
 
 defmodule WorkOS.ConnectApplicationRedirectUri do
   @moduledoc """
-  ConnectApplication_redirect_uri model.
+  ConnectApplicationRedirectUri model.
   """
 
   defstruct [

@@ -2,7 +2,7 @@
 
 defmodule WorkOS.MFATotpSessionAuthenticateRequest do
   @moduledoc """
-  MfaTotpSessionAuthenticateRequest model.
+  MFATotpSessionAuthenticateRequest model.
   """
 
   defstruct [

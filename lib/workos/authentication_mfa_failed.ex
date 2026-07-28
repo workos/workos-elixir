@@ -2,7 +2,7 @@
 
 defmodule WorkOS.AuthenticationMFAFailed do
   @moduledoc """
-  AuthenticationMfaFailed model.
+  AuthenticationMFAFailed model.
   """
 
   defstruct [

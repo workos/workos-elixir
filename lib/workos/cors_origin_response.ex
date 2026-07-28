@@ -2,7 +2,7 @@
 
 defmodule WorkOS.CORSOriginResponse do
   @moduledoc """
-  CorsOriginResponse model.
+  CORSOriginResponse model.
   """
 
   defstruct [
