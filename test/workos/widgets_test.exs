@@ -15,10 +15,26 @@ defmodule WorkOS.WidgetsTest do
 
   test "create_token succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/widgets/token"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("widgets/create_token"))
     end)
 
-    assert {:ok, %WorkOS.WidgetSessionTokenResponse{}} = WorkOS.Widgets.create_token(client)
+    assert {:ok, %WorkOS.WidgetSessionTokenResponse{token: "token"}} =
+             WorkOS.Widgets.create_token(client)
+  end
+
+  test "create_token honors per-request options", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      assert Plug.Conn.get_req_header(conn, "x-custom") == ["value"]
+      assert conn.host == "override.example.com"
+      Plug.Conn.send_resp(conn, 204, "")
+    end)
+
+    WorkOS.Widgets.create_token(client, %{},
+      headers: [{"x-custom", "value"}],
+      base_url: "https://override.example.com"
+    )
   end
 
   test "surfaces API errors as tagged tuples", %{client: client} do

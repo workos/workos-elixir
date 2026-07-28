@@ -15,14 +15,19 @@ defmodule WorkOS.RadarTest do
 
   test "create_attempt succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/radar/attempts"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("radar/create_attempt"))
     end)
 
-    assert {:ok, %WorkOS.RadarStandaloneResponse{}} = WorkOS.Radar.create_attempt(client)
+    assert {:ok, %WorkOS.RadarStandaloneResponse{reason: "reason", attempt_id: "attempt_id"}} =
+             WorkOS.Radar.create_attempt(client)
   end
 
   test "update_attempt succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "PUT"
+      assert conn.request_path == "/radar/attempts/test_id"
       Plug.Conn.send_resp(conn, 204, "")
     end)
 
@@ -31,19 +36,36 @@ defmodule WorkOS.RadarTest do
 
   test "add_list_entry succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/radar/lists/test_type/test_action"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("radar/add_list_entry"))
     end)
 
-    assert {:ok, %WorkOS.RadarListEntryAlreadyPresentResponse{}} =
+    assert {:ok, %WorkOS.RadarListEntryAlreadyPresentResponse{message: "message"}} =
              WorkOS.Radar.add_list_entry(client, "test_type", "test_action")
   end
 
   test "remove_list_entry succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "DELETE"
+      assert conn.request_path == "/radar/lists/test_type/test_action"
       Plug.Conn.send_resp(conn, 204, "")
     end)
 
     assert {:ok, _} = WorkOS.Radar.remove_list_entry(client, "test_type", "test_action")
+  end
+
+  test "create_attempt honors per-request options", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      assert Plug.Conn.get_req_header(conn, "x-custom") == ["value"]
+      assert conn.host == "override.example.com"
+      Plug.Conn.send_resp(conn, 204, "")
+    end)
+
+    WorkOS.Radar.create_attempt(client, %{},
+      headers: [{"x-custom", "value"}],
+      base_url: "https://override.example.com"
+    )
   end
 
   test "surfaces API errors as tagged tuples", %{client: client} do

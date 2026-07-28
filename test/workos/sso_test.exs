@@ -15,23 +15,40 @@ defmodule WorkOS.SSOTest do
 
   test "list_connections succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/connections"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("sso/list_connections"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.ConnectionList{} | _]}} =
+    assert {:ok, %WorkOS.Page{data: [%WorkOS.ConnectionList{object: "list"} | _]}} =
              WorkOS.SSO.list_connections(client)
+  end
+
+  test "list_connections handles an empty page", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, %WorkOS.Page{data: []} = page} = WorkOS.SSO.list_connections(client)
+    refute WorkOS.Page.has_more?(page)
+    assert page |> WorkOS.Page.stream() |> Enum.to_list() == []
   end
 
   test "get_connection succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/connections/test_id"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("sso/get_connection"))
     end)
 
-    assert {:ok, %WorkOS.Connection{}} = WorkOS.SSO.get_connection(client, "test_id")
+    assert {:ok, %WorkOS.Connection{object: "connection", id: "id"}} =
+             WorkOS.SSO.get_connection(client, "test_id")
   end
 
   test "delete_connection succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "DELETE"
+      assert conn.request_path == "/connections/test_id"
       Plug.Conn.send_resp(conn, 204, "")
     end)
 
@@ -40,26 +57,37 @@ defmodule WorkOS.SSOTest do
 
   test "authorize_logout succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/sso/logout/authorize"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("sso/authorize_logout"))
     end)
 
-    assert {:ok, %WorkOS.SSOLogoutAuthorizeResponse{}} = WorkOS.SSO.authorize_logout(client)
+    assert {:ok,
+            %WorkOS.SSOLogoutAuthorizeResponse{
+              logout_url: "logout_url",
+              logout_token: "logout_token"
+            }} = WorkOS.SSO.authorize_logout(client)
   end
 
   test "get_profile succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/sso/profile"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("sso/get_profile"))
     end)
 
-    assert {:ok, %WorkOS.Profile{}} = WorkOS.SSO.get_profile(client)
+    assert {:ok, %WorkOS.Profile{object: "profile", id: "id"}} = WorkOS.SSO.get_profile(client)
   end
 
   test "get_profile_and_token succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/sso/token"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("sso/get_profile_and_token"))
     end)
 
-    assert {:ok, %WorkOS.SSOTokenResponse{}} = WorkOS.SSO.get_profile_and_token(client)
+    assert {:ok, %WorkOS.SSOTokenResponse{token_type: "Bearer", access_token: "access_token"}} =
+             WorkOS.SSO.get_profile_and_token(client)
   end
 
   test "get_authorization_url builds a redirect URL without an HTTP request", %{client: client} do
@@ -77,6 +105,30 @@ defmodule WorkOS.SSOTest do
     assert is_binary(url)
     assert String.starts_with?(url, client.base_url)
     assert url =~ "/sso/logout"
+  end
+
+  test "list_connections encodes query parameters", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      params = Plug.Conn.fetch_query_params(conn).query_params
+      assert params["before"] == "hello world&x"
+      refute Map.has_key?(params, "after")
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, _} = WorkOS.SSO.list_connections(client, %{before: "hello world&x"})
+  end
+
+  test "list_connections honors per-request options", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      assert Plug.Conn.get_req_header(conn, "x-custom") == ["value"]
+      assert conn.host == "override.example.com"
+      Plug.Conn.send_resp(conn, 204, "")
+    end)
+
+    WorkOS.SSO.list_connections(client, %{},
+      headers: [{"x-custom", "value"}],
+      base_url: "https://override.example.com"
+    )
   end
 
   test "surfaces API errors as tagged tuples", %{client: client} do

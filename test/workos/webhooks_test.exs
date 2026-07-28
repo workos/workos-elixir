@@ -15,36 +15,79 @@ defmodule WorkOS.WebhooksTest do
 
   test "list_webhook_endpoints succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/webhook_endpoints"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("webhooks/list_webhook_endpoints"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.WebhookEndpointList{} | _]}} =
+    assert {:ok, %WorkOS.Page{data: [%WorkOS.WebhookEndpointList{object: "list"} | _]}} =
              WorkOS.Webhooks.list_webhook_endpoints(client)
+  end
+
+  test "list_webhook_endpoints handles an empty page", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, %WorkOS.Page{data: []} = page} = WorkOS.Webhooks.list_webhook_endpoints(client)
+    refute WorkOS.Page.has_more?(page)
+    assert page |> WorkOS.Page.stream() |> Enum.to_list() == []
   end
 
   test "create_webhook_endpoint succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/webhook_endpoints"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("webhooks/create_webhook_endpoint"))
     end)
 
-    assert {:ok, %WorkOS.WebhookEndpoint{}} = WorkOS.Webhooks.create_webhook_endpoint(client)
+    assert {:ok, %WorkOS.WebhookEndpoint{object: "webhook_endpoint", id: "id"}} =
+             WorkOS.Webhooks.create_webhook_endpoint(client)
   end
 
   test "update_webhook_endpoint succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "PATCH"
+      assert conn.request_path == "/webhook_endpoints/test_id"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("webhooks/update_webhook_endpoint"))
     end)
 
-    assert {:ok, %WorkOS.WebhookEndpoint{}} =
+    assert {:ok, %WorkOS.WebhookEndpoint{object: "webhook_endpoint", id: "id"}} =
              WorkOS.Webhooks.update_webhook_endpoint(client, "test_id")
   end
 
   test "delete_webhook_endpoint succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "DELETE"
+      assert conn.request_path == "/webhook_endpoints/test_id"
       Plug.Conn.send_resp(conn, 204, "")
     end)
 
     assert {:ok, _} = WorkOS.Webhooks.delete_webhook_endpoint(client, "test_id")
+  end
+
+  test "list_webhook_endpoints encodes query parameters", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      params = Plug.Conn.fetch_query_params(conn).query_params
+      assert params["before"] == "hello world&x"
+      refute Map.has_key?(params, "after")
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, _} = WorkOS.Webhooks.list_webhook_endpoints(client, %{before: "hello world&x"})
+  end
+
+  test "list_webhook_endpoints honors per-request options", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      assert Plug.Conn.get_req_header(conn, "x-custom") == ["value"]
+      assert conn.host == "override.example.com"
+      Plug.Conn.send_resp(conn, 204, "")
+    end)
+
+    WorkOS.Webhooks.list_webhook_endpoints(client, %{},
+      headers: [{"x-custom", "value"}],
+      base_url: "https://override.example.com"
+    )
   end
 
   test "surfaces API errors as tagged tuples", %{client: client} do

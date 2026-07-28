@@ -61,25 +61,6 @@ defmodule WorkOS.Connect do
   end
 
   @doc """
-  Create a Connect Application
-
-  Create a new Connect Application. Supports both OAuth and Machine-to-Machine (M2M) application types.
-
-  ## Parameters
-
-    * `params` — request body map
-    * `opts` — per-request options (see `WorkOS.Client.request/5`)
-  """
-  @spec create_application(WorkOS.Client.t(), map(), keyword()) ::
-          {:ok, WorkOS.ConnectApplication.t()} | {:error, WorkOS.Error.error()}
-  def create_application(client, params \\ %{}, opts \\ []) do
-    with {:ok, body} <-
-           WorkOS.Client.request(client, :post, "/connect/applications", params, opts) do
-      {:ok, WorkOS.Cast.nested(body, &WorkOS.ConnectApplication.from_map/1)}
-    end
-  end
-
-  @doc """
   Create oauth application
 
   Create a Connect Application

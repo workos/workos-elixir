@@ -3,6 +3,10 @@
 defmodule WorkOS.Organization do
   @moduledoc """
   Organization model.
+
+  ## Deprecated fields
+
+    * `:allow_profiles_outside_organization` — Whether the Organization allows profiles outside of its managed domains.
   """
 
   defstruct [

@@ -3,6 +3,10 @@
 defmodule WorkOS.UpdateOrganization do
   @moduledoc """
   UpdateOrganization model.
+
+  ## Deprecated fields
+
+    * `:domains` — The domains associated with the organization. Deprecated in favor of `domain_data`.
   """
 
   defstruct [

@@ -3,6 +3,10 @@
 defmodule WorkOS.Connection do
   @moduledoc """
   Connection model.
+
+  ## Deprecated fields
+
+    * `:status` — Deprecated. Use `state` instead.
   """
 
   defstruct [
@@ -15,8 +19,7 @@ defmodule WorkOS.Connection do
     :domains,
     :created_at,
     :updated_at,
-    :organization_id,
-    :callback_endpoint
+    :organization_id
   ]
 
   @type t :: %__MODULE__{
@@ -29,8 +32,7 @@ defmodule WorkOS.Connection do
           domains: [WorkOS.ConnectionDomain.t()],
           created_at: String.t(),
           updated_at: String.t(),
-          organization_id: String.t() | nil,
-          callback_endpoint: String.t() | nil
+          organization_id: String.t() | nil
         }
 
   @doc false
@@ -46,8 +48,7 @@ defmodule WorkOS.Connection do
       domains: WorkOS.Cast.list(map["domains"], &WorkOS.ConnectionDomain.from_map/1),
       created_at: map["created_at"],
       updated_at: map["updated_at"],
-      organization_id: map["organization_id"],
-      callback_endpoint: map["callback_endpoint"]
+      organization_id: map["organization_id"]
     }
   end
 
@@ -68,8 +69,7 @@ defmodule WorkOS.Connection do
         end),
       "created_at" => struct.created_at,
       "updated_at" => struct.updated_at,
-      "organization_id" => struct.organization_id,
-      "callback_endpoint" => struct.callback_endpoint
+      "organization_id" => struct.organization_id
     })
   end
 end

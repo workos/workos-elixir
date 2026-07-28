@@ -12,7 +12,7 @@ defmodule WorkOS.DirectorySync do
 
   ## Parameters
 
-    * `params` — query parameters: `:before`, `:after_`, `:limit`, `:order`, `:organization_id`, `:search`, `:domain`
+    * `params` — query parameters: `:before`, `:after_`, `:limit`, `:order`, `:organization_id`, `:search`, `:domain` (deprecated)
     * `opts` — per-request options (see `WorkOS.Client.request/5`)
   """
   @spec list_directories(WorkOS.Client.t(), map(), keyword()) ::

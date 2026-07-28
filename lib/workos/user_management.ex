@@ -31,25 +31,6 @@ defmodule WorkOS.UserManagement do
   end
 
   @doc """
-  Authenticate
-
-  Authenticate a user with a specified [authentication method](https://workos.com/docs/reference/authkit/authentication).
-
-  ## Parameters
-
-    * `params` — request body map
-    * `opts` — per-request options (see `WorkOS.Client.request/5`)
-  """
-  @spec create_authenticate(WorkOS.Client.t(), map(), keyword()) ::
-          {:ok, WorkOS.AuthenticateResponse.t()} | {:error, WorkOS.Error.error()}
-  def create_authenticate(client, params \\ %{}, opts \\ []) do
-    with {:ok, body} <-
-           WorkOS.Client.request(client, :post, "/user_management/authenticate", params, opts) do
-      {:ok, WorkOS.Cast.nested(body, &WorkOS.AuthenticateResponse.from_map/1)}
-    end
-  end
-
-  @doc """
   Authenticate with password
 
   Authenticate
@@ -637,7 +618,7 @@ defmodule WorkOS.UserManagement do
 
   ## Parameters
 
-    * `params` — query parameters: `:before`, `:after_`, `:limit`, `:order`, `:organization`, `:organization_id`, `:email`
+    * `params` — query parameters: `:before`, `:after_`, `:limit`, `:order`, `:organization` (deprecated), `:organization_id`, `:email`
     * `opts` — per-request options (see `WorkOS.Client.request/5`)
   """
   @spec list_users(WorkOS.Client.t(), map(), keyword()) ::

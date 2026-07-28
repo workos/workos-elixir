@@ -15,33 +15,41 @@ defmodule WorkOS.MultiFactorAuthTest do
 
   test "verify_challenge succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/auth/challenges/test_id/verify"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("multi_factor_auth/verify_challenge"))
     end)
 
-    assert {:ok, %WorkOS.AuthenticationChallengeVerifyResponse{}} =
+    assert {:ok, %WorkOS.AuthenticationChallengeVerifyResponse{valid: true}} =
              WorkOS.MultiFactorAuth.verify_challenge(client, "test_id")
   end
 
   test "enroll_factor succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/auth/factors/enroll"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("multi_factor_auth/enroll_factor"))
     end)
 
-    assert {:ok, %WorkOS.AuthenticationFactorEnrolled{}} =
+    assert {:ok, %WorkOS.AuthenticationFactorEnrolled{object: "authentication_factor", id: "id"}} =
              WorkOS.MultiFactorAuth.enroll_factor(client)
   end
 
   test "get_factor succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/auth/factors/test_id"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("multi_factor_auth/get_factor"))
     end)
 
-    assert {:ok, %WorkOS.AuthenticationFactor{}} =
+    assert {:ok, %WorkOS.AuthenticationFactor{object: "authentication_factor", id: "id"}} =
              WorkOS.MultiFactorAuth.get_factor(client, "test_id")
   end
 
   test "delete_factor succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "DELETE"
+      assert conn.request_path == "/auth/factors/test_id"
       Plug.Conn.send_resp(conn, 204, "")
     end)
 
@@ -50,24 +58,43 @@ defmodule WorkOS.MultiFactorAuthTest do
 
   test "challenge_factor succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/auth/factors/test_id/challenge"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("multi_factor_auth/challenge_factor"))
     end)
 
-    assert {:ok, %WorkOS.AuthenticationChallenge{}} =
+    assert {:ok, %WorkOS.AuthenticationChallenge{object: "authentication_challenge", id: "id"}} =
              WorkOS.MultiFactorAuth.challenge_factor(client, "test_id")
   end
 
   test "list_user_auth_factors succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/user_management/users/test_userland_user_id/auth_factors"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("multi_factor_auth/list_user_auth_factors"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.UserAuthenticationFactorList{} | _]}} =
+    assert {:ok, %WorkOS.Page{data: [%WorkOS.UserAuthenticationFactorList{object: "list"} | _]}} =
              WorkOS.MultiFactorAuth.list_user_auth_factors(client, "test_userland_user_id")
+  end
+
+  test "list_user_auth_factors handles an empty page", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, %WorkOS.Page{data: []} = page} =
+             WorkOS.MultiFactorAuth.list_user_auth_factors(client, "test_userland_user_id")
+
+    refute WorkOS.Page.has_more?(page)
+    assert page |> WorkOS.Page.stream() |> Enum.to_list() == []
   end
 
   test "create_user_auth_factor succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/user_management/users/test_userland_user_id/auth_factors"
+
       Req.Test.json(
         conn,
         WorkOS.TestFixtures.fixture("multi_factor_auth/create_user_auth_factor")
@@ -76,6 +103,33 @@ defmodule WorkOS.MultiFactorAuthTest do
 
     assert {:ok, %WorkOS.UserAuthenticationFactorEnrollResponse{}} =
              WorkOS.MultiFactorAuth.create_user_auth_factor(client, "test_userland_user_id")
+  end
+
+  test "list_user_auth_factors encodes query parameters", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      params = Plug.Conn.fetch_query_params(conn).query_params
+      assert params["before"] == "hello world&x"
+      refute Map.has_key?(params, "after")
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, _} =
+             WorkOS.MultiFactorAuth.list_user_auth_factors(client, "test_userland_user_id", %{
+               before: "hello world&x"
+             })
+  end
+
+  test "verify_challenge honors per-request options", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      assert Plug.Conn.get_req_header(conn, "x-custom") == ["value"]
+      assert conn.host == "override.example.com"
+      Plug.Conn.send_resp(conn, 204, "")
+    end)
+
+    WorkOS.MultiFactorAuth.verify_challenge(client, "test_id", %{},
+      headers: [{"x-custom", "value"}],
+      base_url: "https://override.example.com"
+    )
   end
 
   test "surfaces API errors as tagged tuples", %{client: client} do

@@ -15,23 +15,40 @@ defmodule WorkOS.DirectorySyncTest do
 
   test "list_directories succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/directories"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("directory_sync/list_directories"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.DirectoryList{} | _]}} =
+    assert {:ok, %WorkOS.Page{data: [%WorkOS.DirectoryList{object: "list"} | _]}} =
              WorkOS.DirectorySync.list_directories(client)
+  end
+
+  test "list_directories handles an empty page", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, %WorkOS.Page{data: []} = page} = WorkOS.DirectorySync.list_directories(client)
+    refute WorkOS.Page.has_more?(page)
+    assert page |> WorkOS.Page.stream() |> Enum.to_list() == []
   end
 
   test "get_directory succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/directories/test_id"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("directory_sync/get_directory"))
     end)
 
-    assert {:ok, %WorkOS.Directory{}} = WorkOS.DirectorySync.get_directory(client, "test_id")
+    assert {:ok, %WorkOS.Directory{object: "directory", id: "id"}} =
+             WorkOS.DirectorySync.get_directory(client, "test_id")
   end
 
   test "delete_directory succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "DELETE"
+      assert conn.request_path == "/directories/test_id"
       Plug.Conn.send_resp(conn, 204, "")
     end)
 
@@ -40,37 +57,90 @@ defmodule WorkOS.DirectorySyncTest do
 
   test "list_groups succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/directory_groups"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("directory_sync/list_groups"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.DirectoryGroupList{} | _]}} =
+    assert {:ok, %WorkOS.Page{data: [%WorkOS.DirectoryGroupList{object: "list"} | _]}} =
              WorkOS.DirectorySync.list_groups(client)
+  end
+
+  test "list_groups handles an empty page", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, %WorkOS.Page{data: []} = page} = WorkOS.DirectorySync.list_groups(client)
+    refute WorkOS.Page.has_more?(page)
+    assert page |> WorkOS.Page.stream() |> Enum.to_list() == []
   end
 
   test "get_group succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/directory_groups/test_id"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("directory_sync/get_group"))
     end)
 
-    assert {:ok, %WorkOS.DirectoryGroup{}} = WorkOS.DirectorySync.get_group(client, "test_id")
+    assert {:ok, %WorkOS.DirectoryGroup{object: "directory_group", id: "id"}} =
+             WorkOS.DirectorySync.get_group(client, "test_id")
   end
 
   test "list_users succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/directory_users"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("directory_sync/list_users"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.DirectoryUserList{} | _]}} =
+    assert {:ok, %WorkOS.Page{data: [%WorkOS.DirectoryUserList{object: "list"} | _]}} =
              WorkOS.DirectorySync.list_users(client)
+  end
+
+  test "list_users handles an empty page", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, %WorkOS.Page{data: []} = page} = WorkOS.DirectorySync.list_users(client)
+    refute WorkOS.Page.has_more?(page)
+    assert page |> WorkOS.Page.stream() |> Enum.to_list() == []
   end
 
   test "get_user succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/directory_users/test_id"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("directory_sync/get_user"))
     end)
 
-    assert {:ok, %WorkOS.DirectoryUserWithGroups{}} =
+    assert {:ok, %WorkOS.DirectoryUserWithGroups{object: "directory_user", id: "id"}} =
              WorkOS.DirectorySync.get_user(client, "test_id")
+  end
+
+  test "list_directories encodes query parameters", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      params = Plug.Conn.fetch_query_params(conn).query_params
+      assert params["before"] == "hello world&x"
+      refute Map.has_key?(params, "after")
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, _} = WorkOS.DirectorySync.list_directories(client, %{before: "hello world&x"})
+  end
+
+  test "list_directories honors per-request options", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      assert Plug.Conn.get_req_header(conn, "x-custom") == ["value"]
+      assert conn.host == "override.example.com"
+      Plug.Conn.send_resp(conn, 204, "")
+    end)
+
+    WorkOS.DirectorySync.list_directories(client, %{},
+      headers: [{"x-custom", "value"}],
+      base_url: "https://override.example.com"
+    )
   end
 
   test "surfaces API errors as tagged tuples", %{client: client} do

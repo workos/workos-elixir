@@ -15,10 +15,26 @@ defmodule WorkOS.ClientApiTest do
 
   test "create_token succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/client/token"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("client_api/create_token"))
     end)
 
-    assert {:ok, %WorkOS.ClientApiTokenResponse{}} = WorkOS.ClientApi.create_token(client)
+    assert {:ok, %WorkOS.ClientApiTokenResponse{token: "token"}} =
+             WorkOS.ClientApi.create_token(client)
+  end
+
+  test "create_token honors per-request options", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      assert Plug.Conn.get_req_header(conn, "x-custom") == ["value"]
+      assert conn.host == "override.example.com"
+      Plug.Conn.send_resp(conn, 204, "")
+    end)
+
+    WorkOS.ClientApi.create_token(client, %{},
+      headers: [{"x-custom", "value"}],
+      base_url: "https://override.example.com"
+    )
   end
 
   test "surfaces API errors as tagged tuples", %{client: client} do

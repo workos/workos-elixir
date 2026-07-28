@@ -107,7 +107,7 @@ defmodule WorkOS.Organizations do
   ## Parameters
 
     * `id` — Unique identifier of the Organization.
-    * `params` — request body map
+    * `params` — request body map. Deprecated: `:domains` (see `WorkOS.UpdateOrganization`).
     * `opts` — per-request options (see `WorkOS.Client.request/5`)
   """
   @spec update_organization(WorkOS.Client.t(), String.t(), map(), keyword()) ::

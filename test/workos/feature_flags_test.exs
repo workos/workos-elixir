@@ -15,41 +15,62 @@ defmodule WorkOS.FeatureFlagsTest do
 
   test "list_feature_flags succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/feature-flags"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("feature_flags/list_feature_flags"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.FlagList{} | _]}} =
+    assert {:ok, %WorkOS.Page{data: [%WorkOS.FlagList{object: "list"} | _]}} =
              WorkOS.FeatureFlags.list_feature_flags(client)
+  end
+
+  test "list_feature_flags handles an empty page", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, %WorkOS.Page{data: []} = page} = WorkOS.FeatureFlags.list_feature_flags(client)
+    refute WorkOS.Page.has_more?(page)
+    assert page |> WorkOS.Page.stream() |> Enum.to_list() == []
   end
 
   test "get_feature_flag succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/feature-flags/test_slug"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("feature_flags/get_feature_flag"))
     end)
 
-    assert {:ok, %WorkOS.Flag{}} = WorkOS.FeatureFlags.get_feature_flag(client, "test_slug")
+    assert {:ok, %WorkOS.Flag{object: "feature_flag", id: "id"}} =
+             WorkOS.FeatureFlags.get_feature_flag(client, "test_slug")
   end
 
   test "disable_feature_flag succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "PUT"
+      assert conn.request_path == "/feature-flags/test_slug/disable"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("feature_flags/disable_feature_flag"))
     end)
 
-    assert {:ok, %WorkOS.FeatureFlag{}} =
+    assert {:ok, %WorkOS.FeatureFlag{object: "feature_flag", id: "id"}} =
              WorkOS.FeatureFlags.disable_feature_flag(client, "test_slug")
   end
 
   test "enable_feature_flag succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "PUT"
+      assert conn.request_path == "/feature-flags/test_slug/enable"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("feature_flags/enable_feature_flag"))
     end)
 
-    assert {:ok, %WorkOS.FeatureFlag{}} =
+    assert {:ok, %WorkOS.FeatureFlag{object: "feature_flag", id: "id"}} =
              WorkOS.FeatureFlags.enable_feature_flag(client, "test_slug")
   end
 
   test "add_flag_target succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/feature-flags/test_slug/targets/test_resource_id"
       Plug.Conn.send_resp(conn, 204, "")
     end)
 
@@ -58,6 +79,8 @@ defmodule WorkOS.FeatureFlagsTest do
 
   test "remove_flag_target succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "DELETE"
+      assert conn.request_path == "/feature-flags/test_slug/targets/test_resource_id"
       Plug.Conn.send_resp(conn, 204, "")
     end)
 
@@ -67,23 +90,76 @@ defmodule WorkOS.FeatureFlagsTest do
 
   test "list_organization_feature_flags succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/organizations/test_organization_id/feature-flags"
+
       Req.Test.json(
         conn,
         WorkOS.TestFixtures.fixture("feature_flags/list_organization_feature_flags")
       )
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.FlagList{} | _]}} =
+    assert {:ok, %WorkOS.Page{data: [%WorkOS.FlagList{object: "list"} | _]}} =
              WorkOS.FeatureFlags.list_organization_feature_flags(client, "test_organization_id")
+  end
+
+  test "list_organization_feature_flags handles an empty page", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, %WorkOS.Page{data: []} = page} =
+             WorkOS.FeatureFlags.list_organization_feature_flags(client, "test_organization_id")
+
+    refute WorkOS.Page.has_more?(page)
+    assert page |> WorkOS.Page.stream() |> Enum.to_list() == []
   end
 
   test "list_user_feature_flags succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/user_management/users/test_user_id/feature-flags"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("feature_flags/list_user_feature_flags"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.FlagList{} | _]}} =
+    assert {:ok, %WorkOS.Page{data: [%WorkOS.FlagList{object: "list"} | _]}} =
              WorkOS.FeatureFlags.list_user_feature_flags(client, "test_user_id")
+  end
+
+  test "list_user_feature_flags handles an empty page", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, %WorkOS.Page{data: []} = page} =
+             WorkOS.FeatureFlags.list_user_feature_flags(client, "test_user_id")
+
+    refute WorkOS.Page.has_more?(page)
+    assert page |> WorkOS.Page.stream() |> Enum.to_list() == []
+  end
+
+  test "list_feature_flags encodes query parameters", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      params = Plug.Conn.fetch_query_params(conn).query_params
+      assert params["before"] == "hello world&x"
+      refute Map.has_key?(params, "after")
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, _} = WorkOS.FeatureFlags.list_feature_flags(client, %{before: "hello world&x"})
+  end
+
+  test "list_feature_flags honors per-request options", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      assert Plug.Conn.get_req_header(conn, "x-custom") == ["value"]
+      assert conn.host == "override.example.com"
+      Plug.Conn.send_resp(conn, 204, "")
+    end)
+
+    WorkOS.FeatureFlags.list_feature_flags(client, %{},
+      headers: [{"x-custom", "value"}],
+      base_url: "https://override.example.com"
+    )
   end
 
   test "surfaces API errors as tagged tuples", %{client: client} do

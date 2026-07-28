@@ -15,6 +15,11 @@ defmodule WorkOS.PipesProviderTest do
 
   test "list_organization_data_integration_configurations succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+
+      assert conn.request_path ==
+               "/organizations/test_organization_id/data_integration_configurations"
+
       Req.Test.json(
         conn,
         WorkOS.TestFixtures.fixture(
@@ -23,7 +28,7 @@ defmodule WorkOS.PipesProviderTest do
       )
     end)
 
-    assert {:ok, %WorkOS.DataIntegrationConfigurationListResponse{}} =
+    assert {:ok, %WorkOS.DataIntegrationConfigurationListResponse{object: "list"}} =
              WorkOS.PipesProvider.list_organization_data_integration_configurations(
                client,
                "test_organization_id"
@@ -32,6 +37,11 @@ defmodule WorkOS.PipesProviderTest do
 
   test "update_organization_data_integration_configuration succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "PUT"
+
+      assert conn.request_path ==
+               "/organizations/test_organization_id/data_integration_configurations/test_slug"
+
       Req.Test.json(
         conn,
         WorkOS.TestFixtures.fixture(
@@ -40,12 +50,33 @@ defmodule WorkOS.PipesProviderTest do
       )
     end)
 
-    assert {:ok, %WorkOS.DataIntegrationConfigurationResponse{}} =
+    assert {:ok,
+            %WorkOS.DataIntegrationConfigurationResponse{
+              object: "data_integration_configuration",
+              id: "id"
+            }} =
              WorkOS.PipesProvider.update_organization_data_integration_configuration(
                client,
                "test_organization_id",
                "test_slug"
              )
+  end
+
+  test "list_organization_data_integration_configurations honors per-request options", %{
+    client: client
+  } do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      assert Plug.Conn.get_req_header(conn, "x-custom") == ["value"]
+      assert conn.host == "override.example.com"
+      Plug.Conn.send_resp(conn, 204, "")
+    end)
+
+    WorkOS.PipesProvider.list_organization_data_integration_configurations(
+      client,
+      "test_organization_id",
+      headers: [{"x-custom", "value"}],
+      base_url: "https://override.example.com"
+    )
   end
 
   test "surfaces API errors as tagged tuples", %{client: client} do

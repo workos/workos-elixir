@@ -15,49 +15,73 @@ defmodule WorkOS.OrganizationMembershipServiceTest do
 
   test "list_organization_memberships succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/user_management/organization_memberships"
+
       Req.Test.json(
         conn,
         WorkOS.TestFixtures.fixture("organization_membership/list_organization_memberships")
       )
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.UserOrganizationMembershipList{} | _]}} =
+    assert {:ok, %WorkOS.Page{data: [%WorkOS.UserOrganizationMembershipList{object: "list"} | _]}} =
              WorkOS.OrganizationMembershipService.list_organization_memberships(client)
+  end
+
+  test "list_organization_memberships handles an empty page", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, %WorkOS.Page{data: []} = page} =
+             WorkOS.OrganizationMembershipService.list_organization_memberships(client)
+
+    refute WorkOS.Page.has_more?(page)
+    assert page |> WorkOS.Page.stream() |> Enum.to_list() == []
   end
 
   test "create_organization_membership succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/user_management/organization_memberships"
+
       Req.Test.json(
         conn,
         WorkOS.TestFixtures.fixture("organization_membership/create_organization_membership")
       )
     end)
 
-    assert {:ok, %WorkOS.OrganizationMembership{}} =
+    assert {:ok, %WorkOS.OrganizationMembership{object: "organization_membership", id: "id"}} =
              WorkOS.OrganizationMembershipService.create_organization_membership(client)
   end
 
   test "get_organization_membership succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/user_management/organization_memberships/test_id"
+
       Req.Test.json(
         conn,
         WorkOS.TestFixtures.fixture("organization_membership/get_organization_membership")
       )
     end)
 
-    assert {:ok, %WorkOS.UserOrganizationMembership{}} =
+    assert {:ok, %WorkOS.UserOrganizationMembership{object: "organization_membership", id: "id"}} =
              WorkOS.OrganizationMembershipService.get_organization_membership(client, "test_id")
   end
 
   test "update_organization_membership succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "PUT"
+      assert conn.request_path == "/user_management/organization_memberships/test_id"
+
       Req.Test.json(
         conn,
         WorkOS.TestFixtures.fixture("organization_membership/update_organization_membership")
       )
     end)
 
-    assert {:ok, %WorkOS.UserOrganizationMembership{}} =
+    assert {:ok, %WorkOS.UserOrganizationMembership{object: "organization_membership", id: "id"}} =
              WorkOS.OrganizationMembershipService.update_organization_membership(
                client,
                "test_id"
@@ -66,6 +90,8 @@ defmodule WorkOS.OrganizationMembershipServiceTest do
 
   test "delete_organization_membership succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "DELETE"
+      assert conn.request_path == "/user_management/organization_memberships/test_id"
       Plug.Conn.send_resp(conn, 204, "")
     end)
 
@@ -78,13 +104,16 @@ defmodule WorkOS.OrganizationMembershipServiceTest do
 
   test "deactivate_organization_membership succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "PUT"
+      assert conn.request_path == "/user_management/organization_memberships/test_id/deactivate"
+
       Req.Test.json(
         conn,
         WorkOS.TestFixtures.fixture("organization_membership/deactivate_organization_membership")
       )
     end)
 
-    assert {:ok, %WorkOS.OrganizationMembership{}} =
+    assert {:ok, %WorkOS.OrganizationMembership{object: "organization_membership", id: "id"}} =
              WorkOS.OrganizationMembershipService.deactivate_organization_membership(
                client,
                "test_id"
@@ -93,13 +122,16 @@ defmodule WorkOS.OrganizationMembershipServiceTest do
 
   test "reactivate_organization_membership succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "PUT"
+      assert conn.request_path == "/user_management/organization_memberships/test_id/reactivate"
+
       Req.Test.json(
         conn,
         WorkOS.TestFixtures.fixture("organization_membership/reactivate_organization_membership")
       )
     end)
 
-    assert {:ok, %WorkOS.UserOrganizationMembership{}} =
+    assert {:ok, %WorkOS.UserOrganizationMembership{object: "organization_membership", id: "id"}} =
              WorkOS.OrganizationMembershipService.reactivate_organization_membership(
                client,
                "test_id"
@@ -108,17 +140,64 @@ defmodule WorkOS.OrganizationMembershipServiceTest do
 
   test "list_organization_membership_groups succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/user_management/organization_memberships/test_om_id/groups"
+
       Req.Test.json(
         conn,
         WorkOS.TestFixtures.fixture("organization_membership/list_organization_membership_groups")
       )
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.GroupList{} | _]}} =
+    assert {:ok, %WorkOS.Page{data: [%WorkOS.GroupList{object: "list"} | _]}} =
              WorkOS.OrganizationMembershipService.list_organization_membership_groups(
                client,
                "test_om_id"
              )
+  end
+
+  test "list_organization_membership_groups handles an empty page", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, %WorkOS.Page{data: []} = page} =
+             WorkOS.OrganizationMembershipService.list_organization_membership_groups(
+               client,
+               "test_om_id"
+             )
+
+    refute WorkOS.Page.has_more?(page)
+    assert page |> WorkOS.Page.stream() |> Enum.to_list() == []
+  end
+
+  test "list_organization_memberships encodes query parameters", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      params = Plug.Conn.fetch_query_params(conn).query_params
+      assert params["before"] == "hello world&x"
+      assert params["statuses"] == "a,b"
+      refute Map.has_key?(params, "after")
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, _} =
+             WorkOS.OrganizationMembershipService.list_organization_memberships(client, %{
+               before: "hello world&x",
+               statuses: ["a", "b"]
+             })
+  end
+
+  test "list_organization_memberships honors per-request options", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      assert Plug.Conn.get_req_header(conn, "x-custom") == ["value"]
+      assert conn.host == "override.example.com"
+      Plug.Conn.send_resp(conn, 204, "")
+    end)
+
+    WorkOS.OrganizationMembershipService.list_organization_memberships(client, %{},
+      headers: [{"x-custom", "value"}],
+      base_url: "https://override.example.com"
+    )
   end
 
   test "surfaces API errors as tagged tuples", %{client: client} do

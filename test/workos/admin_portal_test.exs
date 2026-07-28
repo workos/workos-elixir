@@ -15,10 +15,26 @@ defmodule WorkOS.AdminPortalTest do
 
   test "generate_link succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/portal/generate_link"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("admin_portal/generate_link"))
     end)
 
-    assert {:ok, %WorkOS.PortalLinkResponse{}} = WorkOS.AdminPortal.generate_link(client)
+    assert {:ok, %WorkOS.PortalLinkResponse{link: "link"}} =
+             WorkOS.AdminPortal.generate_link(client)
+  end
+
+  test "generate_link honors per-request options", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      assert Plug.Conn.get_req_header(conn, "x-custom") == ["value"]
+      assert conn.host == "override.example.com"
+      Plug.Conn.send_resp(conn, 204, "")
+    end)
+
+    WorkOS.AdminPortal.generate_link(client, %{},
+      headers: [{"x-custom", "value"}],
+      base_url: "https://override.example.com"
+    )
   end
 
   test "surfaces API errors as tagged tuples", %{client: client} do

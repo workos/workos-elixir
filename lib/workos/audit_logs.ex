@@ -181,7 +181,7 @@ defmodule WorkOS.AuditLogs do
 
   ## Parameters
 
-    * `params` — request body map
+    * `params` — request body map. Deprecated: `:actors` (see `WorkOS.AuditLogExportCreation`).
     * `opts` — per-request options (see `WorkOS.Client.request/5`)
   """
   @spec create_export(WorkOS.Client.t(), map(), keyword()) ::

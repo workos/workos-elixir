@@ -15,53 +15,77 @@ defmodule WorkOS.OrganizationsTest do
 
   test "list_organizations succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/organizations"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("organizations/list_organizations"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.OrganizationList{} | _]}} =
+    assert {:ok, %WorkOS.Page{data: [%WorkOS.OrganizationList{object: "list"} | _]}} =
              WorkOS.Organizations.list_organizations(client)
+  end
+
+  test "list_organizations handles an empty page", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, %WorkOS.Page{data: []} = page} = WorkOS.Organizations.list_organizations(client)
+    refute WorkOS.Page.has_more?(page)
+    assert page |> WorkOS.Page.stream() |> Enum.to_list() == []
   end
 
   test "create_organization succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/organizations"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("organizations/create_organization"))
     end)
 
-    assert {:ok, %WorkOS.Organization{}} = WorkOS.Organizations.create_organization(client)
+    assert {:ok, %WorkOS.Organization{object: "organization", id: "id"}} =
+             WorkOS.Organizations.create_organization(client)
   end
 
   test "get_organization_by_external_id succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/organizations/external_id/test_external_id"
+
       Req.Test.json(
         conn,
         WorkOS.TestFixtures.fixture("organizations/get_organization_by_external_id")
       )
     end)
 
-    assert {:ok, %WorkOS.Organization{}} =
+    assert {:ok, %WorkOS.Organization{object: "organization", id: "id"}} =
              WorkOS.Organizations.get_organization_by_external_id(client, "test_external_id")
   end
 
   test "get_organization succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/organizations/test_id"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("organizations/get_organization"))
     end)
 
-    assert {:ok, %WorkOS.Organization{}} =
+    assert {:ok, %WorkOS.Organization{object: "organization", id: "id"}} =
              WorkOS.Organizations.get_organization(client, "test_id")
   end
 
   test "update_organization succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "PUT"
+      assert conn.request_path == "/organizations/test_id"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("organizations/update_organization"))
     end)
 
-    assert {:ok, %WorkOS.Organization{}} =
+    assert {:ok, %WorkOS.Organization{object: "organization", id: "id"}} =
              WorkOS.Organizations.update_organization(client, "test_id")
   end
 
   test "delete_organization succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "DELETE"
+      assert conn.request_path == "/organizations/test_id"
       Plug.Conn.send_resp(conn, 204, "")
     end)
 
@@ -70,26 +94,78 @@ defmodule WorkOS.OrganizationsTest do
 
   test "get_audit_log_configuration succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/organizations/test_id/audit_log_configuration"
+
       Req.Test.json(
         conn,
         WorkOS.TestFixtures.fixture("organizations/get_audit_log_configuration")
       )
     end)
 
-    assert {:ok, %WorkOS.AuditLogConfiguration{}} =
-             WorkOS.Organizations.get_audit_log_configuration(client, "test_id")
+    assert {:ok,
+            %WorkOS.AuditLogConfiguration{
+              organization_id: "organization_id",
+              retention_period_in_days: 1
+            }} = WorkOS.Organizations.get_audit_log_configuration(client, "test_id")
   end
 
   test "list_authorized_applications succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/organizations/test_organization_id/authorized_applications"
+
       Req.Test.json(
         conn,
         WorkOS.TestFixtures.fixture("organizations/list_authorized_applications")
       )
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.OrganizationAuthorizedConnectApplicationList{} | _]}} =
+    assert {:ok,
+            %WorkOS.Page{
+              data: [%WorkOS.OrganizationAuthorizedConnectApplicationList{object: "list"} | _]
+            }} = WorkOS.Organizations.list_authorized_applications(client, "test_organization_id")
+  end
+
+  test "list_authorized_applications handles an empty page", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, %WorkOS.Page{data: []} = page} =
              WorkOS.Organizations.list_authorized_applications(client, "test_organization_id")
+
+    refute WorkOS.Page.has_more?(page)
+    assert page |> WorkOS.Page.stream() |> Enum.to_list() == []
+  end
+
+  test "list_organizations encodes query parameters", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      params = Plug.Conn.fetch_query_params(conn).query_params
+      assert params["before"] == "hello world&x"
+      assert params["domains"] == "a,b"
+      refute Map.has_key?(params, "after")
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, _} =
+             WorkOS.Organizations.list_organizations(client, %{
+               before: "hello world&x",
+               domains: ["a", "b"]
+             })
+  end
+
+  test "list_organizations honors per-request options", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      assert Plug.Conn.get_req_header(conn, "x-custom") == ["value"]
+      assert conn.host == "override.example.com"
+      Plug.Conn.send_resp(conn, 204, "")
+    end)
+
+    WorkOS.Organizations.list_organizations(client, %{},
+      headers: [{"x-custom", "value"}],
+      base_url: "https://override.example.com"
+    )
   end
 
   test "surfaces API errors as tagged tuples", %{client: client} do

@@ -15,11 +15,49 @@ defmodule WorkOS.EventsTest do
 
   test "list_events succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/events"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("events/list_events"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.EventList{} | _]}} =
+    assert {:ok, %WorkOS.Page{data: [%WorkOS.EventList{object: "list"} | _]}} =
              WorkOS.Events.list_events(client)
+  end
+
+  test "list_events handles an empty page", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, %WorkOS.Page{data: []} = page} = WorkOS.Events.list_events(client)
+    refute WorkOS.Page.has_more?(page)
+    assert page |> WorkOS.Page.stream() |> Enum.to_list() == []
+  end
+
+  test "list_events encodes query parameters", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      params = Plug.Conn.fetch_query_params(conn).query_params
+      assert params["before"] == "hello world&x"
+      assert params["events"] == "a,b"
+      refute Map.has_key?(params, "after")
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, _} =
+             WorkOS.Events.list_events(client, %{before: "hello world&x", events: ["a", "b"]})
+  end
+
+  test "list_events honors per-request options", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      assert Plug.Conn.get_req_header(conn, "x-custom") == ["value"]
+      assert conn.host == "override.example.com"
+      Plug.Conn.send_resp(conn, 204, "")
+    end)
+
+    WorkOS.Events.list_events(client, %{},
+      headers: [{"x-custom", "value"}],
+      base_url: "https://override.example.com"
+    )
   end
 
   test "surfaces API errors as tagged tuples", %{client: client} do

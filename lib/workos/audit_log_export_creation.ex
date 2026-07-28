@@ -3,6 +3,10 @@
 defmodule WorkOS.AuditLogExportCreation do
   @moduledoc """
   AuditLogExportCreation model.
+
+  ## Deprecated fields
+
+    * `:actors` — Deprecated. Use `actor_names` instead.
   """
 
   defstruct [

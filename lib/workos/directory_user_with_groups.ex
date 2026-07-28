@@ -3,6 +3,14 @@
 defmodule WorkOS.DirectoryUserWithGroups do
   @moduledoc """
   DirectoryUserWithGroups model.
+
+  ## Deprecated fields
+
+    * `:raw_attributes` — The raw attributes received from the directory provider.
+    * `:groups` — The directory groups the user belongs to. Deprecated: starting May 1, 2026, this field returns an empty array by default for newly created teams. Existing teams currently depending on this field should migrate to the new access pattern for better throughput performance — the field is unbounded by user, so users with many group memberships produce large, slow response payloads. Use the List Directory Groups endpoint with a `user` filter to fetch a user's group memberships.
+    * `:emails` — A list of email addresses for the user.
+    * `:job_title` — The job title of the user.
+    * `:username` — The username of the user.
   """
 
   defstruct [

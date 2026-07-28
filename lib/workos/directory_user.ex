@@ -3,6 +3,13 @@
 defmodule WorkOS.DirectoryUser do
   @moduledoc """
   DirectoryUser model.
+
+  ## Deprecated fields
+
+    * `:raw_attributes` — The raw attributes received from the directory provider.
+    * `:emails` — A list of email addresses for the user.
+    * `:job_title` — The job title of the user.
+    * `:username` — The username of the user.
   """
 
   defstruct [

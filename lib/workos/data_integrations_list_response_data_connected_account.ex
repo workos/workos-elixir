@@ -3,6 +3,10 @@
 defmodule WorkOS.DataIntegrationsListResponseDataConnectedAccount do
   @moduledoc """
   DataIntegrationsListResponseDataConnectedAccount model.
+
+  ## Deprecated fields
+
+    * `:userland_user_id` — Use `user_id` instead.
   """
 
   defstruct [

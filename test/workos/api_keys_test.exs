@@ -15,32 +15,53 @@ defmodule WorkOS.ApiKeysTest do
 
   test "list_organization_api_keys succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/organizations/test_organization_id/api_keys"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("api_keys/list_organization_api_keys"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.OrganizationApiKeyList{} | _]}} =
+    assert {:ok, %WorkOS.Page{data: [%WorkOS.OrganizationApiKeyList{object: "list"} | _]}} =
              WorkOS.ApiKeys.list_organization_api_keys(client, "test_organization_id")
+  end
+
+  test "list_organization_api_keys handles an empty page", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, %WorkOS.Page{data: []} = page} =
+             WorkOS.ApiKeys.list_organization_api_keys(client, "test_organization_id")
+
+    refute WorkOS.Page.has_more?(page)
+    assert page |> WorkOS.Page.stream() |> Enum.to_list() == []
   end
 
   test "create_organization_api_key succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/organizations/test_organization_id/api_keys"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("api_keys/create_organization_api_key"))
     end)
 
-    assert {:ok, %WorkOS.OrganizationApiKeyWithValue{}} =
+    assert {:ok, %WorkOS.OrganizationApiKeyWithValue{object: "api_key", id: "id"}} =
              WorkOS.ApiKeys.create_organization_api_key(client, "test_organization_id")
   end
 
   test "create_validation succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/api_keys/validations"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("api_keys/create_validation"))
     end)
 
-    assert {:ok, %WorkOS.ApiKeyValidationResponse{}} = WorkOS.ApiKeys.create_validation(client)
+    assert {:ok, %WorkOS.ApiKeyValidationResponse{agent_registration_id: "agent_registration_id"}} =
+             WorkOS.ApiKeys.create_validation(client)
   end
 
   test "delete_api_key succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "DELETE"
+      assert conn.request_path == "/api_keys/test_id"
       Plug.Conn.send_resp(conn, 204, "")
     end)
 
@@ -49,10 +70,40 @@ defmodule WorkOS.ApiKeysTest do
 
   test "create_api_key_expire succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/api_keys/test_id/expire"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("api_keys/create_api_key_expire"))
     end)
 
-    assert {:ok, %WorkOS.ApiKey{}} = WorkOS.ApiKeys.create_api_key_expire(client, "test_id")
+    assert {:ok, %WorkOS.ApiKey{object: "api_key", id: "id"}} =
+             WorkOS.ApiKeys.create_api_key_expire(client, "test_id")
+  end
+
+  test "list_organization_api_keys encodes query parameters", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      params = Plug.Conn.fetch_query_params(conn).query_params
+      assert params["before"] == "hello world&x"
+      refute Map.has_key?(params, "after")
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, _} =
+             WorkOS.ApiKeys.list_organization_api_keys(client, "test_organization_id", %{
+               before: "hello world&x"
+             })
+  end
+
+  test "list_organization_api_keys honors per-request options", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      assert Plug.Conn.get_req_header(conn, "x-custom") == ["value"]
+      assert conn.host == "override.example.com"
+      Plug.Conn.send_resp(conn, 204, "")
+    end)
+
+    WorkOS.ApiKeys.list_organization_api_keys(client, "test_organization_id", %{},
+      headers: [{"x-custom", "value"}],
+      base_url: "https://override.example.com"
+    )
   end
 
   test "surfaces API errors as tagged tuples", %{client: client} do

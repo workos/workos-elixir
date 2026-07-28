@@ -15,38 +15,47 @@ defmodule WorkOS.ConnectTest do
 
   test "complete_oauth2 succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/authkit/oauth2/complete"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("connect/complete_oauth2"))
     end)
 
-    assert {:ok, %WorkOS.ExternalAuthCompleteResponse{}} = WorkOS.Connect.complete_oauth2(client)
+    assert {:ok, %WorkOS.ExternalAuthCompleteResponse{redirect_uri: "redirect_uri"}} =
+             WorkOS.Connect.complete_oauth2(client)
   end
 
   test "list_applications succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/connect/applications"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("connect/list_applications"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.ConnectApplicationList{} | _]}} =
+    assert {:ok, %WorkOS.Page{data: [%WorkOS.ConnectApplicationList{object: "list"} | _]}} =
              WorkOS.Connect.list_applications(client)
   end
 
-  test "create_application succeeds", %{client: client} do
+  test "list_applications handles an empty page", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
-      Req.Test.json(conn, WorkOS.TestFixtures.fixture("connect/create_application"))
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
     end)
 
-    assert {:ok, %WorkOS.ConnectApplication{}} = WorkOS.Connect.create_application(client)
+    assert {:ok, %WorkOS.Page{data: []} = page} = WorkOS.Connect.list_applications(client)
+    refute WorkOS.Page.has_more?(page)
+    assert page |> WorkOS.Page.stream() |> Enum.to_list() == []
   end
 
   test "create_oauth_application succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/connect/applications"
       {:ok, req_body, conn} = Plug.Conn.read_body(conn)
       req_body = JSON.decode!(req_body)
       assert req_body["application_type"] == "oauth"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("connect/create_oauth_application"))
     end)
 
-    assert {:ok, %WorkOS.ConnectApplication{}} =
+    assert {:ok, %WorkOS.ConnectApplication{object: "connect_application", id: "id"}} =
              WorkOS.Connect.create_oauth_application(client, %{
                name: "test_name",
                is_first_party: true
@@ -55,13 +64,15 @@ defmodule WorkOS.ConnectTest do
 
   test "create_m2m_application succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/connect/applications"
       {:ok, req_body, conn} = Plug.Conn.read_body(conn)
       req_body = JSON.decode!(req_body)
       assert req_body["application_type"] == "m2m"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("connect/create_m2m_application"))
     end)
 
-    assert {:ok, %WorkOS.ConnectApplication{}} =
+    assert {:ok, %WorkOS.ConnectApplication{object: "connect_application", id: "id"}} =
              WorkOS.Connect.create_m2m_application(client, %{
                name: "test_name",
                organization_id: "test_organization_id"
@@ -70,23 +81,30 @@ defmodule WorkOS.ConnectTest do
 
   test "get_application succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/connect/applications/test_id"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("connect/get_application"))
     end)
 
-    assert {:ok, %WorkOS.ConnectApplication{}} = WorkOS.Connect.get_application(client, "test_id")
+    assert {:ok, %WorkOS.ConnectApplication{object: "connect_application", id: "id"}} =
+             WorkOS.Connect.get_application(client, "test_id")
   end
 
   test "update_application succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "PUT"
+      assert conn.request_path == "/connect/applications/test_id"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("connect/update_application"))
     end)
 
-    assert {:ok, %WorkOS.ConnectApplication{}} =
+    assert {:ok, %WorkOS.ConnectApplication{object: "connect_application", id: "id"}} =
              WorkOS.Connect.update_application(client, "test_id")
   end
 
   test "delete_application succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "DELETE"
+      assert conn.request_path == "/connect/applications/test_id"
       Plug.Conn.send_resp(conn, 204, "")
     end)
 
@@ -95,28 +113,70 @@ defmodule WorkOS.ConnectTest do
 
   test "list_application_client_secrets succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/connect/applications/test_id/client_secrets"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("connect/list_application_client_secrets"))
     end)
 
-    assert {:ok, [%WorkOS.ApplicationCredentialsListItem{} | _]} =
-             WorkOS.Connect.list_application_client_secrets(client, "test_id")
+    assert {:ok,
+            [
+              %WorkOS.ApplicationCredentialsListItem{
+                object: "connect_application_secret",
+                id: "id"
+              }
+              | _
+            ]} = WorkOS.Connect.list_application_client_secrets(client, "test_id")
   end
 
   test "create_application_client_secret succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/connect/applications/test_id/client_secrets"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("connect/create_application_client_secret"))
     end)
 
-    assert {:ok, %WorkOS.NewConnectApplicationSecret{}} =
+    assert {:ok,
+            %WorkOS.NewConnectApplicationSecret{object: "connect_application_secret", id: "id"}} =
              WorkOS.Connect.create_application_client_secret(client, "test_id")
   end
 
   test "delete_client_secret succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "DELETE"
+      assert conn.request_path == "/connect/client_secrets/test_id"
       Plug.Conn.send_resp(conn, 204, "")
     end)
 
     assert {:ok, _} = WorkOS.Connect.delete_client_secret(client, "test_id")
+  end
+
+  test "list_applications encodes query parameters", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      params = Plug.Conn.fetch_query_params(conn).query_params
+      assert params["before"] == "hello world&x"
+      assert params["registration_types"] == "a,b"
+      refute Map.has_key?(params, "after")
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, _} =
+             WorkOS.Connect.list_applications(client, %{
+               before: "hello world&x",
+               registration_types: ["a", "b"]
+             })
+  end
+
+  test "complete_oauth2 honors per-request options", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      assert Plug.Conn.get_req_header(conn, "x-custom") == ["value"]
+      assert conn.host == "override.example.com"
+      Plug.Conn.send_resp(conn, 204, "")
+    end)
+
+    WorkOS.Connect.complete_oauth2(client, %{},
+      headers: [{"x-custom", "value"}],
+      base_url: "https://override.example.com"
+    )
   end
 
   test "surfaces API errors as tagged tuples", %{client: client} do

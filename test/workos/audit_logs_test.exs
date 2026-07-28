@@ -15,78 +15,148 @@ defmodule WorkOS.AuditLogsTest do
 
   test "get_organization_audit_logs_retention succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/organizations/test_id/audit_logs_retention"
+
       Req.Test.json(
         conn,
         WorkOS.TestFixtures.fixture("audit_logs/get_organization_audit_logs_retention")
       )
     end)
 
-    assert {:ok, %WorkOS.AuditLogsRetention{}} =
+    assert {:ok, %WorkOS.AuditLogsRetention{retention_period_in_days: 1}} =
              WorkOS.AuditLogs.get_organization_audit_logs_retention(client, "test_id")
   end
 
   test "update_organization_audit_logs_retention succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "PUT"
+      assert conn.request_path == "/organizations/test_id/audit_logs_retention"
+
       Req.Test.json(
         conn,
         WorkOS.TestFixtures.fixture("audit_logs/update_organization_audit_logs_retention")
       )
     end)
 
-    assert {:ok, %WorkOS.AuditLogsRetention{}} =
+    assert {:ok, %WorkOS.AuditLogsRetention{retention_period_in_days: 1}} =
              WorkOS.AuditLogs.update_organization_audit_logs_retention(client, "test_id")
   end
 
   test "list_actions succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/audit_logs/actions"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("audit_logs/list_actions"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.AuditLogAction{} | _]}} =
-             WorkOS.AuditLogs.list_actions(client)
+    assert {:ok,
+            %WorkOS.Page{
+              data: [%WorkOS.AuditLogAction{object: "audit_log_action", name: "name"} | _]
+            }} = WorkOS.AuditLogs.list_actions(client)
+  end
+
+  test "list_actions handles an empty page", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, %WorkOS.Page{data: []} = page} = WorkOS.AuditLogs.list_actions(client)
+    refute WorkOS.Page.has_more?(page)
+    assert page |> WorkOS.Page.stream() |> Enum.to_list() == []
   end
 
   test "list_action_schemas succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/audit_logs/actions/test_action_name/schemas"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("audit_logs/list_action_schemas"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.AuditLogSchema{} | _]}} =
+    assert {:ok,
+            %WorkOS.Page{
+              data: [%WorkOS.AuditLogSchema{object: "audit_log_schema", version: 1} | _]
+            }} = WorkOS.AuditLogs.list_action_schemas(client, "test_action_name")
+  end
+
+  test "list_action_schemas handles an empty page", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, %WorkOS.Page{data: []} = page} =
              WorkOS.AuditLogs.list_action_schemas(client, "test_action_name")
+
+    refute WorkOS.Page.has_more?(page)
+    assert page |> WorkOS.Page.stream() |> Enum.to_list() == []
   end
 
   test "create_schema succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/audit_logs/actions/test_action_name/schemas"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("audit_logs/create_schema"))
     end)
 
-    assert {:ok, %WorkOS.AuditLogSchema{}} =
+    assert {:ok, %WorkOS.AuditLogSchema{object: "audit_log_schema", version: 1}} =
              WorkOS.AuditLogs.create_schema(client, "test_action_name")
   end
 
   test "create_event succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/audit_logs/events"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("audit_logs/create_event"))
     end)
 
-    assert {:ok, %WorkOS.AuditLogEventCreateResponse{}} = WorkOS.AuditLogs.create_event(client)
+    assert {:ok, %WorkOS.AuditLogEventCreateResponse{success: true}} =
+             WorkOS.AuditLogs.create_event(client)
   end
 
   test "create_export succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/audit_logs/exports"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("audit_logs/create_export"))
     end)
 
-    assert {:ok, %WorkOS.AuditLogExport{}} = WorkOS.AuditLogs.create_export(client)
+    assert {:ok, %WorkOS.AuditLogExport{object: "audit_log_export", id: "id"}} =
+             WorkOS.AuditLogs.create_export(client)
   end
 
   test "get_export succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/audit_logs/exports/test_audit_log_export_id"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("audit_logs/get_export"))
     end)
 
-    assert {:ok, %WorkOS.AuditLogExport{}} =
+    assert {:ok, %WorkOS.AuditLogExport{object: "audit_log_export", id: "id"}} =
              WorkOS.AuditLogs.get_export(client, "test_audit_log_export_id")
+  end
+
+  test "list_actions encodes query parameters", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      params = Plug.Conn.fetch_query_params(conn).query_params
+      assert params["before"] == "hello world&x"
+      refute Map.has_key?(params, "after")
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, _} = WorkOS.AuditLogs.list_actions(client, %{before: "hello world&x"})
+  end
+
+  test "get_organization_audit_logs_retention honors per-request options", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      assert Plug.Conn.get_req_header(conn, "x-custom") == ["value"]
+      assert conn.host == "override.example.com"
+      Plug.Conn.send_resp(conn, 204, "")
+    end)
+
+    WorkOS.AuditLogs.get_organization_audit_logs_retention(client, "test_id",
+      headers: [{"x-custom", "value"}],
+      base_url: "https://override.example.com"
+    )
   end
 
   test "surfaces API errors as tagged tuples", %{client: client} do

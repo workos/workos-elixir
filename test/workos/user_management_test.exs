@@ -15,6 +15,8 @@ defmodule WorkOS.UserManagementTest do
 
   test "get_jwks succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/sso/jwks/test_client_id"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/get_jwks"))
     end)
 
@@ -22,17 +24,10 @@ defmodule WorkOS.UserManagementTest do
              WorkOS.UserManagement.get_jwks(client, "test_client_id")
   end
 
-  test "create_authenticate succeeds", %{client: client} do
-    Req.Test.stub(WorkOS.Client, fn conn ->
-      Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/create_authenticate"))
-    end)
-
-    assert {:ok, %WorkOS.AuthenticateResponse{}} =
-             WorkOS.UserManagement.create_authenticate(client)
-  end
-
   test "authenticate_with_password succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/user_management/authenticate"
       {:ok, req_body, conn} = Plug.Conn.read_body(conn)
       req_body = JSON.decode!(req_body)
       assert req_body["grant_type"] == "password"
@@ -43,7 +38,11 @@ defmodule WorkOS.UserManagementTest do
       )
     end)
 
-    assert {:ok, %WorkOS.AuthenticateResponse{}} =
+    assert {:ok,
+            %WorkOS.AuthenticateResponse{
+              organization_id: "organization_id",
+              authkit_authorization_code: "authkit_authorization_code"
+            }} =
              WorkOS.UserManagement.authenticate_with_password(client, %{
                email: "test_email",
                password: "test_password"
@@ -52,18 +51,25 @@ defmodule WorkOS.UserManagementTest do
 
   test "authenticate_with_code succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/user_management/authenticate"
       {:ok, req_body, conn} = Plug.Conn.read_body(conn)
       req_body = JSON.decode!(req_body)
       assert req_body["grant_type"] == "authorization_code"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/authenticate_with_code"))
     end)
 
-    assert {:ok, %WorkOS.AuthenticateResponse{}} =
-             WorkOS.UserManagement.authenticate_with_code(client, %{code: "test_code"})
+    assert {:ok,
+            %WorkOS.AuthenticateResponse{
+              organization_id: "organization_id",
+              authkit_authorization_code: "authkit_authorization_code"
+            }} = WorkOS.UserManagement.authenticate_with_code(client, %{code: "test_code"})
   end
 
   test "authenticate_with_refresh_token succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/user_management/authenticate"
       {:ok, req_body, conn} = Plug.Conn.read_body(conn)
       req_body = JSON.decode!(req_body)
       assert req_body["grant_type"] == "refresh_token"
@@ -74,7 +80,11 @@ defmodule WorkOS.UserManagementTest do
       )
     end)
 
-    assert {:ok, %WorkOS.AuthenticateResponse{}} =
+    assert {:ok,
+            %WorkOS.AuthenticateResponse{
+              organization_id: "organization_id",
+              authkit_authorization_code: "authkit_authorization_code"
+            }} =
              WorkOS.UserManagement.authenticate_with_refresh_token(client, %{
                refresh_token: "test_refresh_token"
              })
@@ -82,6 +92,8 @@ defmodule WorkOS.UserManagementTest do
 
   test "authenticate_with_magic_auth succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/user_management/authenticate"
       {:ok, req_body, conn} = Plug.Conn.read_body(conn)
       req_body = JSON.decode!(req_body)
       assert req_body["grant_type"] == "urn:workos:oauth:grant-type:magic-auth:code"
@@ -92,7 +104,11 @@ defmodule WorkOS.UserManagementTest do
       )
     end)
 
-    assert {:ok, %WorkOS.AuthenticateResponse{}} =
+    assert {:ok,
+            %WorkOS.AuthenticateResponse{
+              organization_id: "organization_id",
+              authkit_authorization_code: "authkit_authorization_code"
+            }} =
              WorkOS.UserManagement.authenticate_with_magic_auth(client, %{
                code: "test_code",
                email: "test_email"
@@ -101,6 +117,8 @@ defmodule WorkOS.UserManagementTest do
 
   test "authenticate_with_email_verification succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/user_management/authenticate"
       {:ok, req_body, conn} = Plug.Conn.read_body(conn)
       req_body = JSON.decode!(req_body)
       assert req_body["grant_type"] == "urn:workos:oauth:grant-type:email-verification:code"
@@ -111,7 +129,11 @@ defmodule WorkOS.UserManagementTest do
       )
     end)
 
-    assert {:ok, %WorkOS.AuthenticateResponse{}} =
+    assert {:ok,
+            %WorkOS.AuthenticateResponse{
+              organization_id: "organization_id",
+              authkit_authorization_code: "authkit_authorization_code"
+            }} =
              WorkOS.UserManagement.authenticate_with_email_verification(client, %{
                code: "test_code",
                pending_authentication_token: "test_pending_authentication_token"
@@ -120,13 +142,19 @@ defmodule WorkOS.UserManagementTest do
 
   test "authenticate_with_totp succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/user_management/authenticate"
       {:ok, req_body, conn} = Plug.Conn.read_body(conn)
       req_body = JSON.decode!(req_body)
       assert req_body["grant_type"] == "urn:workos:oauth:grant-type:mfa-totp"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/authenticate_with_totp"))
     end)
 
-    assert {:ok, %WorkOS.AuthenticateResponse{}} =
+    assert {:ok,
+            %WorkOS.AuthenticateResponse{
+              organization_id: "organization_id",
+              authkit_authorization_code: "authkit_authorization_code"
+            }} =
              WorkOS.UserManagement.authenticate_with_totp(client, %{
                code: "test_code",
                pending_authentication_token: "test_pending_authentication_token",
@@ -136,6 +164,8 @@ defmodule WorkOS.UserManagementTest do
 
   test "authenticate_with_organization_selection succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/user_management/authenticate"
       {:ok, req_body, conn} = Plug.Conn.read_body(conn)
       req_body = JSON.decode!(req_body)
       assert req_body["grant_type"] == "urn:workos:oauth:grant-type:organization-selection"
@@ -146,7 +176,11 @@ defmodule WorkOS.UserManagementTest do
       )
     end)
 
-    assert {:ok, %WorkOS.AuthenticateResponse{}} =
+    assert {:ok,
+            %WorkOS.AuthenticateResponse{
+              organization_id: "organization_id",
+              authkit_authorization_code: "authkit_authorization_code"
+            }} =
              WorkOS.UserManagement.authenticate_with_organization_selection(client, %{
                pending_authentication_token: "test_pending_authentication_token",
                organization_id: "test_organization_id"
@@ -155,6 +189,8 @@ defmodule WorkOS.UserManagementTest do
 
   test "authenticate_with_device_code succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/user_management/authenticate"
       {:ok, req_body, conn} = Plug.Conn.read_body(conn)
       req_body = JSON.decode!(req_body)
       assert req_body["grant_type"] == "urn:ietf:params:oauth:grant-type:device_code"
@@ -165,7 +201,11 @@ defmodule WorkOS.UserManagementTest do
       )
     end)
 
-    assert {:ok, %WorkOS.AuthenticateResponse{}} =
+    assert {:ok,
+            %WorkOS.AuthenticateResponse{
+              organization_id: "organization_id",
+              authkit_authorization_code: "authkit_authorization_code"
+            }} =
              WorkOS.UserManagement.authenticate_with_device_code(client, %{
                device_code: "test_device_code"
              })
@@ -173,6 +213,8 @@ defmodule WorkOS.UserManagementTest do
 
   test "authenticate_with_radar_email_challenge succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/user_management/authenticate"
       {:ok, req_body, conn} = Plug.Conn.read_body(conn)
       req_body = JSON.decode!(req_body)
       assert req_body["grant_type"] == "urn:workos:oauth:grant-type:radar-email-challenge:code"
@@ -183,7 +225,11 @@ defmodule WorkOS.UserManagementTest do
       )
     end)
 
-    assert {:ok, %WorkOS.AuthenticateResponse{}} =
+    assert {:ok,
+            %WorkOS.AuthenticateResponse{
+              organization_id: "organization_id",
+              authkit_authorization_code: "authkit_authorization_code"
+            }} =
              WorkOS.UserManagement.authenticate_with_radar_email_challenge(client, %{
                code: "test_code",
                radar_challenge_id: "test_radar_challenge_id",
@@ -193,6 +239,8 @@ defmodule WorkOS.UserManagementTest do
 
   test "authenticate_with_radar_sms_challenge succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/user_management/authenticate"
       {:ok, req_body, conn} = Plug.Conn.read_body(conn)
       req_body = JSON.decode!(req_body)
       assert req_body["grant_type"] == "urn:workos:oauth:grant-type:radar-sms-challenge:code"
@@ -203,7 +251,11 @@ defmodule WorkOS.UserManagementTest do
       )
     end)
 
-    assert {:ok, %WorkOS.AuthenticateResponse{}} =
+    assert {:ok,
+            %WorkOS.AuthenticateResponse{
+              organization_id: "organization_id",
+              authkit_authorization_code: "authkit_authorization_code"
+            }} =
              WorkOS.UserManagement.authenticate_with_radar_sms_challenge(client, %{
                code: "test_code",
                verification_id: "test_verification_id",
@@ -214,33 +266,47 @@ defmodule WorkOS.UserManagementTest do
 
   test "create_device succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/user_management/authorize/device"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/create_device"))
     end)
 
-    assert {:ok, %WorkOS.DeviceAuthorizationResponse{}} =
-             WorkOS.UserManagement.create_device(client)
+    assert {:ok,
+            %WorkOS.DeviceAuthorizationResponse{
+              device_code: "device_code",
+              user_code: "user_code"
+            }} = WorkOS.UserManagement.create_device(client)
   end
 
   test "create_radar_challenge succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/user_management/radar_challenges"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/create_radar_challenge"))
     end)
 
-    assert {:ok, %WorkOS.SendRadarSmsChallengeResponse{}} =
-             WorkOS.UserManagement.create_radar_challenge(client)
+    assert {:ok,
+            %WorkOS.SendRadarSmsChallengeResponse{
+              verification_id: "verification_id",
+              phone_number: "phone_number"
+            }} = WorkOS.UserManagement.create_radar_challenge(client)
   end
 
   test "get_radar_challenge succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/user_management/radar_challenges/test_id"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/get_radar_challenge"))
     end)
 
-    assert {:ok, %WorkOS.RadarChallenge{}} =
+    assert {:ok, %WorkOS.RadarChallenge{object: "radar_challenge", id: "id"}} =
              WorkOS.UserManagement.get_radar_challenge(client, "test_id")
   end
 
   test "revoke_session succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/user_management/sessions/revoke"
       Plug.Conn.send_resp(conn, 204, "")
     end)
 
@@ -249,40 +315,63 @@ defmodule WorkOS.UserManagementTest do
 
   test "list_cors_origins succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/user_management/cors_origins"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/list_cors_origins"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.CORSOriginResponse{} | _]}} =
+    assert {:ok,
+            %WorkOS.Page{data: [%WorkOS.CORSOriginResponse{object: "cors_origin", id: "id"} | _]}} =
              WorkOS.UserManagement.list_cors_origins(client)
+  end
+
+  test "list_cors_origins handles an empty page", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, %WorkOS.Page{data: []} = page} = WorkOS.UserManagement.list_cors_origins(client)
+    refute WorkOS.Page.has_more?(page)
+    assert page |> WorkOS.Page.stream() |> Enum.to_list() == []
   end
 
   test "create_cors_origin succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/user_management/cors_origins"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/create_cors_origin"))
     end)
 
-    assert {:ok, %WorkOS.CORSOriginResponse{}} = WorkOS.UserManagement.create_cors_origin(client)
+    assert {:ok, %WorkOS.CORSOriginResponse{object: "cors_origin", id: "id"}} =
+             WorkOS.UserManagement.create_cors_origin(client)
   end
 
   test "get_email_verification succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/user_management/email_verification/test_id"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/get_email_verification"))
     end)
 
-    assert {:ok, %WorkOS.EmailVerification{}} =
+    assert {:ok, %WorkOS.EmailVerification{object: "email_verification", id: "id"}} =
              WorkOS.UserManagement.get_email_verification(client, "test_id")
   end
 
   test "reset_password succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/user_management/password_reset"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/reset_password"))
     end)
 
-    assert {:ok, %WorkOS.PasswordReset{}} = WorkOS.UserManagement.reset_password(client)
+    assert {:ok, %WorkOS.PasswordReset{object: "password_reset", id: "id"}} =
+             WorkOS.UserManagement.reset_password(client)
   end
 
   test "confirm_password_reset succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/user_management/password_reset/confirm"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/confirm_password_reset"))
     end)
 
@@ -292,57 +381,84 @@ defmodule WorkOS.UserManagementTest do
 
   test "get_password_reset succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/user_management/password_reset/test_id"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/get_password_reset"))
     end)
 
-    assert {:ok, %WorkOS.PasswordReset{}} =
+    assert {:ok, %WorkOS.PasswordReset{object: "password_reset", id: "id"}} =
              WorkOS.UserManagement.get_password_reset(client, "test_id")
   end
 
   test "list_users succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/user_management/users"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/list_users"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.UserList{} | _]}} =
+    assert {:ok, %WorkOS.Page{data: [%WorkOS.UserList{object: "list"} | _]}} =
              WorkOS.UserManagement.list_users(client)
+  end
+
+  test "list_users handles an empty page", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, %WorkOS.Page{data: []} = page} = WorkOS.UserManagement.list_users(client)
+    refute WorkOS.Page.has_more?(page)
+    assert page |> WorkOS.Page.stream() |> Enum.to_list() == []
   end
 
   test "create_user succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/user_management/users"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/create_user"))
     end)
 
-    assert {:ok, %WorkOS.UserCreateResponse{}} = WorkOS.UserManagement.create_user(client)
+    assert {:ok, %WorkOS.UserCreateResponse{object: "user", id: "id"}} =
+             WorkOS.UserManagement.create_user(client)
   end
 
   test "get_user_by_external_id succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/user_management/users/external_id/test_external_id"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/get_user_by_external_id"))
     end)
 
-    assert {:ok, %WorkOS.User{}} =
+    assert {:ok, %WorkOS.User{object: "user", id: "id"}} =
              WorkOS.UserManagement.get_user_by_external_id(client, "test_external_id")
   end
 
   test "get_user succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/user_management/users/test_id"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/get_user"))
     end)
 
-    assert {:ok, %WorkOS.User{}} = WorkOS.UserManagement.get_user(client, "test_id")
+    assert {:ok, %WorkOS.User{object: "user", id: "id"}} =
+             WorkOS.UserManagement.get_user(client, "test_id")
   end
 
   test "update_user succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "PUT"
+      assert conn.request_path == "/user_management/users/test_id"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/update_user"))
     end)
 
-    assert {:ok, %WorkOS.User{}} = WorkOS.UserManagement.update_user(client, "test_id")
+    assert {:ok, %WorkOS.User{object: "user", id: "id"}} =
+             WorkOS.UserManagement.update_user(client, "test_id")
   end
 
   test "delete_user succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "DELETE"
+      assert conn.request_path == "/user_management/users/test_id"
       Plug.Conn.send_resp(conn, 204, "")
     end)
 
@@ -351,24 +467,30 @@ defmodule WorkOS.UserManagementTest do
 
   test "confirm_email_change succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/user_management/users/test_id/email_change/confirm"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/confirm_email_change"))
     end)
 
-    assert {:ok, %WorkOS.EmailChangeConfirmation{}} =
+    assert {:ok, %WorkOS.EmailChangeConfirmation{object: "email_change_confirmation"}} =
              WorkOS.UserManagement.confirm_email_change(client, "test_id")
   end
 
   test "send_email_change succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/user_management/users/test_id/email_change/send"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/send_email_change"))
     end)
 
-    assert {:ok, %WorkOS.EmailChange{}} =
+    assert {:ok, %WorkOS.EmailChange{object: "email_change", new_email: "new_email"}} =
              WorkOS.UserManagement.send_email_change(client, "test_id")
   end
 
   test "verify_email succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/user_management/users/test_id/email_verification/confirm"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/verify_email"))
     end)
 
@@ -378,6 +500,8 @@ defmodule WorkOS.UserManagementTest do
 
   test "send_verification_email succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/user_management/users/test_id/email_verification/send"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/send_verification_email"))
     end)
 
@@ -387,136 +511,207 @@ defmodule WorkOS.UserManagementTest do
 
   test "get_user_identities succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/user_management/users/test_id/identities"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/get_user_identities"))
     end)
 
-    assert {:ok, [%WorkOS.UserIdentitiesGetItem{} | _]} =
+    assert {:ok, [%WorkOS.UserIdentitiesGetItem{idp_id: "idp_id", type: "OAuth"} | _]} =
              WorkOS.UserManagement.get_user_identities(client, "test_id")
   end
 
   test "list_sessions succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/user_management/users/test_id/sessions"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/list_sessions"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.UserSessionsListItem{} | _]}} =
+    assert {:ok,
+            %WorkOS.Page{data: [%WorkOS.UserSessionsListItem{object: "session", id: "id"} | _]}} =
              WorkOS.UserManagement.list_sessions(client, "test_id")
+  end
+
+  test "list_sessions handles an empty page", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, %WorkOS.Page{data: []} = page} =
+             WorkOS.UserManagement.list_sessions(client, "test_id")
+
+    refute WorkOS.Page.has_more?(page)
+    assert page |> WorkOS.Page.stream() |> Enum.to_list() == []
   end
 
   test "list_invitations succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/user_management/invitations"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/list_invitations"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.UserInviteList{} | _]}} =
+    assert {:ok, %WorkOS.Page{data: [%WorkOS.UserInviteList{object: "list"} | _]}} =
              WorkOS.UserManagement.list_invitations(client)
+  end
+
+  test "list_invitations handles an empty page", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, %WorkOS.Page{data: []} = page} = WorkOS.UserManagement.list_invitations(client)
+    refute WorkOS.Page.has_more?(page)
+    assert page |> WorkOS.Page.stream() |> Enum.to_list() == []
   end
 
   test "send_invitation succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/user_management/invitations"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/send_invitation"))
     end)
 
-    assert {:ok, %WorkOS.UserInvite{}} = WorkOS.UserManagement.send_invitation(client)
+    assert {:ok, %WorkOS.UserInvite{object: "invitation", id: "id"}} =
+             WorkOS.UserManagement.send_invitation(client)
   end
 
   test "find_invitation_by_token succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/user_management/invitations/by_token/test_token"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/find_invitation_by_token"))
     end)
 
-    assert {:ok, %WorkOS.UserInvite{}} =
+    assert {:ok, %WorkOS.UserInvite{object: "invitation", id: "id"}} =
              WorkOS.UserManagement.find_invitation_by_token(client, "test_token")
   end
 
   test "get_invitation succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/user_management/invitations/test_id"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/get_invitation"))
     end)
 
-    assert {:ok, %WorkOS.UserInvite{}} = WorkOS.UserManagement.get_invitation(client, "test_id")
+    assert {:ok, %WorkOS.UserInvite{object: "invitation", id: "id"}} =
+             WorkOS.UserManagement.get_invitation(client, "test_id")
   end
 
   test "accept_invitation succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/user_management/invitations/test_id/accept"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/accept_invitation"))
     end)
 
-    assert {:ok, %WorkOS.Invitation{}} =
+    assert {:ok, %WorkOS.Invitation{object: "invitation", id: "id"}} =
              WorkOS.UserManagement.accept_invitation(client, "test_id")
   end
 
   test "resend_invitation succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/user_management/invitations/test_id/resend"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/resend_invitation"))
     end)
 
-    assert {:ok, %WorkOS.UserInvite{}} =
+    assert {:ok, %WorkOS.UserInvite{object: "invitation", id: "id"}} =
              WorkOS.UserManagement.resend_invitation(client, "test_id")
   end
 
   test "revoke_invitation succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/user_management/invitations/test_id/revoke"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/revoke_invitation"))
     end)
 
-    assert {:ok, %WorkOS.Invitation{}} =
+    assert {:ok, %WorkOS.Invitation{object: "invitation", id: "id"}} =
              WorkOS.UserManagement.revoke_invitation(client, "test_id")
   end
 
   test "list_jwt_template succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/user_management/jwt_template"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/list_jwt_template"))
     end)
 
-    assert {:ok, %WorkOS.JWTTemplateResponse{}} = WorkOS.UserManagement.list_jwt_template(client)
+    assert {:ok, %WorkOS.JWTTemplateResponse{object: "jwt_template", content: "content"}} =
+             WorkOS.UserManagement.list_jwt_template(client)
   end
 
   test "update_jwt_template succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "PUT"
+      assert conn.request_path == "/user_management/jwt_template"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/update_jwt_template"))
     end)
 
-    assert {:ok, %WorkOS.JWTTemplateResponse{}} =
+    assert {:ok, %WorkOS.JWTTemplateResponse{object: "jwt_template", content: "content"}} =
              WorkOS.UserManagement.update_jwt_template(client)
   end
 
   test "create_magic_auth succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/user_management/magic_auth"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/create_magic_auth"))
     end)
 
-    assert {:ok, %WorkOS.MagicAuthSendMagicAuthCodeAndReturnResponse{}} =
+    assert {:ok,
+            %WorkOS.MagicAuthSendMagicAuthCodeAndReturnResponse{object: "magic_auth", id: "id"}} =
              WorkOS.UserManagement.create_magic_auth(client)
   end
 
   test "get_magic_auth succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/user_management/magic_auth/test_id"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/get_magic_auth"))
     end)
 
-    assert {:ok, %WorkOS.MagicAuth{}} = WorkOS.UserManagement.get_magic_auth(client, "test_id")
+    assert {:ok, %WorkOS.MagicAuth{object: "magic_auth", id: "id"}} =
+             WorkOS.UserManagement.get_magic_auth(client, "test_id")
   end
 
   test "list_redirect_uris succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/user_management/redirect_uris"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/list_redirect_uris"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.RedirectUri{} | _]}} =
+    assert {:ok, %WorkOS.Page{data: [%WorkOS.RedirectUri{object: "redirect_uri", id: "id"} | _]}} =
              WorkOS.UserManagement.list_redirect_uris(client)
+  end
+
+  test "list_redirect_uris handles an empty page", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, %WorkOS.Page{data: []} = page} = WorkOS.UserManagement.list_redirect_uris(client)
+    refute WorkOS.Page.has_more?(page)
+    assert page |> WorkOS.Page.stream() |> Enum.to_list() == []
   end
 
   test "create_redirect_uri succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/user_management/redirect_uris"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/create_redirect_uri"))
     end)
 
-    assert {:ok, %WorkOS.RedirectUri{}} = WorkOS.UserManagement.create_redirect_uri(client)
+    assert {:ok, %WorkOS.RedirectUri{object: "redirect_uri", id: "id"}} =
+             WorkOS.UserManagement.create_redirect_uri(client)
   end
 
   test "delete_redirect_uris succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "DELETE"
+      assert conn.request_path == "/user_management/redirect_uris/test_id"
       Plug.Conn.send_resp(conn, 204, "")
     end)
 
@@ -525,18 +720,39 @@ defmodule WorkOS.UserManagementTest do
 
   test "list_user_authorized_applications succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/user_management/users/test_user_id/authorized_applications"
+
       Req.Test.json(
         conn,
         WorkOS.TestFixtures.fixture("user_management/list_user_authorized_applications")
       )
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.AuthorizedConnectApplicationList{} | _]}} =
+    assert {:ok,
+            %WorkOS.Page{data: [%WorkOS.AuthorizedConnectApplicationList{object: "list"} | _]}} =
              WorkOS.UserManagement.list_user_authorized_applications(client, "test_user_id")
+  end
+
+  test "list_user_authorized_applications handles an empty page", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, %WorkOS.Page{data: []} = page} =
+             WorkOS.UserManagement.list_user_authorized_applications(client, "test_user_id")
+
+    refute WorkOS.Page.has_more?(page)
+    assert page |> WorkOS.Page.stream() |> Enum.to_list() == []
   end
 
   test "delete_user_authorized_application succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "DELETE"
+
+      assert conn.request_path ==
+               "/user_management/users/test_user_id/authorized_applications/test_application_id"
+
       Plug.Conn.send_resp(conn, 204, "")
     end)
 
@@ -550,19 +766,35 @@ defmodule WorkOS.UserManagementTest do
 
   test "list_user_api_keys succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/user_management/users/test_user_id/api_keys"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/list_user_api_keys"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.UserApiKeyList{} | _]}} =
+    assert {:ok, %WorkOS.Page{data: [%WorkOS.UserApiKeyList{object: "list"} | _]}} =
              WorkOS.UserManagement.list_user_api_keys(client, "test_user_id")
+  end
+
+  test "list_user_api_keys handles an empty page", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, %WorkOS.Page{data: []} = page} =
+             WorkOS.UserManagement.list_user_api_keys(client, "test_user_id")
+
+    refute WorkOS.Page.has_more?(page)
+    assert page |> WorkOS.Page.stream() |> Enum.to_list() == []
   end
 
   test "create_user_api_key succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/user_management/users/test_user_id/api_keys"
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/create_user_api_key"))
     end)
 
-    assert {:ok, %WorkOS.UserApiKeyWithValue{}} =
+    assert {:ok, %WorkOS.UserApiKeyWithValue{object: "api_key", id: "id"}} =
              WorkOS.UserManagement.create_user_api_key(client, "test_user_id")
   end
 
@@ -581,6 +813,30 @@ defmodule WorkOS.UserManagementTest do
     assert is_binary(url)
     assert String.starts_with?(url, client.base_url)
     assert url =~ "/user_management/sessions/logout"
+  end
+
+  test "list_cors_origins encodes query parameters", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      params = Plug.Conn.fetch_query_params(conn).query_params
+      assert params["before"] == "hello world&x"
+      refute Map.has_key?(params, "after")
+      Req.Test.json(conn, %{"data" => [], "list_metadata" => %{"after" => nil}})
+    end)
+
+    assert {:ok, _} = WorkOS.UserManagement.list_cors_origins(client, %{before: "hello world&x"})
+  end
+
+  test "get_jwks honors per-request options", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      assert Plug.Conn.get_req_header(conn, "x-custom") == ["value"]
+      assert conn.host == "override.example.com"
+      Plug.Conn.send_resp(conn, 204, "")
+    end)
+
+    WorkOS.UserManagement.get_jwks(client, "test_client_id",
+      headers: [{"x-custom", "value"}],
+      base_url: "https://override.example.com"
+    )
   end
 
   test "surfaces API errors as tagged tuples", %{client: client} do

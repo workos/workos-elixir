@@ -15,30 +15,38 @@ defmodule WorkOS.OrganizationDomainsTest do
 
   test "create_organization_domain succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/organization_domains"
+
       Req.Test.json(
         conn,
         WorkOS.TestFixtures.fixture("organization_domains/create_organization_domain")
       )
     end)
 
-    assert {:ok, %WorkOS.OrganizationDomain{}} =
+    assert {:ok, %WorkOS.OrganizationDomain{object: "organization_domain", id: "id"}} =
              WorkOS.OrganizationDomains.create_organization_domain(client)
   end
 
   test "get_organization_domain succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "GET"
+      assert conn.request_path == "/organization_domains/test_id"
+
       Req.Test.json(
         conn,
         WorkOS.TestFixtures.fixture("organization_domains/get_organization_domain")
       )
     end)
 
-    assert {:ok, %WorkOS.OrganizationDomain{}} =
+    assert {:ok, %WorkOS.OrganizationDomain{object: "organization_domain", id: "id"}} =
              WorkOS.OrganizationDomains.get_organization_domain(client, "test_id")
   end
 
   test "delete_organization_domain succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "DELETE"
+      assert conn.request_path == "/organization_domains/test_id"
       Plug.Conn.send_resp(conn, 204, "")
     end)
 
@@ -47,14 +55,30 @@ defmodule WorkOS.OrganizationDomainsTest do
 
   test "verify_organization_domain succeeds", %{client: client} do
     Req.Test.stub(WorkOS.Client, fn conn ->
+      assert conn.method == "POST"
+      assert conn.request_path == "/organization_domains/test_id/verify"
+
       Req.Test.json(
         conn,
         WorkOS.TestFixtures.fixture("organization_domains/verify_organization_domain")
       )
     end)
 
-    assert {:ok, %WorkOS.OrganizationDomain{}} =
+    assert {:ok, %WorkOS.OrganizationDomain{object: "organization_domain", id: "id"}} =
              WorkOS.OrganizationDomains.verify_organization_domain(client, "test_id")
+  end
+
+  test "create_organization_domain honors per-request options", %{client: client} do
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      assert Plug.Conn.get_req_header(conn, "x-custom") == ["value"]
+      assert conn.host == "override.example.com"
+      Plug.Conn.send_resp(conn, 204, "")
+    end)
+
+    WorkOS.OrganizationDomains.create_organization_domain(client, %{},
+      headers: [{"x-custom", "value"}],
+      base_url: "https://override.example.com"
+    )
   end
 
   test "surfaces API errors as tagged tuples", %{client: client} do

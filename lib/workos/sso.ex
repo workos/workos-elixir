@@ -91,7 +91,7 @@ defmodule WorkOS.SSO do
 
   ## Parameters
 
-    * `params` — query parameters: `:provider_scopes`, `:provider_query_params`, `:domain`, `:provider`, `:redirect_uri`, `:state`, `:connection`, `:organization`, `:domain_hint`, `:login_hint`, `:nonce`, `:prompt`
+    * `params` — query parameters: `:provider_scopes`, `:provider_query_params`, `:domain` (deprecated), `:provider`, `:redirect_uri`, `:state`, `:connection`, `:organization`, `:domain_hint`, `:login_hint`, `:nonce`, `:prompt`
   """
   @spec get_authorization_url(WorkOS.Client.t(), map()) :: String.t()
   def get_authorization_url(client, params \\ %{}) do
