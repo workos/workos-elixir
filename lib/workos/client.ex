@@ -79,6 +79,8 @@ defmodule WorkOS.Client do
     * `:headers` — extra headers, as a list of `{name, value}` tuples
     * `:idempotency_key` — explicit idempotency key header value
     * `:timeout` — per-request receive timeout in milliseconds
+    * `:max_retries` — per-request retry ceiling, overriding the client's
+    * `:base_url` — per-request base URL, overriding the client's
     * `:query` — extra query parameters for requests whose `params` is a body
   """
   @spec request(t(), atom(), String.t(), map(), keyword()) ::
@@ -92,19 +94,23 @@ defmodule WorkOS.Client do
         do: params,
         else: Map.new(opts[:query] || %{}, fn {k, v} -> {to_string(k), v} end)
 
+    query = encode_query_values(query)
+
     body = if query_method?, do: nil, else: params
+
+    max_retries = opts[:max_retries] || client.max_retries
 
     req_options =
       [
         method: method,
         url: path,
-        base_url: client.base_url,
+        base_url: normalize_base_url(opts[:base_url]) || client.base_url,
         auth: {:bearer, client.api_key},
-        headers: build_headers(client, method, opts),
+        headers: build_headers(client, method, opts, max_retries),
         receive_timeout: opts[:timeout] || client.timeout,
         retry: &retryable?/2,
         retry_delay: &retry_delay/1,
-        max_retries: client.max_retries,
+        max_retries: max_retries,
         decode_body: false
       ]
       |> put_query(query)
@@ -143,6 +149,18 @@ defmodule WorkOS.Client do
     end
   end
 
+  # Req hands `:params` to URI.encode_query, which rejects list values outright
+  # and mangles maps, so structured query values must be flattened to strings
+  # before they get there — the same normalization `build_url/3` applies.
+  # nil is left alone: `put_query` drops it rather than sending "".
+  defp encode_query_values(query) do
+    Map.new(query, fn
+      {k, nil} -> {k, nil}
+      {k, v} when is_list(v) or is_map(v) -> {k, query_value(v)}
+      {k, v} -> {k, v}
+    end)
+  end
+
   defp query_value(value) when is_list(value), do: Enum.map_join(value, ",", &to_string/1)
   defp query_value(value) when is_map(value), do: JSON.encode!(value)
   defp query_value(value), do: to_string(value)
@@ -160,8 +178,13 @@ defmodule WorkOS.Client do
   def put_inferred(params, _key, nil), do: params
   def put_inferred(params, key, value), do: Map.put_new(params, key, value)
 
-  defp put_query(req_options, query) when map_size(query) == 0, do: req_options
-  defp put_query(req_options, query), do: Keyword.put(req_options, :params, Map.to_list(query))
+  # nil query values are omitted rather than sent as `key=`, matching build_url/3.
+  defp put_query(req_options, query) do
+    case Enum.reject(query, fn {_k, v} -> is_nil(v) end) do
+      [] -> req_options
+      pairs -> Keyword.put(req_options, :params, pairs)
+    end
+  end
 
   defp put_body(req_options, nil), do: req_options
 
@@ -171,16 +194,23 @@ defmodule WorkOS.Client do
     |> Keyword.update!(:headers, &[{"content-type", "application/json"} | &1])
   end
 
-  defp build_headers(_client, method, opts) do
-    [{"user-agent", user_agent()}] ++ idempotency_headers(method, opts) ++ (opts[:headers] || [])
+  defp normalize_base_url(nil), do: nil
+  defp normalize_base_url(url) when is_binary(url), do: String.trim_trailing(url, "/")
+
+  defp build_headers(_client, method, opts, max_retries) do
+    [{"user-agent", user_agent()}] ++
+      idempotency_headers(method, opts, max_retries) ++ (opts[:headers] || [])
   end
 
-  defp idempotency_headers(method, opts) do
+  # A retried POST must be safe to replay, so when retries are enabled and the
+  # caller supplied no key we mint one. `:idempotency` remains supported for
+  # spec-driven opt-in (`injectIdempotencyKey`) even with retries disabled.
+  defp idempotency_headers(method, opts, max_retries) do
     cond do
       is_binary(opts[:idempotency_key]) ->
         [{@idempotency_header, opts[:idempotency_key]}]
 
-      opts[:idempotency] == true and method == :post ->
+      method == :post and (opts[:idempotency] == true or max_retries > 0) ->
         [{@idempotency_header, generate_idempotency_key()}]
 
       true ->
@@ -223,9 +253,20 @@ defmodule WorkOS.Client do
       kind: error_kind(status),
       request_id: response |> Req.Response.get_header(@request_id_header) |> List.first(),
       code: if(is_map(body), do: body["code"]),
+      param: error_param(body),
       body: body
     }
   end
+
+  # The offending field, when the API names one. WorkOS reports it either at the
+  # top level (`field`/`param`) or per-entry under `errors`.
+  defp error_param(%{"field" => field}) when is_binary(field), do: field
+  defp error_param(%{"param" => param}) when is_binary(param), do: param
+
+  defp error_param(%{"errors" => [first | _]}) when is_map(first),
+    do: error_param(first)
+
+  defp error_param(_body), do: nil
 
   defp error_message(%{"message" => message}, _status) when is_binary(message), do: message
 

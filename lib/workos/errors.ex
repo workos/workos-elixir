@@ -13,10 +13,11 @@ defmodule WorkOS.ApiError do
   A non-2xx response from the API.
 
   The `:kind` field classifies the failure by status code (e.g. `:not_found`),
-  so callers can pattern-match without memorizing status numbers.
+  so callers can pattern-match without memorizing status numbers. `:param`
+  carries the offending field name when the API names one.
   """
 
-  defexception [:message, :status, :kind, :request_id, :code, :body]
+  defexception [:message, :status, :kind, :request_id, :code, :param, :body]
 
   @type kind ::
           :bad_request
@@ -35,6 +36,7 @@ defmodule WorkOS.ApiError do
           kind: kind(),
           request_id: String.t() | nil,
           code: String.t() | nil,
+          param: String.t() | nil,
           body: map() | String.t() | nil
         }
 end
