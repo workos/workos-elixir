@@ -5,21 +5,23 @@ defmodule WorkOS.ConnectedAccountAuthMethod do
   ConnectedAccountAuthMethod enum.
   """
 
-  @type t :: :oauth | :api_key
+  @type t :: :oauth | :api_key | :client_credentials
 
   @doc "All known values."
   @spec values() :: [t()]
-  def values, do: [:oauth, :api_key]
+  def values, do: [:oauth, :api_key, :client_credentials]
 
   @doc "Casts a wire string to its atom; unknown values pass through unchanged."
   @spec cast(String.t() | nil) :: t() | String.t() | nil
   def cast("oauth"), do: :oauth
   def cast("api_key"), do: :api_key
+  def cast("client_credentials"), do: :client_credentials
   def cast(other), do: other
 
   @doc "Dumps an atom back to its wire string."
   @spec dump(t() | String.t()) :: String.t()
   def dump(:oauth), do: "oauth"
   def dump(:api_key), do: "api_key"
+  def dump(:client_credentials), do: "client_credentials"
   def dump(other) when is_binary(other), do: other
 end

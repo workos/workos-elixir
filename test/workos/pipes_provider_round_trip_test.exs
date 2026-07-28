@@ -15,6 +15,7 @@ defmodule WorkOS.PipesProviderRoundTripTest do
           "name" => "name",
           "enabled" => true,
           "scopes" => ["scopes"],
+          "config" => %{},
           "created_at" => "created_at",
           "updated_at" => "updated_at",
           "credentials" => %{
@@ -49,6 +50,7 @@ defmodule WorkOS.PipesProviderRoundTripTest do
       "name" => "name",
       "enabled" => true,
       "scopes" => ["scopes"],
+      "config" => %{},
       "created_at" => "created_at",
       "updated_at" => "updated_at",
       "credentials" => %{

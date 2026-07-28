@@ -9,14 +9,16 @@ defmodule WorkOS.ConfigureDataIntegrationBody do
     :enabled,
     :scopes,
     :client_id,
-    :client_secret
+    :client_secret,
+    :config
   ]
 
   @type t :: %__MODULE__{
           enabled: boolean() | nil,
           scopes: [String.t()] | nil,
           client_id: String.t() | nil,
-          client_secret: String.t() | nil
+          client_secret: String.t() | nil,
+          config: %{optional(String.t()) => String.t()} | nil
         }
 
   @doc false
@@ -26,7 +28,8 @@ defmodule WorkOS.ConfigureDataIntegrationBody do
       enabled: map["enabled"],
       scopes: map["scopes"],
       client_id: map["client_id"],
-      client_secret: map["client_secret"]
+      client_secret: map["client_secret"],
+      config: map["config"]
     }
   end
 
@@ -37,7 +40,8 @@ defmodule WorkOS.ConfigureDataIntegrationBody do
       "enabled" => struct.enabled,
       "scopes" => struct.scopes,
       "client_id" => struct.client_id,
-      "client_secret" => struct.client_secret
+      "client_secret" => struct.client_secret,
+      "config" => struct.config
     })
   end
 end

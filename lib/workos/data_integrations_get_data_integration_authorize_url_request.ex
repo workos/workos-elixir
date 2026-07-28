@@ -8,13 +8,15 @@ defmodule WorkOS.DataIntegrationsGetDataIntegrationAuthorizeUrlRequest do
   defstruct [
     :user_id,
     :organization_id,
-    :return_to
+    :return_to,
+    :config
   ]
 
   @type t :: %__MODULE__{
           user_id: String.t(),
           organization_id: String.t() | nil,
-          return_to: String.t() | nil
+          return_to: String.t() | nil,
+          config: %{optional(String.t()) => String.t()} | nil
         }
 
   @doc false
@@ -23,7 +25,8 @@ defmodule WorkOS.DataIntegrationsGetDataIntegrationAuthorizeUrlRequest do
     %__MODULE__{
       user_id: map["user_id"],
       organization_id: map["organization_id"],
-      return_to: map["return_to"]
+      return_to: map["return_to"],
+      config: map["config"]
     }
   end
 
@@ -33,7 +36,8 @@ defmodule WorkOS.DataIntegrationsGetDataIntegrationAuthorizeUrlRequest do
     WorkOS.Cast.drop_nils(%{
       "user_id" => struct.user_id,
       "organization_id" => struct.organization_id,
-      "return_to" => struct.return_to
+      "return_to" => struct.return_to,
+      "config" => struct.config
     })
   end
 end

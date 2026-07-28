@@ -13,6 +13,7 @@ defmodule WorkOS.DataIntegrationConfigurationResponse do
     :name,
     :enabled,
     :scopes,
+    :config,
     :created_at,
     :updated_at,
     :credentials
@@ -26,6 +27,7 @@ defmodule WorkOS.DataIntegrationConfigurationResponse do
           name: String.t(),
           enabled: boolean(),
           scopes: [String.t()] | nil,
+          config: %{optional(String.t()) => String.t()},
           created_at: String.t(),
           updated_at: String.t(),
           credentials: WorkOS.DataIntegrationCredentials.t() | nil
@@ -42,6 +44,7 @@ defmodule WorkOS.DataIntegrationConfigurationResponse do
       name: map["name"],
       enabled: map["enabled"],
       scopes: map["scopes"],
+      config: map["config"],
       created_at: map["created_at"],
       updated_at: map["updated_at"],
       credentials:
@@ -60,6 +63,7 @@ defmodule WorkOS.DataIntegrationConfigurationResponse do
       "name" => struct.name,
       "enabled" => struct.enabled,
       "scopes" => struct.scopes,
+      "config" => struct.config,
       "created_at" => struct.created_at,
       "updated_at" => struct.updated_at,
       "credentials" =>
