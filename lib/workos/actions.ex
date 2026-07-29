@@ -17,6 +17,8 @@ defmodule WorkOS.Actions do
   `response.payload` and `response.sig` form the action webhook response body.
   """
 
+  alias WorkOS.Webhooks.Signature
+
   @default_tolerance_seconds 30
 
   @typedoc """
@@ -38,7 +40,7 @@ defmodule WorkOS.Actions do
     opts = Keyword.put_new(opts, :tolerance, @default_tolerance_seconds)
 
     with {:ok, _body} <-
-           WorkOS.Webhooks.Signature.verify_payload(sig_header, payload, secret, opts) do
+           Signature.verify_payload(sig_header, payload, secret, opts) do
       :ok
     end
   end
@@ -85,7 +87,7 @@ defmodule WorkOS.Actions do
       |> Base.encode64()
 
     timestamp = Integer.to_string(now_ms)
-    signature = WorkOS.Webhooks.Signature.compute_signature(secret, timestamp, payload)
+    signature = Signature.compute_signature(secret, timestamp, payload)
 
     {:ok, %{payload: payload, sig: "t=#{timestamp},v1=#{signature}"}}
   end

@@ -3,6 +3,8 @@
 defmodule WorkOS.Vault.CryptoTest do
   use ExUnit.Case, async: true
 
+  alias WorkOS.Vault.Crypto
+
   @data_key :crypto.strong_rand_bytes(32)
   @data_key_b64 Base.encode64(@data_key)
   # Over 127 bytes so the LEB128 length prefix takes more than one byte.
@@ -31,35 +33,35 @@ defmodule WorkOS.Vault.CryptoTest do
 
   describe "local encrypt/decrypt" do
     test "roundtrips data without touching the API" do
-      assert {:ok, encrypted} = WorkOS.Vault.Crypto.local_encrypt("my secret", key_pair())
-      assert {:ok, "my secret"} = WorkOS.Vault.Crypto.local_decrypt(encrypted, decrypt_key())
+      assert {:ok, encrypted} = Crypto.local_encrypt("my secret", key_pair())
+      assert {:ok, "my secret"} = Crypto.local_decrypt(encrypted, decrypt_key())
     end
 
     test "roundtrips with associated data" do
       assert {:ok, encrypted} =
-               WorkOS.Vault.Crypto.local_encrypt("my secret", key_pair(), "aad-123")
+               Crypto.local_encrypt("my secret", key_pair(), "aad-123")
 
       assert {:ok, "my secret"} =
-               WorkOS.Vault.Crypto.local_decrypt(encrypted, decrypt_key(), "aad-123")
+               Crypto.local_decrypt(encrypted, decrypt_key(), "aad-123")
     end
 
     test "fails when associated data does not match" do
       assert {:ok, encrypted} =
-               WorkOS.Vault.Crypto.local_encrypt("my secret", key_pair(), "aad-123")
+               Crypto.local_encrypt("my secret", key_pair(), "aad-123")
 
       assert {:error, :decryption_failed} =
-               WorkOS.Vault.Crypto.local_decrypt(encrypted, decrypt_key(), "aad-456")
+               Crypto.local_decrypt(encrypted, decrypt_key(), "aad-456")
     end
 
     test "fails with the wrong data key" do
-      assert {:ok, encrypted} = WorkOS.Vault.Crypto.local_encrypt("my secret", key_pair())
+      assert {:ok, encrypted} = Crypto.local_encrypt("my secret", key_pair())
 
       wrong = %WorkOS.DecryptResponse{data_key: Base.encode64(:crypto.strong_rand_bytes(32))}
-      assert {:error, :decryption_failed} = WorkOS.Vault.Crypto.local_decrypt(encrypted, wrong)
+      assert {:error, :decryption_failed} = Crypto.local_decrypt(encrypted, wrong)
     end
 
     test "embeds the encrypted keys ahead of the payload" do
-      assert {:ok, encrypted} = WorkOS.Vault.Crypto.local_encrypt("my secret", key_pair())
+      assert {:ok, encrypted} = Crypto.local_encrypt("my secret", key_pair())
 
       raw = Base.decode64!(encrypted)
       # 200 encodes as two LEB128 bytes: 0xC8 0x01.
@@ -69,7 +71,7 @@ defmodule WorkOS.Vault.CryptoTest do
 
     test "rejects truncated input" do
       assert {:error, :encrypted_data_too_short} =
-               WorkOS.Vault.Crypto.local_decrypt(Base.encode64(<<5, 1, 2>>), decrypt_key())
+               Crypto.local_decrypt(Base.encode64(<<5, 1, 2>>), decrypt_key())
     end
   end
 
@@ -99,12 +101,12 @@ defmodule WorkOS.Vault.CryptoTest do
       client = build_client()
 
       assert {:ok, result} =
-               WorkOS.Vault.Crypto.encrypt(client, "my secret", %{"org" => "org_123"})
+               Crypto.encrypt(client, "my secret", %{"org" => "org_123"})
 
       assert result.encrypted_keys == @encrypted_keys_b64
       assert result.key_context == %{"org" => "org_123"}
 
-      assert {:ok, "my secret"} = WorkOS.Vault.Crypto.decrypt(client, result.encrypted_data)
+      assert {:ok, "my secret"} = Crypto.decrypt(client, result.encrypted_data)
     end
 
     test "decrypt surfaces API errors from the key exchange" do
@@ -114,10 +116,10 @@ defmodule WorkOS.Vault.CryptoTest do
         |> Req.Test.json(%{"message" => "Forbidden"})
       end)
 
-      {:ok, encrypted} = WorkOS.Vault.Crypto.local_encrypt("my secret", key_pair())
+      {:ok, encrypted} = Crypto.local_encrypt("my secret", key_pair())
 
       assert {:error, %WorkOS.ApiError{status: 403}} =
-               WorkOS.Vault.Crypto.decrypt(build_client(), encrypted)
+               Crypto.decrypt(build_client(), encrypted)
     end
   end
 end

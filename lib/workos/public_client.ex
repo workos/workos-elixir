@@ -17,6 +17,8 @@ defmodule WorkOS.PublicClient do
   endpoint directly from the public client's environment.
   """
 
+  alias WorkOS.SSO.PKCE
+
   defstruct [:client]
 
   @type t :: %__MODULE__{client: WorkOS.Client.t()}
@@ -62,6 +64,6 @@ defmodule WorkOS.PublicClient do
   """
   @spec get_sso_authorization_url(t(), map()) :: WorkOS.AuthKit.pkce_authorization_url()
   def get_sso_authorization_url(%__MODULE__{client: client}, params \\ %{}) do
-    WorkOS.SSO.PKCE.get_authorization_url(client, params)
+    PKCE.get_authorization_url(client, params)
   end
 end

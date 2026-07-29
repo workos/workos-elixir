@@ -3,6 +3,8 @@
 defmodule WorkOS.SSOHelpersTest do
   use ExUnit.Case, async: true
 
+  alias WorkOS.SSO.Logout
+
   setup do
     client =
       WorkOS.Client.new(
@@ -65,7 +67,7 @@ defmodule WorkOS.SSOHelpersTest do
         })
       end)
 
-      assert {:ok, url} = WorkOS.SSO.Logout.get_logout_url(client, %{profile_id: "prof_123"})
+      assert {:ok, url} = Logout.get_logout_url(client, %{profile_id: "prof_123"})
 
       assert url =~ "/sso/logout"
       assert url =~ "token=logout_token_123"
@@ -77,7 +79,7 @@ defmodule WorkOS.SSOHelpersTest do
       end)
 
       assert {:ok, url} =
-               WorkOS.SSO.Logout.get_logout_url(client, %{
+               Logout.get_logout_url(client, %{
                  profile_id: "prof_123",
                  return_to: "https://example.com/bye"
                })
@@ -93,7 +95,7 @@ defmodule WorkOS.SSOHelpersTest do
       end)
 
       assert {:error, %WorkOS.ApiError{status: 404}} =
-               WorkOS.SSO.Logout.get_logout_url(client, %{profile_id: "prof_missing"})
+               Logout.get_logout_url(client, %{profile_id: "prof_missing"})
     end
   end
 end
