@@ -291,7 +291,7 @@ defmodule WorkOS.Session do
   defp decrypt(raw, key) do
     ciphertext_size = byte_size(raw) - @nonce_size - @tag_size
 
-    <<nonce::binary-size(@nonce_size), ciphertext::binary-size(ciphertext_size),
+    <<nonce::binary-size(@nonce_size), ciphertext::binary-size(^ciphertext_size),
       tag::binary-size(@tag_size)>> = raw
 
     case :crypto.crypto_one_time_aead(:aes_256_gcm, key, nonce, ciphertext, "", tag, false) do

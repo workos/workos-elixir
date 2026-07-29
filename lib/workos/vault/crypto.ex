@@ -102,7 +102,7 @@ defmodule WorkOS.Vault.Crypto do
   defp split_payload(<<nonce::binary-size(@nonce_size), payload::binary>>)
        when byte_size(payload) >= @tag_size do
     ciphertext_size = byte_size(payload) - @tag_size
-    <<ciphertext::binary-size(ciphertext_size), tag::binary-size(@tag_size)>> = payload
+    <<ciphertext::binary-size(^ciphertext_size), tag::binary-size(@tag_size)>> = payload
     {:ok, nonce, ciphertext, tag}
   end
 
@@ -127,7 +127,7 @@ defmodule WorkOS.Vault.Crypto do
     with {:ok, raw} <- decode_base64(encrypted_data, :invalid_base64),
          {:ok, keys_length, rest} <- decode_leb128(raw) do
       case rest do
-        <<encrypted_keys::binary-size(keys_length), _body::binary>> ->
+        <<encrypted_keys::binary-size(^keys_length), _body::binary>> ->
           {:ok, Base.encode64(encrypted_keys)}
 
         _too_short ->
@@ -138,7 +138,7 @@ defmodule WorkOS.Vault.Crypto do
 
   defp skip_encrypted_keys(rest, keys_length) do
     case rest do
-      <<_keys::binary-size(keys_length), body::binary>> -> {:ok, body}
+      <<_keys::binary-size(^keys_length), body::binary>> -> {:ok, body}
       _too_short -> {:error, :encrypted_data_too_short}
     end
   end
