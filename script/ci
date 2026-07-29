@@ -3,6 +3,10 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
+# CI sets MIX_ENV=test for every job (see .github/workflows/{main,lint}.yml).
+# Compiling in dev here would skip test/support and miss warnings CI catches.
+export MIX_ENV=test
+
 echo "==> Fetching dependencies..."
 mix deps.get
 
@@ -13,7 +17,9 @@ echo "==> Checking formatting..."
 mix format --check-formatted
 
 echo "==> credo (lint)..."
-mix credo --all
+# Must match lint.yml — --strict enables the low-priority design and
+# readability checks that plain --all skips, and CI fails on them.
+mix credo --strict -a
 
 echo "==> dialyzer (typecheck)..."
 mix dialyzer
