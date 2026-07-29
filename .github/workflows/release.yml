@@ -1,0 +1,48 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  publish:
+    name: Publish to Hex
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Set up Elixir and Erlang/OTP
+        uses: erlef/setup-beam@54075bcc5e249e4758d363f27d099f55d843f124 # v1.24.1
+        with:
+          # Publish from the minimum supported pair (matches the `elixir:`
+          # requirement in mix.exs) so the release build proves the floor
+          # still compiles.
+          elixir-version: '1.18'
+          otp-version: '27'
+
+      - name: Install dependencies
+        run: mix deps.get
+
+      # release-please bumps @version in mix.exs before tagging, and
+      # `mix hex.publish` publishes whatever mix.exs says — so if the tag
+      # and mix.exs ever disagree, we'd silently ship the wrong version.
+      - name: Verify tag matches mix.exs version
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          MIX_VERSION="$(grep -oE '@version "[^"]+"' mix.exs | cut -d'"' -f2)"
+          if [ "$TAG_VERSION" != "$MIX_VERSION" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match mix.exs version $MIX_VERSION" >&2
+            exit 1
+          fi
+
+      - name: Publish to Hex
+        run: mix hex.publish --yes
+        env:
+          HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
