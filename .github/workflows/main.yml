@@ -32,8 +32,6 @@ jobs:
         #
         #   Elixir | Supported OTP
         #   -------+---------------
-        #   1.16   | 24 - 26
-        #   1.17   | 25 - 27
         #   1.18   | 25 - 27
         #   1.19   | 26 - 28
         #   1.20   | 27 - 29
@@ -47,15 +45,9 @@ jobs:
           - elixir: '1.19'
             otp: '28'
 
+          # Minimum supported Elixir (matches the `elixir:` requirement in mix.exs).
           - elixir: '1.18'
             otp: '27'
-
-          - elixir: '1.17'
-            otp: '27'
-
-          # Minimum supported Elixir (matches the `elixir:` requirement in mix.exs).
-          - elixir: '1.16'
-            otp: '26'
 
     steps:
     - name: Check out this repository
