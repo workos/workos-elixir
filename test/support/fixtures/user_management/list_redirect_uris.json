@@ -1,0 +1,16 @@
+{
+  "data": [
+    {
+      "object": "redirect_uri",
+      "id": "id",
+      "uri": "uri",
+      "default": true,
+      "created_at": "created_at",
+      "updated_at": "updated_at"
+    }
+  ],
+  "list_metadata": {
+    "before": null,
+    "after": null
+  }
+}

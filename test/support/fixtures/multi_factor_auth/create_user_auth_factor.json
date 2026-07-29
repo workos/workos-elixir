@@ -1,0 +1,29 @@
+{
+  "authentication_factor": {
+    "object": "authentication_factor",
+    "id": "id",
+    "type": "generic_otp",
+    "user_id": "user_id",
+    "sms": {
+      "phone_number": "phone_number"
+    },
+    "totp": {
+      "issuer": "issuer",
+      "user": "user",
+      "secret": "secret",
+      "qr_code": "qr_code",
+      "uri": "uri"
+    },
+    "created_at": "2024-01-01T00:00:00.000Z",
+    "updated_at": "2024-01-01T00:00:00.000Z"
+  },
+  "authentication_challenge": {
+    "object": "authentication_challenge",
+    "id": "id",
+    "expires_at": "2024-01-01T00:00:00.000Z",
+    "code": "code",
+    "authentication_factor_id": "authentication_factor_id",
+    "created_at": "2024-01-01T00:00:00.000Z",
+    "updated_at": "2024-01-01T00:00:00.000Z"
+  }
+}

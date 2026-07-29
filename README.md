@@ -1,7 +1,5 @@
 # WorkOS Elixir Library
 
-> **Note:** this an experimental SDK and breaking changes may occur. We don't recommend using this in production since we can't guarantee its stability.
-
 The WorkOS library for Elixir provides convenient access to the WorkOS API from applications written in Elixir.
 
 ## Documentation
@@ -12,27 +10,40 @@ See the [API Reference](https://workos.com/docs/reference/client-libraries) for 
 
 Add this package to the list of dependencies in your `mix.exs` file:
 
-```ex
+```elixir
 def deps do
-  [{:workos, "~> 1.1"}]
+  [{:workos, "~> 1.0"}]
 end
 ```
 
-## Configuration
+Requires Elixir 1.18 or later.
 
-### Configure WorkOS API key & client ID on your app config
+## Usage
 
-```ex
-config :workos, WorkOS.Client,
-      api_key: "sk_example_123456789",
-      client_id: "client_123456789"
+Build a client with your API key, then pass it to any API function:
+
+```elixir
+client = WorkOS.client(api_key: "sk_example_123456789")
+# or set the WORKOS_API_KEY environment variable and call WorkOS.client()
+
+{:ok, organization} = WorkOS.Organizations.get_organization(client, "org_01EHZNVPK3SFK441A1RGBFSHRT")
 ```
 
-The only required config option is `:api_key` and `:client_id`.
+All API functions take the client as their first argument and return `{:ok, result}` or `{:error, error}` tuples. Errors are typed: `WorkOS.ApiError` for non-2xx API responses (with a `:kind` atom such as `:not_found`) and `WorkOS.TransportError` for network failures.
 
-By default, this library uses [Tesla](https://github.com/elixir-tesla/tesla) but it can be replaced via the `:client` option, according to the `WorkOS.Client` module behavior.
+Client configuration is per-instance — there is no global state. Options: `:api_key`, `:base_url`, `:timeout`, `:max_retries`, `:req_options`. Per-request options (`:headers`, `:timeout`, `:idempotency_key`, `:query`) can be passed as the final argument to any API function.
 
-###
+### Pagination
+
+List endpoints return a `WorkOS.Page`. Use `WorkOS.Page.stream/1` to lazily iterate across every page:
+
+```elixir
+{:ok, page} = WorkOS.Organizations.list_organizations(client)
+
+page
+|> WorkOS.Page.stream()
+|> Enum.each(&IO.inspect/1)
+```
 
 ## SDK Versioning
 

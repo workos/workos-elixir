@@ -1,0 +1,97 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches:
+      - main
+      - release/**
+
+  pull_request:
+
+# Cancel superseded runs on the same ref (e.g. rapid pushes to a PR) so we
+# don't burn CI minutes on stale commits.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  MIX_ENV: test
+
+jobs:
+  test:
+    name: Test (Elixir ${{ matrix.elixir }} / OTP ${{ matrix.otp }})
+
+    runs-on: ubuntu-latest
+    strategy:
+      # Don't cancel the rest of the matrix when a single version pair fails —
+      # we want to see every failing combination in one run.
+      fail-fast: false
+      matrix:
+        # Elixir <-> Erlang/OTP compatibility:
+        # https://hexdocs.pm/elixir/compatibility-and-deprecations.html#compatibility-between-elixir-and-erlang-otp
+        #
+        #   Elixir | Supported OTP
+        #   -------+---------------
+        #   1.18   | 25 - 27
+        #   1.19   | 26 - 28
+        #   1.20   | 27 - 29
+        #
+        # Static analysis (formatting, Credo, Dialyzer) runs separately in
+        # lint.yml on the newest pair.
+        include:
+          - elixir: '1.20'
+            otp: '28'
+
+          - elixir: '1.19'
+            otp: '28'
+
+          # Minimum supported Elixir (matches the `elixir:` requirement in mix.exs).
+          - elixir: '1.18'
+            otp: '27'
+
+    steps:
+    - name: Check out this repository
+      uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+    - name: Set up Elixir and Erlang/OTP
+      uses: erlef/setup-beam@54075bcc5e249e4758d363f27d099f55d843f124 # v1.24.1
+      id: beam
+      with:
+        elixir-version: ${{ matrix.elixir }}
+        otp-version: ${{ matrix.otp }}
+
+    # We manually restore and then save so we can cache the "_build" directory
+    # with the *dependencies* compiled but *without* our own application code in
+    # it. Caching our compiled app across runs leads to stale-build bugs, so we
+    # always recompile the app fresh in the steps below.
+    #
+    # The cache key uses the exact OTP/Elixir patch versions resolved by
+    # setup-beam (not just the matrix majors), so a patch bump busts the cache.
+    - name: Restore dependencies and build cache
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      id: mix-cache
+      with:
+        path: |
+          deps
+          _build
+        key: ${{ runner.os }}-otp-${{ steps.beam.outputs.otp-version }}-elixir-${{ steps.beam.outputs.elixir-version }}-mix-${{ env.MIX_ENV }}-${{ hashFiles('**/mix.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-otp-${{ steps.beam.outputs.otp-version }}-elixir-${{ steps.beam.outputs.elixir-version }}-mix-${{ env.MIX_ENV }}-
+
+    - name: Install and compile dependencies
+      if: steps.mix-cache.outputs.cache-hit != 'true'
+      run: |
+        mix deps.get
+        mix deps.compile
+
+    - name: Save dependencies and build cache
+      uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      if: steps.mix-cache.outputs.cache-hit != 'true'
+      with:
+        path: |
+          deps
+          _build
+        key: ${{ steps.mix-cache.outputs.cache-primary-key }}
+
+    - name: Run tests
+      run: mix test

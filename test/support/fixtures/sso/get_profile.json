@@ -1,0 +1,25 @@
+{
+  "object": "profile",
+  "id": "id",
+  "organization_id": "organization_id",
+  "connection_id": "connection_id",
+  "connection_type": "Pending",
+  "idp_id": "idp_id",
+  "email": "email",
+  "first_name": "first_name",
+  "last_name": "last_name",
+  "name": "name",
+  "role": {
+    "slug": "slug"
+  },
+  "roles": [
+    {
+      "slug": "slug"
+    }
+  ],
+  "groups": [
+    "groups"
+  ],
+  "custom_attributes": {},
+  "raw_attributes": {}
+}

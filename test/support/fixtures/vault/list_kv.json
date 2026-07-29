@@ -1,0 +1,21 @@
+{
+  "data": [
+    {
+      "data": [
+        {
+          "id": "id",
+          "name": "name",
+          "updated_at": "2024-01-01T00:00:00.000Z"
+        }
+      ],
+      "list_metadata": {
+        "after": "after",
+        "before": "before"
+      }
+    }
+  ],
+  "list_metadata": {
+    "before": null,
+    "after": null
+  }
+}

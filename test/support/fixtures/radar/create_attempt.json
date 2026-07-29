@@ -1,0 +1,7 @@
+{
+  "verdict": "allow",
+  "reason": "reason",
+  "attempt_id": "attempt_id",
+  "control": "bot_detection",
+  "blocklist_type": "ip_address"
+}

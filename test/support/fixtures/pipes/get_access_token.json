@@ -1,0 +1,15 @@
+{
+  "active": true,
+  "access_token": {
+    "object": "access_token",
+    "access_token": "access_token",
+    "expires_at": "2024-01-01T00:00:00.000Z",
+    "scopes": [
+      "scopes"
+    ],
+    "missing_scopes": [
+      "missing_scopes"
+    ]
+  },
+  "error": "not_installed"
+}

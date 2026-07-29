@@ -1,0 +1,43 @@
+{
+  "object": "list",
+  "data": [
+    {
+      "object": "data_provider",
+      "id": "id",
+      "name": "name",
+      "description": "description",
+      "slug": "slug",
+      "integration_type": "integration_type",
+      "credentials_type": "credentials_type",
+      "scopes": [
+        "scopes"
+      ],
+      "auth_methods": [
+        "oauth"
+      ],
+      "ownership": "userland_user",
+      "created_at": "created_at",
+      "updated_at": "updated_at",
+      "integrationType": "integrationType",
+      "credentialsType": "credentialsType",
+      "createdAt": "createdAt",
+      "updatedAt": "updatedAt",
+      "connected_account": {
+        "object": "connected_account",
+        "id": "id",
+        "user_id": "user_id",
+        "organization_id": "organization_id",
+        "scopes": [],
+        "auth_method": "oauth",
+        "api_key_last_4": "api_key_last_4",
+        "state": "connected",
+        "created_at": "created_at",
+        "updated_at": "updated_at",
+        "userlandUserId": "userlandUserId",
+        "organizationId": "organizationId",
+        "createdAt": "createdAt",
+        "updatedAt": "updatedAt"
+      }
+    }
+  ]
+}

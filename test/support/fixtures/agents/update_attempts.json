@@ -1,0 +1,11 @@
+{
+  "id": "id",
+  "status": "unverified",
+  "user_code": "user_code",
+  "organizations": [
+    {
+      "id": "id",
+      "name": "name"
+    }
+  ]
+}

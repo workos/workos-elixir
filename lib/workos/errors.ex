@@ -1,0 +1,64 @@
+# @oagen-ignore-file
+
+defmodule WorkOS.Error do
+  @moduledoc """
+  Union of the error values SDK functions can return in `{:error, error}` tuples.
+  """
+
+  @type error :: WorkOS.ApiError.t() | WorkOS.TransportError.t()
+end
+
+defmodule WorkOS.ApiError do
+  @moduledoc """
+  A non-2xx response from the API.
+
+  The `:kind` field classifies the failure by status code (e.g. `:not_found`),
+  so callers can pattern-match without memorizing status numbers. `:param`
+  carries the offending field name when the API names one.
+  """
+
+  defexception [:message, :status, :kind, :request_id, :code, :param, :body]
+
+  @type kind ::
+          :bad_request
+          | :authentication
+          | :authorization
+          | :not_found
+          | :conflict
+          | :unprocessable_entity
+          | :rate_limit_exceeded
+          | :server
+          | :api
+
+  @type t :: %__MODULE__{
+          message: String.t(),
+          status: pos_integer(),
+          kind: kind(),
+          request_id: String.t() | nil,
+          code: String.t() | nil,
+          param: String.t() | nil,
+          body: map() | String.t() | nil
+        }
+end
+
+defmodule WorkOS.TransportError do
+  @moduledoc """
+  A network-level failure (DNS, timeout, connection refused).
+  """
+
+  defexception [:message, :reason]
+
+  @type t :: %__MODULE__{message: String.t(), reason: term()}
+end
+
+defmodule WorkOS.ConfigurationError do
+  @moduledoc """
+  Missing or invalid client configuration (e.g. no API key). Raised from
+  `WorkOS.Client.new/1` — configuration problems are programmer errors, not
+  runtime failures.
+  """
+
+  defexception [:message]
+
+  @type t :: %__MODULE__{message: String.t()}
+end

@@ -1,0 +1,7 @@
+[
+  {
+    "idp_id": "idp_id",
+    "type": "OAuth",
+    "provider": "AppleOAuth"
+  }
+]

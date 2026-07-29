@@ -1,0 +1,13 @@
+# @oagen-ignore-file
+
+defmodule WorkOS.TestFixtures do
+  @moduledoc false
+
+  @fixtures_dir Path.join(__DIR__, "fixtures")
+
+  @doc "Loads and decodes a JSON fixture by name (without extension)."
+  @spec fixture(String.t()) :: term()
+  def fixture(name) do
+    @fixtures_dir |> Path.join(name <> ".json") |> File.read!() |> JSON.decode!()
+  end
+end
