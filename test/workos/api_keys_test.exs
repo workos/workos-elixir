@@ -20,7 +20,8 @@ defmodule WorkOS.ApiKeysTest do
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("api_keys/list_organization_api_keys"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.OrganizationApiKeyList{object: "list"} | _]}} =
+    assert {:ok,
+            %WorkOS.Page{data: [%WorkOS.OrganizationApiKey{object: "api_key", id: "id"} | _]}} =
              WorkOS.ApiKeys.list_organization_api_keys(client, "test_organization_id")
   end
 

@@ -24,8 +24,13 @@ defmodule WorkOS.OrganizationMembershipServiceTest do
       )
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.UserOrganizationMembershipList{object: "list"} | _]}} =
-             WorkOS.OrganizationMembershipService.list_organization_memberships(client)
+    assert {:ok,
+            %WorkOS.Page{
+              data: [
+                %WorkOS.UserOrganizationMembership{object: "organization_membership", id: "id"}
+                | _
+              ]
+            }} = WorkOS.OrganizationMembershipService.list_organization_memberships(client)
   end
 
   test "list_organization_memberships handles an empty page", %{client: client} do
@@ -149,7 +154,7 @@ defmodule WorkOS.OrganizationMembershipServiceTest do
       )
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.GroupList{object: "list"} | _]}} =
+    assert {:ok, %WorkOS.Page{data: [%WorkOS.Group{object: "group", id: "id"} | _]}} =
              WorkOS.OrganizationMembershipService.list_organization_membership_groups(
                client,
                "test_om_id"

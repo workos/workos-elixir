@@ -16,7 +16,7 @@ defmodule WorkOS.DirectorySync do
     * `opts` — per-request options (see `WorkOS.Client.request/5`)
   """
   @spec list_directories(WorkOS.Client.t(), map(), keyword()) ::
-          {:ok, WorkOS.Page.t(WorkOS.DirectoryList.t())} | {:error, WorkOS.Error.error()}
+          {:ok, WorkOS.Page.t(WorkOS.Directory.t())} | {:error, WorkOS.Error.error()}
   def list_directories(client, params \\ %{}, opts \\ []) do
     with {:ok, body} <- WorkOS.Client.request(client, :get, "/directories", params, opts) do
       fetch_next = fn cursor ->
@@ -27,7 +27,7 @@ defmodule WorkOS.DirectorySync do
         )
       end
 
-      {:ok, WorkOS.Page.from_map(body, "data", &WorkOS.DirectoryList.from_map/1, fetch_next)}
+      {:ok, WorkOS.Page.from_map(body, "data", &WorkOS.Directory.from_map/1, fetch_next)}
     end
   end
 
@@ -89,7 +89,7 @@ defmodule WorkOS.DirectorySync do
     * `opts` — per-request options (see `WorkOS.Client.request/5`)
   """
   @spec list_groups(WorkOS.Client.t(), map(), keyword()) ::
-          {:ok, WorkOS.Page.t(WorkOS.DirectoryGroupList.t())} | {:error, WorkOS.Error.error()}
+          {:ok, WorkOS.Page.t(WorkOS.DirectoryGroup.t())} | {:error, WorkOS.Error.error()}
   def list_groups(client, params \\ %{}, opts \\ []) do
     with {:ok, body} <- WorkOS.Client.request(client, :get, "/directory_groups", params, opts) do
       fetch_next = fn cursor ->
@@ -100,7 +100,7 @@ defmodule WorkOS.DirectorySync do
         )
       end
 
-      {:ok, WorkOS.Page.from_map(body, "data", &WorkOS.DirectoryGroupList.from_map/1, fetch_next)}
+      {:ok, WorkOS.Page.from_map(body, "data", &WorkOS.DirectoryGroup.from_map/1, fetch_next)}
     end
   end
 
@@ -140,7 +140,8 @@ defmodule WorkOS.DirectorySync do
     * `opts` — per-request options (see `WorkOS.Client.request/5`)
   """
   @spec list_users(WorkOS.Client.t(), map(), keyword()) ::
-          {:ok, WorkOS.Page.t(WorkOS.DirectoryUserList.t())} | {:error, WorkOS.Error.error()}
+          {:ok, WorkOS.Page.t(WorkOS.DirectoryUserWithGroups.t())}
+          | {:error, WorkOS.Error.error()}
   def list_users(client, params \\ %{}, opts \\ []) do
     with {:ok, body} <- WorkOS.Client.request(client, :get, "/directory_users", params, opts) do
       fetch_next = fn cursor ->
@@ -151,7 +152,8 @@ defmodule WorkOS.DirectorySync do
         )
       end
 
-      {:ok, WorkOS.Page.from_map(body, "data", &WorkOS.DirectoryUserList.from_map/1, fetch_next)}
+      {:ok,
+       WorkOS.Page.from_map(body, "data", &WorkOS.DirectoryUserWithGroups.from_map/1, fetch_next)}
     end
   end
 

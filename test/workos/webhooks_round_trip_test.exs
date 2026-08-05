@@ -21,32 +21,4 @@ defmodule WorkOS.WebhooksRoundTripTest do
     assert serialized |> WorkOS.WebhookEndpoint.from_map() |> WorkOS.WebhookEndpoint.to_map() ==
              serialized
   end
-
-  test "WebhookEndpointList round-trips between wire and struct" do
-    data = %{
-      "object" => "list",
-      "data" => [
-        %{
-          "object" => "webhook_endpoint",
-          "id" => "id",
-          "endpoint_url" => "endpoint_url",
-          "secret" => "secret",
-          "status" => "enabled",
-          "events" => ["events"],
-          "created_at" => "2024-01-01T00:00:00.000Z",
-          "updated_at" => "2024-01-01T00:00:00.000Z"
-        }
-      ],
-      "list_metadata" => %{"before" => "before", "after" => "after"}
-    }
-
-    serialized =
-      data |> WorkOS.WebhookEndpointList.from_map() |> WorkOS.WebhookEndpointList.to_map()
-
-    assert serialized == data
-
-    assert serialized
-           |> WorkOS.WebhookEndpointList.from_map()
-           |> WorkOS.WebhookEndpointList.to_map() == serialized
-  end
 end

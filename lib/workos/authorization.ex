@@ -17,8 +17,7 @@ defmodule WorkOS.Authorization do
     * `opts` — per-request options (see `WorkOS.Client.request/5`)
   """
   @spec list_group_role_assignments(WorkOS.Client.t(), String.t(), map(), keyword()) ::
-          {:ok, WorkOS.Page.t(WorkOS.GroupRoleAssignmentList.t())}
-          | {:error, WorkOS.Error.error()}
+          {:ok, WorkOS.Page.t(WorkOS.GroupRoleAssignment.t())} | {:error, WorkOS.Error.error()}
   def list_group_role_assignments(client, group_id, params \\ %{}, opts \\ []) do
     with {:ok, body} <-
            WorkOS.Client.request(
@@ -38,7 +37,7 @@ defmodule WorkOS.Authorization do
       end
 
       {:ok,
-       WorkOS.Page.from_map(body, "data", &WorkOS.GroupRoleAssignmentList.from_map/1, fetch_next)}
+       WorkOS.Page.from_map(body, "data", &WorkOS.GroupRoleAssignment.from_map/1, fetch_next)}
     end
   end
 
@@ -206,8 +205,7 @@ defmodule WorkOS.Authorization do
     * `opts` — per-request options (see `WorkOS.Client.request/5`)
   """
   @spec list_resources_for_membership(WorkOS.Client.t(), String.t(), map(), keyword()) ::
-          {:ok, WorkOS.Page.t(WorkOS.AuthorizationResourceList.t())}
-          | {:error, WorkOS.Error.error()}
+          {:ok, WorkOS.Page.t(WorkOS.AuthorizationResource.t())} | {:error, WorkOS.Error.error()}
   def list_resources_for_membership(client, organization_membership_id, params \\ %{}, opts \\ []) do
     with {:ok, body} <-
            WorkOS.Client.request(
@@ -227,12 +225,7 @@ defmodule WorkOS.Authorization do
       end
 
       {:ok,
-       WorkOS.Page.from_map(
-         body,
-         "data",
-         &WorkOS.AuthorizationResourceList.from_map/1,
-         fetch_next
-       )}
+       WorkOS.Page.from_map(body, "data", &WorkOS.AuthorizationResource.from_map/1, fetch_next)}
     end
   end
 
@@ -249,7 +242,7 @@ defmodule WorkOS.Authorization do
     * `opts` — per-request options (see `WorkOS.Client.request/5`)
   """
   @spec list_effective_permissions(WorkOS.Client.t(), String.t(), String.t(), map(), keyword()) ::
-          {:ok, WorkOS.Page.t(WorkOS.AuthorizationPermissionList.t())}
+          {:ok, WorkOS.Page.t(WorkOS.AuthorizationPermission.t())}
           | {:error, WorkOS.Error.error()}
   def list_effective_permissions(
         client,
@@ -277,12 +270,7 @@ defmodule WorkOS.Authorization do
       end
 
       {:ok,
-       WorkOS.Page.from_map(
-         body,
-         "data",
-         &WorkOS.AuthorizationPermissionList.from_map/1,
-         fetch_next
-       )}
+       WorkOS.Page.from_map(body, "data", &WorkOS.AuthorizationPermission.from_map/1, fetch_next)}
     end
   end
 
@@ -307,7 +295,7 @@ defmodule WorkOS.Authorization do
           map(),
           keyword()
         ) ::
-          {:ok, WorkOS.Page.t(WorkOS.AuthorizationPermissionList.t())}
+          {:ok, WorkOS.Page.t(WorkOS.AuthorizationPermission.t())}
           | {:error, WorkOS.Error.error()}
   def list_effective_permissions_by_external_id(
         client,
@@ -337,12 +325,7 @@ defmodule WorkOS.Authorization do
       end
 
       {:ok,
-       WorkOS.Page.from_map(
-         body,
-         "data",
-         &WorkOS.AuthorizationPermissionList.from_map/1,
-         fetch_next
-       )}
+       WorkOS.Page.from_map(body, "data", &WorkOS.AuthorizationPermission.from_map/1, fetch_next)}
     end
   end
 
@@ -358,7 +341,7 @@ defmodule WorkOS.Authorization do
     * `opts` — per-request options (see `WorkOS.Client.request/5`)
   """
   @spec list_role_assignments(WorkOS.Client.t(), String.t(), map(), keyword()) ::
-          {:ok, WorkOS.Page.t(WorkOS.UserRoleAssignmentList.t())} | {:error, WorkOS.Error.error()}
+          {:ok, WorkOS.Page.t(WorkOS.UserRoleAssignment.t())} | {:error, WorkOS.Error.error()}
   def list_role_assignments(client, organization_membership_id, params \\ %{}, opts \\ []) do
     with {:ok, body} <-
            WorkOS.Client.request(
@@ -377,8 +360,7 @@ defmodule WorkOS.Authorization do
         )
       end
 
-      {:ok,
-       WorkOS.Page.from_map(body, "data", &WorkOS.UserRoleAssignmentList.from_map/1, fetch_next)}
+      {:ok, WorkOS.Page.from_map(body, "data", &WorkOS.UserRoleAssignment.from_map/1, fetch_next)}
     end
   end
 
@@ -827,7 +809,7 @@ defmodule WorkOS.Authorization do
           map(),
           keyword()
         ) ::
-          {:ok, WorkOS.Page.t(WorkOS.UserOrganizationMembershipBaseList.t())}
+          {:ok, WorkOS.Page.t(WorkOS.UserOrganizationMembershipBaseListData.t())}
           | {:error, WorkOS.Error.error()}
   def list_memberships_for_resource_by_external_id(
         client,
@@ -860,7 +842,7 @@ defmodule WorkOS.Authorization do
        WorkOS.Page.from_map(
          body,
          "data",
-         &WorkOS.UserOrganizationMembershipBaseList.from_map/1,
+         &WorkOS.UserOrganizationMembershipBaseListData.from_map/1,
          fetch_next
        )}
     end
@@ -887,7 +869,7 @@ defmodule WorkOS.Authorization do
           map(),
           keyword()
         ) ::
-          {:ok, WorkOS.Page.t(WorkOS.UserRoleAssignmentList.t())} | {:error, WorkOS.Error.error()}
+          {:ok, WorkOS.Page.t(WorkOS.UserRoleAssignment.t())} | {:error, WorkOS.Error.error()}
   def list_role_assignments_for_resource_by_external_id(
         client,
         organization_id,
@@ -915,8 +897,7 @@ defmodule WorkOS.Authorization do
         )
       end
 
-      {:ok,
-       WorkOS.Page.from_map(body, "data", &WorkOS.UserRoleAssignmentList.from_map/1, fetch_next)}
+      {:ok, WorkOS.Page.from_map(body, "data", &WorkOS.UserRoleAssignment.from_map/1, fetch_next)}
     end
   end
 
@@ -931,8 +912,7 @@ defmodule WorkOS.Authorization do
     * `opts` — per-request options (see `WorkOS.Client.request/5`)
   """
   @spec list_resources(WorkOS.Client.t(), map(), keyword()) ::
-          {:ok, WorkOS.Page.t(WorkOS.AuthorizationResourceList.t())}
-          | {:error, WorkOS.Error.error()}
+          {:ok, WorkOS.Page.t(WorkOS.AuthorizationResource.t())} | {:error, WorkOS.Error.error()}
   def list_resources(client, params \\ %{}, opts \\ []) do
     with {:ok, body} <-
            WorkOS.Client.request(client, :get, "/authorization/resources", params, opts) do
@@ -945,12 +925,7 @@ defmodule WorkOS.Authorization do
       end
 
       {:ok,
-       WorkOS.Page.from_map(
-         body,
-         "data",
-         &WorkOS.AuthorizationResourceList.from_map/1,
-         fetch_next
-       )}
+       WorkOS.Page.from_map(body, "data", &WorkOS.AuthorizationResource.from_map/1, fetch_next)}
     end
   end
 
@@ -1059,7 +1034,7 @@ defmodule WorkOS.Authorization do
     * `opts` — per-request options (see `WorkOS.Client.request/5`)
   """
   @spec list_memberships_for_resource(WorkOS.Client.t(), String.t(), map(), keyword()) ::
-          {:ok, WorkOS.Page.t(WorkOS.UserOrganizationMembershipBaseList.t())}
+          {:ok, WorkOS.Page.t(WorkOS.UserOrganizationMembershipBaseListData.t())}
           | {:error, WorkOS.Error.error()}
   def list_memberships_for_resource(client, resource_id, params \\ %{}, opts \\ []) do
     with {:ok, body} <-
@@ -1083,7 +1058,7 @@ defmodule WorkOS.Authorization do
        WorkOS.Page.from_map(
          body,
          "data",
-         &WorkOS.UserOrganizationMembershipBaseList.from_map/1,
+         &WorkOS.UserOrganizationMembershipBaseListData.from_map/1,
          fetch_next
        )}
     end
@@ -1101,7 +1076,7 @@ defmodule WorkOS.Authorization do
     * `opts` — per-request options (see `WorkOS.Client.request/5`)
   """
   @spec list_role_assignments_for_resource(WorkOS.Client.t(), String.t(), map(), keyword()) ::
-          {:ok, WorkOS.Page.t(WorkOS.UserRoleAssignmentList.t())} | {:error, WorkOS.Error.error()}
+          {:ok, WorkOS.Page.t(WorkOS.UserRoleAssignment.t())} | {:error, WorkOS.Error.error()}
   def list_role_assignments_for_resource(client, resource_id, params \\ %{}, opts \\ []) do
     with {:ok, body} <-
            WorkOS.Client.request(
@@ -1120,8 +1095,7 @@ defmodule WorkOS.Authorization do
         )
       end
 
-      {:ok,
-       WorkOS.Page.from_map(body, "data", &WorkOS.UserRoleAssignmentList.from_map/1, fetch_next)}
+      {:ok, WorkOS.Page.from_map(body, "data", &WorkOS.UserRoleAssignment.from_map/1, fetch_next)}
     end
   end
 
@@ -1274,7 +1248,7 @@ defmodule WorkOS.Authorization do
     * `opts` — per-request options (see `WorkOS.Client.request/5`)
   """
   @spec list_permissions(WorkOS.Client.t(), map(), keyword()) ::
-          {:ok, WorkOS.Page.t(WorkOS.AuthorizationPermissionList.t())}
+          {:ok, WorkOS.Page.t(WorkOS.AuthorizationPermission.t())}
           | {:error, WorkOS.Error.error()}
   def list_permissions(client, params \\ %{}, opts \\ []) do
     with {:ok, body} <-
@@ -1288,12 +1262,7 @@ defmodule WorkOS.Authorization do
       end
 
       {:ok,
-       WorkOS.Page.from_map(
-         body,
-         "data",
-         &WorkOS.AuthorizationPermissionList.from_map/1,
-         fetch_next
-       )}
+       WorkOS.Page.from_map(body, "data", &WorkOS.AuthorizationPermission.from_map/1, fetch_next)}
     end
   end
 

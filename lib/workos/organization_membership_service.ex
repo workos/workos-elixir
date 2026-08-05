@@ -16,7 +16,7 @@ defmodule WorkOS.OrganizationMembershipService do
     * `opts` — per-request options (see `WorkOS.Client.request/5`)
   """
   @spec list_organization_memberships(WorkOS.Client.t(), map(), keyword()) ::
-          {:ok, WorkOS.Page.t(WorkOS.UserOrganizationMembershipList.t())}
+          {:ok, WorkOS.Page.t(WorkOS.UserOrganizationMembership.t())}
           | {:error, WorkOS.Error.error()}
   def list_organization_memberships(client, params \\ %{}, opts \\ []) do
     with {:ok, body} <-
@@ -39,7 +39,7 @@ defmodule WorkOS.OrganizationMembershipService do
        WorkOS.Page.from_map(
          body,
          "data",
-         &WorkOS.UserOrganizationMembershipList.from_map/1,
+         &WorkOS.UserOrganizationMembership.from_map/1,
          fetch_next
        )}
     end
@@ -217,7 +217,7 @@ defmodule WorkOS.OrganizationMembershipService do
     * `opts` — per-request options (see `WorkOS.Client.request/5`)
   """
   @spec list_organization_membership_groups(WorkOS.Client.t(), String.t(), map(), keyword()) ::
-          {:ok, WorkOS.Page.t(WorkOS.GroupList.t())} | {:error, WorkOS.Error.error()}
+          {:ok, WorkOS.Page.t(WorkOS.Group.t())} | {:error, WorkOS.Error.error()}
   def list_organization_membership_groups(client, om_id, params \\ %{}, opts \\ []) do
     with {:ok, body} <-
            WorkOS.Client.request(
@@ -236,7 +236,7 @@ defmodule WorkOS.OrganizationMembershipService do
         )
       end
 
-      {:ok, WorkOS.Page.from_map(body, "data", &WorkOS.GroupList.from_map/1, fetch_next)}
+      {:ok, WorkOS.Page.from_map(body, "data", &WorkOS.Group.from_map/1, fetch_next)}
     end
   end
 end

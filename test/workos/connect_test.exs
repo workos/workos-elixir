@@ -31,8 +31,10 @@ defmodule WorkOS.ConnectTest do
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("connect/list_applications"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.ConnectApplicationList{object: "list"} | _]}} =
-             WorkOS.Connect.list_applications(client)
+    assert {:ok,
+            %WorkOS.Page{
+              data: [%WorkOS.ConnectApplication{object: "connect_application", id: "id"} | _]
+            }} = WorkOS.Connect.list_applications(client)
   end
 
   test "list_applications handles an empty page", %{client: client} do

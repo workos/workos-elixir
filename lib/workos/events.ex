@@ -16,7 +16,7 @@ defmodule WorkOS.Events do
     * `opts` — per-request options (see `WorkOS.Client.request/5`)
   """
   @spec list_events(WorkOS.Client.t(), map(), keyword()) ::
-          {:ok, WorkOS.Page.t(WorkOS.EventList.t())} | {:error, WorkOS.Error.error()}
+          {:ok, WorkOS.Page.t(WorkOS.EventSchema.t())} | {:error, WorkOS.Error.error()}
   def list_events(client, params \\ %{}, opts \\ []) do
     with {:ok, body} <- WorkOS.Client.request(client, :get, "/events", params, opts) do
       fetch_next = fn cursor ->
@@ -27,7 +27,7 @@ defmodule WorkOS.Events do
         )
       end
 
-      {:ok, WorkOS.Page.from_map(body, "data", &WorkOS.EventList.from_map/1, fetch_next)}
+      {:ok, WorkOS.Page.from_map(body, "data", &WorkOS.EventSchema.from_map/1, fetch_next)}
     end
   end
 end

@@ -3,25 +3,20 @@
 defmodule WorkOS.EventsRoundTripTest do
   use ExUnit.Case, async: true
 
-  test "EventList round-trips between wire and struct" do
+  test "EventSchema round-trips between wire and struct" do
     data = %{
-      "object" => "list",
-      "data" => [
-        %{
-          "object" => "event",
-          "id" => "id",
-          "event" => "event",
-          "data" => %{},
-          "created_at" => "2024-01-01T00:00:00.000Z",
-          "context" => %{}
-        }
-      ],
-      "list_metadata" => %{"after" => "after"}
+      "object" => "event",
+      "id" => "id",
+      "event" => "event",
+      "data" => %{},
+      "created_at" => "2024-01-01T00:00:00.000Z",
+      "context" => %{}
     }
 
-    serialized = data |> WorkOS.EventList.from_map() |> WorkOS.EventList.to_map()
+    serialized = data |> WorkOS.EventSchema.from_map() |> WorkOS.EventSchema.to_map()
     assert serialized == data
 
-    assert serialized |> WorkOS.EventList.from_map() |> WorkOS.EventList.to_map() == serialized
+    assert serialized |> WorkOS.EventSchema.from_map() |> WorkOS.EventSchema.to_map() ==
+             serialized
   end
 end

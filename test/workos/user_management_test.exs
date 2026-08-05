@@ -397,7 +397,7 @@ defmodule WorkOS.UserManagementTest do
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/list_users"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.UserList{object: "list"} | _]}} =
+    assert {:ok, %WorkOS.Page{data: [%WorkOS.User{object: "user", id: "id"} | _]}} =
              WorkOS.UserManagement.list_users(client)
   end
 
@@ -551,7 +551,7 @@ defmodule WorkOS.UserManagementTest do
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/list_invitations"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.UserInviteList{object: "list"} | _]}} =
+    assert {:ok, %WorkOS.Page{data: [%WorkOS.UserInvite{object: "invitation", id: "id"} | _]}} =
              WorkOS.UserManagement.list_invitations(client)
   end
 
@@ -730,8 +730,15 @@ defmodule WorkOS.UserManagementTest do
     end)
 
     assert {:ok,
-            %WorkOS.Page{data: [%WorkOS.AuthorizedConnectApplicationList{object: "list"} | _]}} =
-             WorkOS.UserManagement.list_user_authorized_applications(client, "test_user_id")
+            %WorkOS.Page{
+              data: [
+                %WorkOS.AuthorizedConnectApplicationListData{
+                  object: "authorized_connect_application",
+                  id: "id"
+                }
+                | _
+              ]
+            }} = WorkOS.UserManagement.list_user_authorized_applications(client, "test_user_id")
   end
 
   test "list_user_authorized_applications handles an empty page", %{client: client} do
@@ -771,7 +778,7 @@ defmodule WorkOS.UserManagementTest do
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("user_management/list_user_api_keys"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.UserApiKeyList{object: "list"} | _]}} =
+    assert {:ok, %WorkOS.Page{data: [%WorkOS.UserApiKey{object: "api_key", id: "id"} | _]}} =
              WorkOS.UserManagement.list_user_api_keys(client, "test_user_id")
   end
 

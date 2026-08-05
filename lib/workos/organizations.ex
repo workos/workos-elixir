@@ -16,7 +16,7 @@ defmodule WorkOS.Organizations do
     * `opts` — per-request options (see `WorkOS.Client.request/5`)
   """
   @spec list_organizations(WorkOS.Client.t(), map(), keyword()) ::
-          {:ok, WorkOS.Page.t(WorkOS.OrganizationList.t())} | {:error, WorkOS.Error.error()}
+          {:ok, WorkOS.Page.t(WorkOS.Organization.t())} | {:error, WorkOS.Error.error()}
   def list_organizations(client, params \\ %{}, opts \\ []) do
     with {:ok, body} <- WorkOS.Client.request(client, :get, "/organizations", params, opts) do
       fetch_next = fn cursor ->
@@ -27,7 +27,7 @@ defmodule WorkOS.Organizations do
         )
       end
 
-      {:ok, WorkOS.Page.from_map(body, "data", &WorkOS.OrganizationList.from_map/1, fetch_next)}
+      {:ok, WorkOS.Page.from_map(body, "data", &WorkOS.Organization.from_map/1, fetch_next)}
     end
   end
 
@@ -184,7 +184,7 @@ defmodule WorkOS.Organizations do
     * `opts` — per-request options (see `WorkOS.Client.request/5`)
   """
   @spec list_authorized_applications(WorkOS.Client.t(), String.t(), map(), keyword()) ::
-          {:ok, WorkOS.Page.t(WorkOS.OrganizationAuthorizedConnectApplicationList.t())}
+          {:ok, WorkOS.Page.t(WorkOS.OrganizationAuthorizedConnectApplicationListData.t())}
           | {:error, WorkOS.Error.error()}
   def list_authorized_applications(client, organization_id, params \\ %{}, opts \\ []) do
     with {:ok, body} <-
@@ -208,7 +208,7 @@ defmodule WorkOS.Organizations do
        WorkOS.Page.from_map(
          body,
          "data",
-         &WorkOS.OrganizationAuthorizedConnectApplicationList.from_map/1,
+         &WorkOS.OrganizationAuthorizedConnectApplicationListData.from_map/1,
          fetch_next
        )}
     end

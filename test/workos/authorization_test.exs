@@ -24,8 +24,10 @@ defmodule WorkOS.AuthorizationTest do
       )
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.GroupRoleAssignmentList{object: "list"} | _]}} =
-             WorkOS.Authorization.list_group_role_assignments(client, "test_group_id")
+    assert {:ok,
+            %WorkOS.Page{
+              data: [%WorkOS.GroupRoleAssignment{object: "group_role_assignment", id: "id"} | _]
+            }} = WorkOS.Authorization.list_group_role_assignments(client, "test_group_id")
   end
 
   test "list_group_role_assignments handles an empty page", %{client: client} do
@@ -143,7 +145,12 @@ defmodule WorkOS.AuthorizationTest do
       )
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.AuthorizationResourceList{object: "list"} | _]}} =
+    assert {:ok,
+            %WorkOS.Page{
+              data: [
+                %WorkOS.AuthorizationResource{object: "authorization_resource", name: "name"} | _
+              ]
+            }} =
              WorkOS.Authorization.list_resources_for_membership(
                client,
                "test_organization_membership_id"
@@ -175,7 +182,10 @@ defmodule WorkOS.AuthorizationTest do
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("authorization/list_effective_permissions"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.AuthorizationPermissionList{object: "list"} | _]}} =
+    assert {:ok,
+            %WorkOS.Page{
+              data: [%WorkOS.AuthorizationPermission{object: "permission", id: "id"} | _]
+            }} =
              WorkOS.Authorization.list_effective_permissions(
                client,
                "test_organization_membership_id",
@@ -212,7 +222,10 @@ defmodule WorkOS.AuthorizationTest do
       )
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.AuthorizationPermissionList{object: "list"} | _]}} =
+    assert {:ok,
+            %WorkOS.Page{
+              data: [%WorkOS.AuthorizationPermission{object: "permission", id: "id"} | _]
+            }} =
              WorkOS.Authorization.list_effective_permissions_by_external_id(
                client,
                "test_organization_membership_id",
@@ -248,7 +261,10 @@ defmodule WorkOS.AuthorizationTest do
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("authorization/list_role_assignments"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.UserRoleAssignmentList{object: "list"} | _]}} =
+    assert {:ok,
+            %WorkOS.Page{
+              data: [%WorkOS.UserRoleAssignment{object: "role_assignment", id: "id"} | _]
+            }} =
              WorkOS.Authorization.list_role_assignments(client, "test_organization_membership_id")
   end
 
@@ -526,7 +542,15 @@ defmodule WorkOS.AuthorizationTest do
     end)
 
     assert {:ok,
-            %WorkOS.Page{data: [%WorkOS.UserOrganizationMembershipBaseList{object: "list"} | _]}} =
+            %WorkOS.Page{
+              data: [
+                %WorkOS.UserOrganizationMembershipBaseListData{
+                  object: "organization_membership",
+                  id: "id"
+                }
+                | _
+              ]
+            }} =
              WorkOS.Authorization.list_memberships_for_resource_by_external_id(
                client,
                "test_organization_id",
@@ -567,7 +591,10 @@ defmodule WorkOS.AuthorizationTest do
       )
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.UserRoleAssignmentList{object: "list"} | _]}} =
+    assert {:ok,
+            %WorkOS.Page{
+              data: [%WorkOS.UserRoleAssignment{object: "role_assignment", id: "id"} | _]
+            }} =
              WorkOS.Authorization.list_role_assignments_for_resource_by_external_id(
                client,
                "test_organization_id",
@@ -602,8 +629,12 @@ defmodule WorkOS.AuthorizationTest do
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("authorization/list_resources"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.AuthorizationResourceList{object: "list"} | _]}} =
-             WorkOS.Authorization.list_resources(client)
+    assert {:ok,
+            %WorkOS.Page{
+              data: [
+                %WorkOS.AuthorizationResource{object: "authorization_resource", name: "name"} | _
+              ]
+            }} = WorkOS.Authorization.list_resources(client)
   end
 
   test "list_resources handles an empty page", %{client: client} do
@@ -673,8 +704,15 @@ defmodule WorkOS.AuthorizationTest do
     end)
 
     assert {:ok,
-            %WorkOS.Page{data: [%WorkOS.UserOrganizationMembershipBaseList{object: "list"} | _]}} =
-             WorkOS.Authorization.list_memberships_for_resource(client, "test_resource_id")
+            %WorkOS.Page{
+              data: [
+                %WorkOS.UserOrganizationMembershipBaseListData{
+                  object: "organization_membership",
+                  id: "id"
+                }
+                | _
+              ]
+            }} = WorkOS.Authorization.list_memberships_for_resource(client, "test_resource_id")
   end
 
   test "list_memberships_for_resource handles an empty page", %{client: client} do
@@ -700,7 +738,10 @@ defmodule WorkOS.AuthorizationTest do
       )
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.UserRoleAssignmentList{object: "list"} | _]}} =
+    assert {:ok,
+            %WorkOS.Page{
+              data: [%WorkOS.UserRoleAssignment{object: "role_assignment", id: "id"} | _]
+            }} =
              WorkOS.Authorization.list_role_assignments_for_resource(client, "test_resource_id")
   end
 
@@ -797,8 +838,10 @@ defmodule WorkOS.AuthorizationTest do
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("authorization/list_permissions"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.AuthorizationPermissionList{object: "list"} | _]}} =
-             WorkOS.Authorization.list_permissions(client)
+    assert {:ok,
+            %WorkOS.Page{
+              data: [%WorkOS.AuthorizationPermission{object: "permission", id: "id"} | _]
+            }} = WorkOS.Authorization.list_permissions(client)
   end
 
   test "list_permissions handles an empty page", %{client: client} do

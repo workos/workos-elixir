@@ -20,7 +20,7 @@ defmodule WorkOS.DirectorySyncTest do
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("directory_sync/list_directories"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.DirectoryList{object: "list"} | _]}} =
+    assert {:ok, %WorkOS.Page{data: [%WorkOS.Directory{object: "directory", id: "id"} | _]}} =
              WorkOS.DirectorySync.list_directories(client)
   end
 
@@ -62,7 +62,8 @@ defmodule WorkOS.DirectorySyncTest do
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("directory_sync/list_groups"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.DirectoryGroupList{object: "list"} | _]}} =
+    assert {:ok,
+            %WorkOS.Page{data: [%WorkOS.DirectoryGroup{object: "directory_group", id: "id"} | _]}} =
              WorkOS.DirectorySync.list_groups(client)
   end
 
@@ -94,8 +95,10 @@ defmodule WorkOS.DirectorySyncTest do
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("directory_sync/list_users"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.DirectoryUserList{object: "list"} | _]}} =
-             WorkOS.DirectorySync.list_users(client)
+    assert {:ok,
+            %WorkOS.Page{
+              data: [%WorkOS.DirectoryUserWithGroups{object: "directory_user", id: "id"} | _]
+            }} = WorkOS.DirectorySync.list_users(client)
   end
 
   test "list_users handles an empty page", %{client: client} do

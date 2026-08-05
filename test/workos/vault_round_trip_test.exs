@@ -44,22 +44,6 @@ defmodule WorkOS.VaultRoundTripTest do
            |> WorkOS.DeleteObjectResponse.to_map() == serialized
   end
 
-  test "ObjectListResponse round-trips between wire and struct" do
-    data = %{
-      "data" => [%{"id" => "id", "name" => "name", "updated_at" => "2024-01-01T00:00:00.000Z"}],
-      "list_metadata" => %{"after" => "after", "before" => "before"}
-    }
-
-    serialized =
-      data |> WorkOS.ObjectListResponse.from_map() |> WorkOS.ObjectListResponse.to_map()
-
-    assert serialized == data
-
-    assert serialized
-           |> WorkOS.ObjectListResponse.from_map()
-           |> WorkOS.ObjectListResponse.to_map() == serialized
-  end
-
   test "ObjectMetadata round-trips between wire and struct" do
     data = %{
       "context" => %{},
@@ -75,6 +59,16 @@ defmodule WorkOS.VaultRoundTripTest do
     assert serialized == data
 
     assert serialized |> WorkOS.ObjectMetadata.from_map() |> WorkOS.ObjectMetadata.to_map() ==
+             serialized
+  end
+
+  test "ObjectSummary round-trips between wire and struct" do
+    data = %{"id" => "id", "name" => "name", "updated_at" => "2024-01-01T00:00:00.000Z"}
+
+    serialized = data |> WorkOS.ObjectSummary.from_map() |> WorkOS.ObjectSummary.to_map()
+    assert serialized == data
+
+    assert serialized |> WorkOS.ObjectSummary.from_map() |> WorkOS.ObjectSummary.to_map() ==
              serialized
   end
 

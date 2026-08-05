@@ -20,7 +20,7 @@ defmodule WorkOS.OrganizationsTest do
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("organizations/list_organizations"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.OrganizationList{object: "list"} | _]}} =
+    assert {:ok, %WorkOS.Page{data: [%WorkOS.Organization{object: "organization", id: "id"} | _]}} =
              WorkOS.Organizations.list_organizations(client)
   end
 
@@ -123,7 +123,13 @@ defmodule WorkOS.OrganizationsTest do
 
     assert {:ok,
             %WorkOS.Page{
-              data: [%WorkOS.OrganizationAuthorizedConnectApplicationList{object: "list"} | _]
+              data: [
+                %WorkOS.OrganizationAuthorizedConnectApplicationListData{
+                  object: "authorized_connect_application",
+                  id: "id"
+                }
+                | _
+              ]
             }} = WorkOS.Organizations.list_authorized_applications(client, "test_organization_id")
   end
 

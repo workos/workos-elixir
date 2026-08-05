@@ -20,7 +20,7 @@ defmodule WorkOS.FeatureFlagsTest do
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("feature_flags/list_feature_flags"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.FlagList{object: "list"} | _]}} =
+    assert {:ok, %WorkOS.Page{data: [%WorkOS.Flag{object: "feature_flag", id: "id"} | _]}} =
              WorkOS.FeatureFlags.list_feature_flags(client)
   end
 
@@ -99,7 +99,7 @@ defmodule WorkOS.FeatureFlagsTest do
       )
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.FlagList{object: "list"} | _]}} =
+    assert {:ok, %WorkOS.Page{data: [%WorkOS.Flag{object: "feature_flag", id: "id"} | _]}} =
              WorkOS.FeatureFlags.list_organization_feature_flags(client, "test_organization_id")
   end
 
@@ -122,7 +122,7 @@ defmodule WorkOS.FeatureFlagsTest do
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("feature_flags/list_user_feature_flags"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.FlagList{object: "list"} | _]}} =
+    assert {:ok, %WorkOS.Page{data: [%WorkOS.Flag{object: "feature_flag", id: "id"} | _]}} =
              WorkOS.FeatureFlags.list_user_feature_flags(client, "test_user_id")
   end
 

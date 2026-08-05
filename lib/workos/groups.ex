@@ -17,7 +17,7 @@ defmodule WorkOS.Groups do
     * `opts` — per-request options (see `WorkOS.Client.request/5`)
   """
   @spec list_organization_groups(WorkOS.Client.t(), String.t(), map(), keyword()) ::
-          {:ok, WorkOS.Page.t(WorkOS.GroupList.t())} | {:error, WorkOS.Error.error()}
+          {:ok, WorkOS.Page.t(WorkOS.Group.t())} | {:error, WorkOS.Error.error()}
   def list_organization_groups(client, organization_id, params \\ %{}, opts \\ []) do
     with {:ok, body} <-
            WorkOS.Client.request(
@@ -36,7 +36,7 @@ defmodule WorkOS.Groups do
         )
       end
 
-      {:ok, WorkOS.Page.from_map(body, "data", &WorkOS.GroupList.from_map/1, fetch_next)}
+      {:ok, WorkOS.Page.from_map(body, "data", &WorkOS.Group.from_map/1, fetch_next)}
     end
   end
 
@@ -161,7 +161,7 @@ defmodule WorkOS.Groups do
           map(),
           keyword()
         ) ::
-          {:ok, WorkOS.Page.t(WorkOS.UserOrganizationMembershipBaseList.t())}
+          {:ok, WorkOS.Page.t(WorkOS.UserOrganizationMembershipBaseListData.t())}
           | {:error, WorkOS.Error.error()}
   def list_group_organization_memberships(
         client,
@@ -192,7 +192,7 @@ defmodule WorkOS.Groups do
        WorkOS.Page.from_map(
          body,
          "data",
-         &WorkOS.UserOrganizationMembershipBaseList.from_map/1,
+         &WorkOS.UserOrganizationMembershipBaseListData.from_map/1,
          fetch_next
        )}
     end

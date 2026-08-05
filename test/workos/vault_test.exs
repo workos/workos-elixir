@@ -55,7 +55,7 @@ defmodule WorkOS.VaultTest do
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("vault/list_kv"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.ObjectListResponse{} | _]}} =
+    assert {:ok, %WorkOS.Page{data: [%WorkOS.ObjectSummary{id: "id", name: "name"} | _]}} =
              WorkOS.Vault.list_kv(client)
   end
 

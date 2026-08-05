@@ -16,7 +16,7 @@ defmodule WorkOS.SSO do
     * `opts` — per-request options (see `WorkOS.Client.request/5`)
   """
   @spec list_connections(WorkOS.Client.t(), map(), keyword()) ::
-          {:ok, WorkOS.Page.t(WorkOS.ConnectionList.t())} | {:error, WorkOS.Error.error()}
+          {:ok, WorkOS.Page.t(WorkOS.Connection.t())} | {:error, WorkOS.Error.error()}
   def list_connections(client, params \\ %{}, opts \\ []) do
     with {:ok, body} <- WorkOS.Client.request(client, :get, "/connections", params, opts) do
       fetch_next = fn cursor ->
@@ -27,7 +27,7 @@ defmodule WorkOS.SSO do
         )
       end
 
-      {:ok, WorkOS.Page.from_map(body, "data", &WorkOS.ConnectionList.from_map/1, fetch_next)}
+      {:ok, WorkOS.Page.from_map(body, "data", &WorkOS.Connection.from_map/1, fetch_next)}
     end
   end
 

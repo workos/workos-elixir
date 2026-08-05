@@ -20,7 +20,7 @@ defmodule WorkOS.GroupsTest do
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("groups/list_organization_groups"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.GroupList{object: "list"} | _]}} =
+    assert {:ok, %WorkOS.Page{data: [%WorkOS.Group{object: "group", id: "id"} | _]}} =
              WorkOS.Groups.list_organization_groups(client, "test_organization_id")
   end
 
@@ -102,7 +102,15 @@ defmodule WorkOS.GroupsTest do
     end)
 
     assert {:ok,
-            %WorkOS.Page{data: [%WorkOS.UserOrganizationMembershipBaseList{object: "list"} | _]}} =
+            %WorkOS.Page{
+              data: [
+                %WorkOS.UserOrganizationMembershipBaseListData{
+                  object: "organization_membership",
+                  id: "id"
+                }
+                | _
+              ]
+            }} =
              WorkOS.Groups.list_group_organization_memberships(
                client,
                "test_organization_id",

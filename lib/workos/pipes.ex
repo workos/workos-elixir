@@ -16,7 +16,7 @@ defmodule WorkOS.Pipes do
     * `opts` — per-request options (see `WorkOS.Client.request/5`)
   """
   @spec list_data_integrations(WorkOS.Client.t(), map(), keyword()) ::
-          {:ok, WorkOS.Page.t(WorkOS.DataIntegrationList.t())} | {:error, WorkOS.Error.error()}
+          {:ok, WorkOS.Page.t(WorkOS.DataIntegration.t())} | {:error, WorkOS.Error.error()}
   def list_data_integrations(client, params \\ %{}, opts \\ []) do
     with {:ok, body} <- WorkOS.Client.request(client, :get, "/data-integrations", params, opts) do
       fetch_next = fn cursor ->
@@ -27,8 +27,7 @@ defmodule WorkOS.Pipes do
         )
       end
 
-      {:ok,
-       WorkOS.Page.from_map(body, "data", &WorkOS.DataIntegrationList.from_map/1, fetch_next)}
+      {:ok, WorkOS.Page.from_map(body, "data", &WorkOS.DataIntegration.from_map/1, fetch_next)}
     end
   end
 

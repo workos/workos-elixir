@@ -16,7 +16,7 @@ defmodule WorkOS.Webhooks do
     * `opts` — per-request options (see `WorkOS.Client.request/5`)
   """
   @spec list_webhook_endpoints(WorkOS.Client.t(), map(), keyword()) ::
-          {:ok, WorkOS.Page.t(WorkOS.WebhookEndpointList.t())} | {:error, WorkOS.Error.error()}
+          {:ok, WorkOS.Page.t(WorkOS.WebhookEndpoint.t())} | {:error, WorkOS.Error.error()}
   def list_webhook_endpoints(client, params \\ %{}, opts \\ []) do
     with {:ok, body} <- WorkOS.Client.request(client, :get, "/webhook_endpoints", params, opts) do
       fetch_next = fn cursor ->
@@ -27,8 +27,7 @@ defmodule WorkOS.Webhooks do
         )
       end
 
-      {:ok,
-       WorkOS.Page.from_map(body, "data", &WorkOS.WebhookEndpointList.from_map/1, fetch_next)}
+      {:ok, WorkOS.Page.from_map(body, "data", &WorkOS.WebhookEndpoint.from_map/1, fetch_next)}
     end
   end
 

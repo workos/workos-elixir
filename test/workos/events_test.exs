@@ -20,7 +20,7 @@ defmodule WorkOS.EventsTest do
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("events/list_events"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.EventList{object: "list"} | _]}} =
+    assert {:ok, %WorkOS.Page{data: [%WorkOS.EventSchema{object: "event", id: "id"} | _]}} =
              WorkOS.Events.list_events(client)
   end
 
