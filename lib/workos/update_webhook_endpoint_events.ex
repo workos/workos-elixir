@@ -11,6 +11,7 @@ defmodule WorkOS.UpdateWebhookEndpointEvents do
           | :agent_registration_claim_completed
           | :agent_registration_credential_issued
           | :agent_registration_deleted
+          | :agent_registration_refreshed
           | :agent_registration_expired
           | :agent_registration_organization_switched
           | :agent_registration_revoked
@@ -108,6 +109,7 @@ defmodule WorkOS.UpdateWebhookEndpointEvents do
       :agent_registration_claim_completed,
       :agent_registration_credential_issued,
       :agent_registration_deleted,
+      :agent_registration_refreshed,
       :agent_registration_expired,
       :agent_registration_organization_switched,
       :agent_registration_revoked,
@@ -207,6 +209,7 @@ defmodule WorkOS.UpdateWebhookEndpointEvents do
   def cast("agent.registration.claim.completed"), do: :agent_registration_claim_completed
   def cast("agent.registration.credential.issued"), do: :agent_registration_credential_issued
   def cast("agent.registration.deleted"), do: :agent_registration_deleted
+  def cast("agent.registration.refreshed"), do: :agent_registration_refreshed
   def cast("agent.registration.expired"), do: :agent_registration_expired
 
   def cast("agent.registration.organization.switched"),
@@ -327,6 +330,7 @@ defmodule WorkOS.UpdateWebhookEndpointEvents do
   def dump(:agent_registration_claim_completed), do: "agent.registration.claim.completed"
   def dump(:agent_registration_credential_issued), do: "agent.registration.credential.issued"
   def dump(:agent_registration_deleted), do: "agent.registration.deleted"
+  def dump(:agent_registration_refreshed), do: "agent.registration.refreshed"
   def dump(:agent_registration_expired), do: "agent.registration.expired"
 
   def dump(:agent_registration_organization_switched),
