@@ -20,8 +20,10 @@ defmodule WorkOS.WebhooksTest do
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("webhooks/list_webhook_endpoints"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.WebhookEndpointList{object: "list"} | _]}} =
-             WorkOS.Webhooks.list_webhook_endpoints(client)
+    assert {:ok,
+            %WorkOS.Page{
+              data: [%WorkOS.WebhookEndpoint{object: "webhook_endpoint", id: "id"} | _]
+            }} = WorkOS.Webhooks.list_webhook_endpoints(client)
   end
 
   test "list_webhook_endpoints handles an empty page", %{client: client} do

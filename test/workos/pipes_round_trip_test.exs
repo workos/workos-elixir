@@ -138,63 +138,6 @@ defmodule WorkOS.PipesRoundTripTest do
            |> WorkOS.DataIntegrationCredentialsResponse.to_map() == serialized
   end
 
-  test "DataIntegrationList round-trips between wire and struct" do
-    data = %{
-      "object" => "list",
-      "data" => [
-        %{
-          "object" => "data_integration",
-          "id" => "id",
-          "slug" => "slug",
-          "integration_type" => "integration_type",
-          "description" => "description",
-          "enabled" => true,
-          "state" => "valid",
-          "scopes" => ["scopes"],
-          "redirect_uri" => "redirect_uri",
-          "auth_methods" => ["oauth"],
-          "credentials" => %{
-            "type" => "custom",
-            "client_id" => "client_id",
-            "redacted_client_secret" => "redacted_client_secret"
-          },
-          "installation" => %{
-            "id" => "id",
-            "user_id" => "user_id",
-            "organization_id" => "organization_id",
-            "api_key_last_4" => "api_key_last_4"
-          },
-          "config" => %{},
-          "custom_provider" => %{
-            "name" => "name",
-            "authorization_url" => "authorization_url",
-            "token_url" => "token_url",
-            "refresh_token_url" => "refresh_token_url",
-            "pkce_enabled" => true,
-            "request_scope_separator" => "request_scope_separator",
-            "scopes_required" => true,
-            "client_secret_required" => true,
-            "additional_authorization_parameters" => %{},
-            "token_body_content_type" => "token_body_content_type",
-            "authenticate_via" => "request_body"
-          },
-          "created_at" => "2024-01-01T00:00:00.000Z",
-          "updated_at" => "2024-01-01T00:00:00.000Z"
-        }
-      ],
-      "list_metadata" => %{"before" => "before", "after" => "after"}
-    }
-
-    serialized =
-      data |> WorkOS.DataIntegrationList.from_map() |> WorkOS.DataIntegrationList.to_map()
-
-    assert serialized == data
-
-    assert serialized
-           |> WorkOS.DataIntegrationList.from_map()
-           |> WorkOS.DataIntegrationList.to_map() == serialized
-  end
-
   test "DataIntegrationsListResponse round-trips between wire and struct" do
     data = %{
       "object" => "list",

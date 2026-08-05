@@ -1,28 +1,19 @@
 {
   "data": [
     {
-      "object": "list",
-      "data": [
-        {
-          "object": "group_role_assignment",
-          "id": "id",
-          "group_id": "group_id",
-          "role": {
-            "slug": "slug"
-          },
-          "resource": {
-            "id": "id",
-            "external_id": "external_id",
-            "resource_type_slug": "resource_type_slug"
-          },
-          "created_at": "2024-01-01T00:00:00.000Z",
-          "updated_at": "2024-01-01T00:00:00.000Z"
-        }
-      ],
-      "list_metadata": {
-        "after": "after",
-        "before": "before"
-      }
+      "object": "group_role_assignment",
+      "id": "id",
+      "group_id": "group_id",
+      "role": {
+        "slug": "slug"
+      },
+      "resource": {
+        "id": "id",
+        "external_id": "external_id",
+        "resource_type_slug": "resource_type_slug"
+      },
+      "created_at": "2024-01-01T00:00:00.000Z",
+      "updated_at": "2024-01-01T00:00:00.000Z"
     }
   ],
   "list_metadata": {

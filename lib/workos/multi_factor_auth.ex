@@ -134,8 +134,7 @@ defmodule WorkOS.MultiFactorAuth do
     * `opts` — per-request options (see `WorkOS.Client.request/5`)
   """
   @spec list_user_auth_factors(WorkOS.Client.t(), String.t(), map(), keyword()) ::
-          {:ok, WorkOS.Page.t(WorkOS.UserAuthenticationFactorList.t())}
-          | {:error, WorkOS.Error.error()}
+          {:ok, WorkOS.Page.t(WorkOS.AuthenticationFactor.t())} | {:error, WorkOS.Error.error()}
   def list_user_auth_factors(client, userland_user_id, params \\ %{}, opts \\ []) do
     with {:ok, body} <-
            WorkOS.Client.request(
@@ -155,12 +154,7 @@ defmodule WorkOS.MultiFactorAuth do
       end
 
       {:ok,
-       WorkOS.Page.from_map(
-         body,
-         "data",
-         &WorkOS.UserAuthenticationFactorList.from_map/1,
-         fetch_next
-       )}
+       WorkOS.Page.from_map(body, "data", &WorkOS.AuthenticationFactor.from_map/1, fetch_next)}
     end
   end
 

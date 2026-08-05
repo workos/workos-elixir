@@ -50,34 +50,28 @@ defmodule WorkOS.ApiKeysRoundTripTest do
            |> WorkOS.ApiKeyValidationResponse.to_map() == serialized
   end
 
-  test "OrganizationApiKeyList round-trips between wire and struct" do
+  test "OrganizationApiKey round-trips between wire and struct" do
     data = %{
-      "object" => "list",
-      "data" => [
-        %{
-          "object" => "api_key",
-          "id" => "id",
-          "owner" => %{"type" => "organization", "id" => "id"},
-          "name" => "name",
-          "obfuscated_value" => "obfuscated_value",
-          "last_used_at" => "2024-01-01T00:00:00.000Z",
-          "expires_at" => "2024-01-01T00:00:00.000Z",
-          "permissions" => ["permissions"],
-          "created_at" => "2024-01-01T00:00:00.000Z",
-          "updated_at" => "2024-01-01T00:00:00.000Z"
-        }
-      ],
-      "list_metadata" => %{"before" => "before", "after" => "after"}
+      "object" => "api_key",
+      "id" => "id",
+      "owner" => %{"type" => "organization", "id" => "id"},
+      "name" => "name",
+      "obfuscated_value" => "obfuscated_value",
+      "last_used_at" => "2024-01-01T00:00:00.000Z",
+      "expires_at" => "2024-01-01T00:00:00.000Z",
+      "permissions" => ["permissions"],
+      "created_at" => "2024-01-01T00:00:00.000Z",
+      "updated_at" => "2024-01-01T00:00:00.000Z"
     }
 
     serialized =
-      data |> WorkOS.OrganizationApiKeyList.from_map() |> WorkOS.OrganizationApiKeyList.to_map()
+      data |> WorkOS.OrganizationApiKey.from_map() |> WorkOS.OrganizationApiKey.to_map()
 
     assert serialized == data
 
     assert serialized
-           |> WorkOS.OrganizationApiKeyList.from_map()
-           |> WorkOS.OrganizationApiKeyList.to_map() == serialized
+           |> WorkOS.OrganizationApiKey.from_map()
+           |> WorkOS.OrganizationApiKey.to_map() == serialized
   end
 
   test "OrganizationApiKeyWithValue round-trips between wire and struct" do

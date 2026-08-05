@@ -39,37 +39,6 @@ defmodule WorkOS.AuthorizationRoundTripTest do
            |> WorkOS.AuthorizationPermission.to_map() == serialized
   end
 
-  test "AuthorizationPermissionList round-trips between wire and struct" do
-    data = %{
-      "object" => "list",
-      "data" => [
-        %{
-          "object" => "permission",
-          "id" => "id",
-          "slug" => "slug",
-          "name" => "name",
-          "description" => "description",
-          "system" => true,
-          "resource_type_slug" => "resource_type_slug",
-          "created_at" => "2024-01-01T00:00:00.000Z",
-          "updated_at" => "2024-01-01T00:00:00.000Z"
-        }
-      ],
-      "list_metadata" => %{"before" => "before", "after" => "after"}
-    }
-
-    serialized =
-      data
-      |> WorkOS.AuthorizationPermissionList.from_map()
-      |> WorkOS.AuthorizationPermissionList.to_map()
-
-    assert serialized == data
-
-    assert serialized
-           |> WorkOS.AuthorizationPermissionList.from_map()
-           |> WorkOS.AuthorizationPermissionList.to_map() == serialized
-  end
-
   test "AuthorizationResource round-trips between wire and struct" do
     data = %{
       "object" => "authorization_resource",
@@ -92,38 +61,6 @@ defmodule WorkOS.AuthorizationRoundTripTest do
     assert serialized
            |> WorkOS.AuthorizationResource.from_map()
            |> WorkOS.AuthorizationResource.to_map() == serialized
-  end
-
-  test "AuthorizationResourceList round-trips between wire and struct" do
-    data = %{
-      "object" => "list",
-      "data" => [
-        %{
-          "object" => "authorization_resource",
-          "name" => "name",
-          "description" => "description",
-          "organization_id" => "organization_id",
-          "parent_resource_id" => "parent_resource_id",
-          "id" => "id",
-          "external_id" => "external_id",
-          "resource_type_slug" => "resource_type_slug",
-          "created_at" => "2024-01-01T00:00:00.000Z",
-          "updated_at" => "2024-01-01T00:00:00.000Z"
-        }
-      ],
-      "list_metadata" => %{"before" => "before", "after" => "after"}
-    }
-
-    serialized =
-      data
-      |> WorkOS.AuthorizationResourceList.from_map()
-      |> WorkOS.AuthorizationResourceList.to_map()
-
-    assert serialized == data
-
-    assert serialized
-           |> WorkOS.AuthorizationResourceList.from_map()
-           |> WorkOS.AuthorizationResourceList.to_map() == serialized
   end
 
   test "GroupRoleAssignment round-trips between wire and struct" do
@@ -246,52 +183,46 @@ defmodule WorkOS.AuthorizationRoundTripTest do
     assert serialized |> WorkOS.RoleList.from_map() |> WorkOS.RoleList.to_map() == serialized
   end
 
-  test "UserOrganizationMembershipBaseList round-trips between wire and struct" do
+  test "UserOrganizationMembershipBaseListData round-trips between wire and struct" do
     data = %{
-      "object" => "list",
-      "data" => [
-        %{
-          "object" => "organization_membership",
-          "id" => "id",
-          "user_id" => "user_id",
-          "organization_id" => "organization_id",
-          "status" => "active",
-          "directory_managed" => true,
-          "organization_name" => "organization_name",
-          "custom_attributes" => %{},
-          "created_at" => "2024-01-01T00:00:00.000Z",
-          "updated_at" => "2024-01-01T00:00:00.000Z",
-          "user" => %{
-            "object" => "user",
-            "id" => "id",
-            "first_name" => "first_name",
-            "last_name" => "last_name",
-            "name" => "name",
-            "profile_picture_url" => "profile_picture_url",
-            "email" => "email",
-            "email_verified" => true,
-            "external_id" => "external_id",
-            "metadata" => %{},
-            "last_sign_in_at" => "2024-01-01T00:00:00.000Z",
-            "locale" => "locale",
-            "created_at" => "2024-01-01T00:00:00.000Z",
-            "updated_at" => "2024-01-01T00:00:00.000Z"
-          }
-        }
-      ],
-      "list_metadata" => %{"before" => "before", "after" => "after"}
+      "object" => "organization_membership",
+      "id" => "id",
+      "user_id" => "user_id",
+      "organization_id" => "organization_id",
+      "status" => "active",
+      "directory_managed" => true,
+      "organization_name" => "organization_name",
+      "custom_attributes" => %{},
+      "created_at" => "2024-01-01T00:00:00.000Z",
+      "updated_at" => "2024-01-01T00:00:00.000Z",
+      "user" => %{
+        "object" => "user",
+        "id" => "id",
+        "first_name" => "first_name",
+        "last_name" => "last_name",
+        "name" => "name",
+        "profile_picture_url" => "profile_picture_url",
+        "email" => "email",
+        "email_verified" => true,
+        "external_id" => "external_id",
+        "metadata" => %{},
+        "last_sign_in_at" => "2024-01-01T00:00:00.000Z",
+        "locale" => "locale",
+        "created_at" => "2024-01-01T00:00:00.000Z",
+        "updated_at" => "2024-01-01T00:00:00.000Z"
+      }
     }
 
     serialized =
       data
-      |> WorkOS.UserOrganizationMembershipBaseList.from_map()
-      |> WorkOS.UserOrganizationMembershipBaseList.to_map()
+      |> WorkOS.UserOrganizationMembershipBaseListData.from_map()
+      |> WorkOS.UserOrganizationMembershipBaseListData.to_map()
 
     assert serialized == data
 
     assert serialized
-           |> WorkOS.UserOrganizationMembershipBaseList.from_map()
-           |> WorkOS.UserOrganizationMembershipBaseList.to_map() == serialized
+           |> WorkOS.UserOrganizationMembershipBaseListData.from_map()
+           |> WorkOS.UserOrganizationMembershipBaseListData.to_map() == serialized
   end
 
   test "UserRoleAssignment round-trips between wire and struct" do
@@ -318,40 +249,5 @@ defmodule WorkOS.AuthorizationRoundTripTest do
     assert serialized
            |> WorkOS.UserRoleAssignment.from_map()
            |> WorkOS.UserRoleAssignment.to_map() == serialized
-  end
-
-  test "UserRoleAssignmentList round-trips between wire and struct" do
-    data = %{
-      "object" => "list",
-      "data" => [
-        %{
-          "object" => "role_assignment",
-          "id" => "id",
-          "organization_membership_id" => "organization_membership_id",
-          "role" => %{"slug" => "slug"},
-          "resource" => %{
-            "id" => "id",
-            "external_id" => "external_id",
-            "resource_type_slug" => "resource_type_slug"
-          },
-          "source" => %{
-            "type" => "direct",
-            "group_role_assignment_id" => "group_role_assignment_id"
-          },
-          "created_at" => "2024-01-01T00:00:00.000Z",
-          "updated_at" => "2024-01-01T00:00:00.000Z"
-        }
-      ],
-      "list_metadata" => %{"before" => "before", "after" => "after"}
-    }
-
-    serialized =
-      data |> WorkOS.UserRoleAssignmentList.from_map() |> WorkOS.UserRoleAssignmentList.to_map()
-
-    assert serialized == data
-
-    assert serialized
-           |> WorkOS.UserRoleAssignmentList.from_map()
-           |> WorkOS.UserRoleAssignmentList.to_map() == serialized
   end
 end

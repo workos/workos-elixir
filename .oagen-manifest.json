@@ -40,6 +40,8 @@
     "lib/workos/agent_registration_kind.ex",
     "lib/workos/agent_registration_organization_switched.ex",
     "lib/workos/agent_registration_organization_switched_data.ex",
+    "lib/workos/agent_registration_refreshed.ex",
+    "lib/workos/agent_registration_refreshed_data.ex",
     "lib/workos/agent_registration_revoked.ex",
     "lib/workos/agent_registration_revoked_data.ex",
     "lib/workos/agent_registration_status.ex",
@@ -157,14 +159,8 @@
     "lib/workos/authorization_check.ex",
     "lib/workos/authorization_code_session_authenticate_request.ex",
     "lib/workos/authorization_permission.ex",
-    "lib/workos/authorization_permission_list.ex",
-    "lib/workos/authorization_permission_list_list_metadata.ex",
     "lib/workos/authorization_resource.ex",
-    "lib/workos/authorization_resource_list.ex",
-    "lib/workos/authorization_resource_list_list_metadata.ex",
-    "lib/workos/authorized_connect_application_list.ex",
     "lib/workos/authorized_connect_application_list_data.ex",
-    "lib/workos/authorized_connect_application_list_list_metadata.ex",
     "lib/workos/challenge_authentication_factor.ex",
     "lib/workos/check_authorization.ex",
     "lib/workos/claim_view_response.ex",
@@ -177,8 +173,6 @@
     "lib/workos/confirm_email_change.ex",
     "lib/workos/connect.ex",
     "lib/workos/connect_application.ex",
-    "lib/workos/connect_application_list.ex",
-    "lib/workos/connect_application_list_list_metadata.ex",
     "lib/workos/connect_application_m2m.ex",
     "lib/workos/connect_application_oauth.ex",
     "lib/workos/connect_application_oauth_redirect_uris.ex",
@@ -206,8 +200,6 @@
     "lib/workos/connection_deleted_data_connection_type.ex",
     "lib/workos/connection_deleted_data_state.ex",
     "lib/workos/connection_domain.ex",
-    "lib/workos/connection_list.ex",
-    "lib/workos/connection_list_list_metadata.ex",
     "lib/workos/connection_saml_certificate_renewal_required.ex",
     "lib/workos/connection_saml_certificate_renewal_required_data.ex",
     "lib/workos/connection_saml_certificate_renewal_required_data_certificate.ex",
@@ -275,8 +267,6 @@
     "lib/workos/data_integration_custom_provider.ex",
     "lib/workos/data_integration_custom_provider_authenticate_via.ex",
     "lib/workos/data_integration_installation.ex",
-    "lib/workos/data_integration_list.ex",
-    "lib/workos/data_integration_list_list_metadata.ex",
     "lib/workos/data_integration_state.ex",
     "lib/workos/data_integrations_get_data_integration_authorize_url_request.ex",
     "lib/workos/data_integrations_get_user_token_request.ex",
@@ -297,10 +287,6 @@
     "lib/workos/device_code_session_authenticate_request.ex",
     "lib/workos/directory.ex",
     "lib/workos/directory_group.ex",
-    "lib/workos/directory_group_list.ex",
-    "lib/workos/directory_group_list_list_metadata.ex",
-    "lib/workos/directory_list.ex",
-    "lib/workos/directory_list_list_metadata.ex",
     "lib/workos/directory_metadata.ex",
     "lib/workos/directory_metadata_user.ex",
     "lib/workos/directory_state.ex",
@@ -308,8 +294,6 @@
     "lib/workos/directory_type.ex",
     "lib/workos/directory_user.ex",
     "lib/workos/directory_user_email.ex",
-    "lib/workos/directory_user_list.ex",
-    "lib/workos/directory_user_list_list_metadata.ex",
     "lib/workos/directory_user_state.ex",
     "lib/workos/directory_user_with_groups.ex",
     "lib/workos/directory_user_with_groups_email.ex",
@@ -354,8 +338,6 @@
     "lib/workos/event_context_actor.ex",
     "lib/workos/event_context_actor_source.ex",
     "lib/workos/event_context_google_analytics_session.ex",
-    "lib/workos/event_list.ex",
-    "lib/workos/event_list_list_metadata.ex",
     "lib/workos/event_schema.ex",
     "lib/workos/events.ex",
     "lib/workos/expire_api_key.ex",
@@ -376,8 +358,6 @@
     "lib/workos/flag_deleted_context_actor_source.ex",
     "lib/workos/flag_deleted_data.ex",
     "lib/workos/flag_deleted_data_owner.ex",
-    "lib/workos/flag_list.ex",
-    "lib/workos/flag_list_list_metadata.ex",
     "lib/workos/flag_owner.ex",
     "lib/workos/flag_rule_updated.ex",
     "lib/workos/flag_rule_updated_context.ex",
@@ -409,8 +389,6 @@
     "lib/workos/group.ex",
     "lib/workos/group_created.ex",
     "lib/workos/group_deleted.ex",
-    "lib/workos/group_list.ex",
-    "lib/workos/group_list_list_metadata.ex",
     "lib/workos/group_member_added.ex",
     "lib/workos/group_member_added_data.ex",
     "lib/workos/group_member_removed.ex",
@@ -446,21 +424,16 @@
     "lib/workos/mfa_totp_session_authenticate_request.ex",
     "lib/workos/multi_factor_auth.ex",
     "lib/workos/new_connect_application_secret.ex",
-    "lib/workos/object_list_response.ex",
     "lib/workos/object_metadata.ex",
     "lib/workos/object_summary.ex",
     "lib/workos/object_version.ex",
     "lib/workos/object_without_value.ex",
     "lib/workos/organization.ex",
     "lib/workos/organization_api_key.ex",
-    "lib/workos/organization_api_key_list.ex",
-    "lib/workos/organization_api_key_list_list_metadata.ex",
     "lib/workos/organization_api_key_owner.ex",
     "lib/workos/organization_api_key_with_value.ex",
     "lib/workos/organization_api_key_with_value_owner.ex",
-    "lib/workos/organization_authorized_connect_application_list.ex",
     "lib/workos/organization_authorized_connect_application_list_data.ex",
-    "lib/workos/organization_authorized_connect_application_list_list_metadata.ex",
     "lib/workos/organization_created.ex",
     "lib/workos/organization_created_data.ex",
     "lib/workos/organization_created_data_domain.ex",
@@ -500,8 +473,6 @@
     "lib/workos/organization_domain_verified_data_verification_strategy.ex",
     "lib/workos/organization_domains.ex",
     "lib/workos/organization_input.ex",
-    "lib/workos/organization_list.ex",
-    "lib/workos/organization_list_list_metadata.ex",
     "lib/workos/organization_membership.ex",
     "lib/workos/organization_membership_created.ex",
     "lib/workos/organization_membership_created_data.ex",
@@ -639,16 +610,12 @@
     "lib/workos/user.ex",
     "lib/workos/user_api_key.ex",
     "lib/workos/user_api_key_created_data_owner.ex",
-    "lib/workos/user_api_key_list.ex",
-    "lib/workos/user_api_key_list_list_metadata.ex",
     "lib/workos/user_api_key_owner.ex",
     "lib/workos/user_api_key_revoked_data_owner.ex",
     "lib/workos/user_api_key_updated_data_owner.ex",
     "lib/workos/user_api_key_with_value.ex",
     "lib/workos/user_api_key_with_value_owner.ex",
     "lib/workos/user_authentication_factor_enroll_response.ex",
-    "lib/workos/user_authentication_factor_list.ex",
-    "lib/workos/user_authentication_factor_list_list_metadata.ex",
     "lib/workos/user_consent_option.ex",
     "lib/workos/user_consent_option_choice.ex",
     "lib/workos/user_create_response.ex",
@@ -657,11 +624,7 @@
     "lib/workos/user_identities_get_item.ex",
     "lib/workos/user_identities_get_item_provider.ex",
     "lib/workos/user_invite.ex",
-    "lib/workos/user_invite_list.ex",
-    "lib/workos/user_invite_list_list_metadata.ex",
     "lib/workos/user_invite_state.ex",
-    "lib/workos/user_list.ex",
-    "lib/workos/user_list_list_metadata.ex",
     "lib/workos/user_management.ex",
     "lib/workos/user_management_authentication_provider.ex",
     "lib/workos/user_management_authentication_screen_hint.ex",
@@ -669,16 +632,10 @@
     "lib/workos/user_management_organization_membership_statuses.ex",
     "lib/workos/user_object.ex",
     "lib/workos/user_organization_membership.ex",
-    "lib/workos/user_organization_membership_base_list.ex",
     "lib/workos/user_organization_membership_base_list_data.ex",
     "lib/workos/user_organization_membership_base_list_data_status.ex",
-    "lib/workos/user_organization_membership_base_list_list_metadata.ex",
-    "lib/workos/user_organization_membership_list.ex",
-    "lib/workos/user_organization_membership_list_list_metadata.ex",
     "lib/workos/user_organization_membership_status.ex",
     "lib/workos/user_role_assignment.ex",
-    "lib/workos/user_role_assignment_list.ex",
-    "lib/workos/user_role_assignment_list_list_metadata.ex",
     "lib/workos/user_role_assignment_resource.ex",
     "lib/workos/user_role_assignment_source.ex",
     "lib/workos/user_role_assignment_source_type.ex",
@@ -735,8 +692,6 @@
     "lib/workos/waitlist_user_denied.ex",
     "lib/workos/waitlist_user_state.ex",
     "lib/workos/webhook_endpoint.ex",
-    "lib/workos/webhook_endpoint_list.ex",
-    "lib/workos/webhook_endpoint_list_list_metadata.ex",
     "lib/workos/webhook_endpoint_status.ex",
     "lib/workos/webhooks.ex",
     "lib/workos/widget_session_token.ex",
@@ -1204,10 +1159,16 @@
       "sdkMethod": "list_applications",
       "service": "connect"
     },
-    "POST /connect/applications": {
-      "sdkMethod": "create_application",
-      "service": "connect"
-    },
+    "POST /connect/applications": [
+      {
+        "sdkMethod": "create_oauth_application",
+        "service": "connect"
+      },
+      {
+        "sdkMethod": "create_m2m_application",
+        "service": "connect"
+      }
+    ],
     "GET /connect/applications/{id}": {
       "sdkMethod": "get_application",
       "service": "connect"
@@ -1480,10 +1441,48 @@
       "sdkMethod": "get_jwks",
       "service": "user_management"
     },
-    "POST /user_management/authenticate": {
-      "sdkMethod": "create_authenticate",
-      "service": "user_management"
-    },
+    "POST /user_management/authenticate": [
+      {
+        "sdkMethod": "authenticate_with_password",
+        "service": "user_management"
+      },
+      {
+        "sdkMethod": "authenticate_with_code",
+        "service": "user_management"
+      },
+      {
+        "sdkMethod": "authenticate_with_refresh_token",
+        "service": "user_management"
+      },
+      {
+        "sdkMethod": "authenticate_with_magic_auth",
+        "service": "user_management"
+      },
+      {
+        "sdkMethod": "authenticate_with_email_verification",
+        "service": "user_management"
+      },
+      {
+        "sdkMethod": "authenticate_with_totp",
+        "service": "user_management"
+      },
+      {
+        "sdkMethod": "authenticate_with_organization_selection",
+        "service": "user_management"
+      },
+      {
+        "sdkMethod": "authenticate_with_device_code",
+        "service": "user_management"
+      },
+      {
+        "sdkMethod": "authenticate_with_radar_email_challenge",
+        "service": "user_management"
+      },
+      {
+        "sdkMethod": "authenticate_with_radar_sms_challenge",
+        "service": "user_management"
+      }
+    ],
     "POST /user_management/authorize/device": {
       "sdkMethod": "create_device",
       "service": "user_management"

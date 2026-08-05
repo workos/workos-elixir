@@ -1,24 +1,15 @@
 {
   "data": [
     {
-      "object": "list",
-      "data": [
-        {
-          "object": "directory_group",
-          "id": "id",
-          "idp_id": "idp_id",
-          "directory_id": "directory_id",
-          "organization_id": "organization_id",
-          "name": "name",
-          "raw_attributes": {},
-          "created_at": "2024-01-01T00:00:00.000Z",
-          "updated_at": "2024-01-01T00:00:00.000Z"
-        }
-      ],
-      "list_metadata": {
-        "before": "before",
-        "after": "after"
-      }
+      "object": "directory_group",
+      "id": "id",
+      "idp_id": "idp_id",
+      "directory_id": "directory_id",
+      "organization_id": "organization_id",
+      "name": "name",
+      "raw_attributes": {},
+      "created_at": "2024-01-01T00:00:00.000Z",
+      "updated_at": "2024-01-01T00:00:00.000Z"
     }
   ],
   "list_metadata": {

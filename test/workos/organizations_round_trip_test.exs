@@ -61,67 +61,34 @@ defmodule WorkOS.OrganizationsRoundTripTest do
              serialized
   end
 
-  test "OrganizationAuthorizedConnectApplicationList round-trips between wire and struct" do
+  test "OrganizationAuthorizedConnectApplicationListData round-trips between wire and struct" do
     data = %{
-      "object" => "list",
-      "data" => [
-        %{
-          "object" => "authorized_connect_application",
-          "id" => "id",
-          "granted_scopes" => ["granted_scopes"],
-          "oauth_resource" => "oauth_resource",
-          "application" => %{
-            "object" => "connect_application",
-            "id" => "id",
-            "client_id" => "client_id",
-            "description" => "description",
-            "name" => "name",
-            "scopes" => [],
-            "created_at" => "2024-01-01T00:00:00.000Z",
-            "updated_at" => "2024-01-01T00:00:00.000Z"
-          },
-          "user_id" => "user_id"
-        }
-      ],
-      "list_metadata" => %{"before" => "before", "after" => "after"}
+      "object" => "authorized_connect_application",
+      "id" => "id",
+      "granted_scopes" => ["granted_scopes"],
+      "oauth_resource" => "oauth_resource",
+      "application" => %{
+        "object" => "connect_application",
+        "id" => "id",
+        "client_id" => "client_id",
+        "description" => "description",
+        "name" => "name",
+        "scopes" => ["scopes"],
+        "created_at" => "2024-01-01T00:00:00.000Z",
+        "updated_at" => "2024-01-01T00:00:00.000Z"
+      },
+      "user_id" => "user_id"
     }
 
     serialized =
       data
-      |> WorkOS.OrganizationAuthorizedConnectApplicationList.from_map()
-      |> WorkOS.OrganizationAuthorizedConnectApplicationList.to_map()
+      |> WorkOS.OrganizationAuthorizedConnectApplicationListData.from_map()
+      |> WorkOS.OrganizationAuthorizedConnectApplicationListData.to_map()
 
     assert serialized == data
 
     assert serialized
-           |> WorkOS.OrganizationAuthorizedConnectApplicationList.from_map()
-           |> WorkOS.OrganizationAuthorizedConnectApplicationList.to_map() == serialized
-  end
-
-  test "OrganizationList round-trips between wire and struct" do
-    data = %{
-      "object" => "list",
-      "data" => [
-        %{
-          "object" => "organization",
-          "id" => "id",
-          "name" => "name",
-          "domains" => [%{}],
-          "metadata" => %{},
-          "external_id" => "external_id",
-          "stripe_customer_id" => "stripe_customer_id",
-          "created_at" => "2024-01-01T00:00:00.000Z",
-          "updated_at" => "2024-01-01T00:00:00.000Z",
-          "allow_profiles_outside_organization" => true
-        }
-      ],
-      "list_metadata" => %{"before" => "before", "after" => "after"}
-    }
-
-    serialized = data |> WorkOS.OrganizationList.from_map() |> WorkOS.OrganizationList.to_map()
-    assert serialized == data
-
-    assert serialized |> WorkOS.OrganizationList.from_map() |> WorkOS.OrganizationList.to_map() ==
-             serialized
+           |> WorkOS.OrganizationAuthorizedConnectApplicationListData.from_map()
+           |> WorkOS.OrganizationAuthorizedConnectApplicationListData.to_map() == serialized
   end
 end

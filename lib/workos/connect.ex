@@ -44,7 +44,7 @@ defmodule WorkOS.Connect do
     * `opts` — per-request options (see `WorkOS.Client.request/5`)
   """
   @spec list_applications(WorkOS.Client.t(), map(), keyword()) ::
-          {:ok, WorkOS.Page.t(WorkOS.ConnectApplicationList.t())} | {:error, WorkOS.Error.error()}
+          {:ok, WorkOS.Page.t(WorkOS.ConnectApplication.t())} | {:error, WorkOS.Error.error()}
   def list_applications(client, params \\ %{}, opts \\ []) do
     with {:ok, body} <- WorkOS.Client.request(client, :get, "/connect/applications", params, opts) do
       fetch_next = fn cursor ->
@@ -55,8 +55,7 @@ defmodule WorkOS.Connect do
         )
       end
 
-      {:ok,
-       WorkOS.Page.from_map(body, "data", &WorkOS.ConnectApplicationList.from_map/1, fetch_next)}
+      {:ok, WorkOS.Page.from_map(body, "data", &WorkOS.ConnectApplication.from_map/1, fetch_next)}
     end
   end
 

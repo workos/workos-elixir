@@ -20,74 +20,45 @@ defmodule WorkOS.GroupsRoundTripTest do
     assert serialized |> WorkOS.Group.from_map() |> WorkOS.Group.to_map() == serialized
   end
 
-  test "GroupList round-trips between wire and struct" do
+  test "UserOrganizationMembershipBaseListData round-trips between wire and struct" do
     data = %{
-      "object" => "list",
-      "data" => [
-        %{
-          "object" => "group",
-          "id" => "id",
-          "organization_id" => "organization_id",
-          "name" => "name",
-          "description" => "description",
-          "created_at" => "2024-01-01T00:00:00.000Z",
-          "updated_at" => "2024-01-01T00:00:00.000Z"
-        }
-      ],
-      "list_metadata" => %{"before" => "before", "after" => "after"}
-    }
-
-    serialized = data |> WorkOS.GroupList.from_map() |> WorkOS.GroupList.to_map()
-    assert serialized == data
-
-    assert serialized |> WorkOS.GroupList.from_map() |> WorkOS.GroupList.to_map() == serialized
-  end
-
-  test "UserOrganizationMembershipBaseList round-trips between wire and struct" do
-    data = %{
-      "object" => "list",
-      "data" => [
-        %{
-          "object" => "organization_membership",
-          "id" => "id",
-          "user_id" => "user_id",
-          "organization_id" => "organization_id",
-          "status" => "active",
-          "directory_managed" => true,
-          "organization_name" => "organization_name",
-          "custom_attributes" => %{},
-          "created_at" => "2024-01-01T00:00:00.000Z",
-          "updated_at" => "2024-01-01T00:00:00.000Z",
-          "user" => %{
-            "object" => "user",
-            "id" => "id",
-            "first_name" => "first_name",
-            "last_name" => "last_name",
-            "name" => "name",
-            "profile_picture_url" => "profile_picture_url",
-            "email" => "email",
-            "email_verified" => true,
-            "external_id" => "external_id",
-            "metadata" => %{},
-            "last_sign_in_at" => "2024-01-01T00:00:00.000Z",
-            "locale" => "locale",
-            "created_at" => "2024-01-01T00:00:00.000Z",
-            "updated_at" => "2024-01-01T00:00:00.000Z"
-          }
-        }
-      ],
-      "list_metadata" => %{"before" => "before", "after" => "after"}
+      "object" => "organization_membership",
+      "id" => "id",
+      "user_id" => "user_id",
+      "organization_id" => "organization_id",
+      "status" => "active",
+      "directory_managed" => true,
+      "organization_name" => "organization_name",
+      "custom_attributes" => %{},
+      "created_at" => "2024-01-01T00:00:00.000Z",
+      "updated_at" => "2024-01-01T00:00:00.000Z",
+      "user" => %{
+        "object" => "user",
+        "id" => "id",
+        "first_name" => "first_name",
+        "last_name" => "last_name",
+        "name" => "name",
+        "profile_picture_url" => "profile_picture_url",
+        "email" => "email",
+        "email_verified" => true,
+        "external_id" => "external_id",
+        "metadata" => %{},
+        "last_sign_in_at" => "2024-01-01T00:00:00.000Z",
+        "locale" => "locale",
+        "created_at" => "2024-01-01T00:00:00.000Z",
+        "updated_at" => "2024-01-01T00:00:00.000Z"
+      }
     }
 
     serialized =
       data
-      |> WorkOS.UserOrganizationMembershipBaseList.from_map()
-      |> WorkOS.UserOrganizationMembershipBaseList.to_map()
+      |> WorkOS.UserOrganizationMembershipBaseListData.from_map()
+      |> WorkOS.UserOrganizationMembershipBaseListData.to_map()
 
     assert serialized == data
 
     assert serialized
-           |> WorkOS.UserOrganizationMembershipBaseList.from_map()
-           |> WorkOS.UserOrganizationMembershipBaseList.to_map() == serialized
+           |> WorkOS.UserOrganizationMembershipBaseListData.from_map()
+           |> WorkOS.UserOrganizationMembershipBaseListData.to_map() == serialized
   end
 end

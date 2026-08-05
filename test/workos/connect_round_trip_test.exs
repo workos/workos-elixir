@@ -47,34 +47,6 @@ defmodule WorkOS.ConnectRoundTripTest do
            |> WorkOS.ConnectApplication.to_map() == serialized
   end
 
-  test "ConnectApplicationList round-trips between wire and struct" do
-    data = %{
-      "object" => "list",
-      "data" => [
-        %{
-          "object" => "connect_application",
-          "id" => "id",
-          "client_id" => "client_id",
-          "description" => "description",
-          "name" => "name",
-          "scopes" => ["scopes"],
-          "created_at" => "2024-01-01T00:00:00.000Z",
-          "updated_at" => "2024-01-01T00:00:00.000Z"
-        }
-      ],
-      "list_metadata" => %{"before" => "before", "after" => "after"}
-    }
-
-    serialized =
-      data |> WorkOS.ConnectApplicationList.from_map() |> WorkOS.ConnectApplicationList.to_map()
-
-    assert serialized == data
-
-    assert serialized
-           |> WorkOS.ConnectApplicationList.from_map()
-           |> WorkOS.ConnectApplicationList.to_map() == serialized
-  end
-
   test "ExternalAuthCompleteResponse round-trips between wire and struct" do
     data = %{"redirect_uri" => "redirect_uri"}
 

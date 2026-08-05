@@ -17,7 +17,7 @@ defmodule WorkOS.ApiKeys do
     * `opts` — per-request options (see `WorkOS.Client.request/5`)
   """
   @spec list_organization_api_keys(WorkOS.Client.t(), String.t(), map(), keyword()) ::
-          {:ok, WorkOS.Page.t(WorkOS.OrganizationApiKeyList.t())} | {:error, WorkOS.Error.error()}
+          {:ok, WorkOS.Page.t(WorkOS.OrganizationApiKey.t())} | {:error, WorkOS.Error.error()}
   def list_organization_api_keys(client, organization_id, params \\ %{}, opts \\ []) do
     with {:ok, body} <-
            WorkOS.Client.request(
@@ -36,8 +36,7 @@ defmodule WorkOS.ApiKeys do
         )
       end
 
-      {:ok,
-       WorkOS.Page.from_map(body, "data", &WorkOS.OrganizationApiKeyList.from_map/1, fetch_next)}
+      {:ok, WorkOS.Page.from_map(body, "data", &WorkOS.OrganizationApiKey.from_map/1, fetch_next)}
     end
   end
 

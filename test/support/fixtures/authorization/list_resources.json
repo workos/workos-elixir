@@ -1,25 +1,16 @@
 {
   "data": [
     {
-      "object": "list",
-      "data": [
-        {
-          "object": "authorization_resource",
-          "name": "name",
-          "description": "description",
-          "organization_id": "organization_id",
-          "parent_resource_id": "parent_resource_id",
-          "id": "id",
-          "external_id": "external_id",
-          "resource_type_slug": "resource_type_slug",
-          "created_at": "2024-01-01T00:00:00.000Z",
-          "updated_at": "2024-01-01T00:00:00.000Z"
-        }
-      ],
-      "list_metadata": {
-        "before": "before",
-        "after": "after"
-      }
+      "object": "authorization_resource",
+      "name": "name",
+      "description": "description",
+      "organization_id": "organization_id",
+      "parent_resource_id": "parent_resource_id",
+      "id": "id",
+      "external_id": "external_id",
+      "resource_type_slug": "resource_type_slug",
+      "created_at": "2024-01-01T00:00:00.000Z",
+      "updated_at": "2024-01-01T00:00:00.000Z"
     }
   ],
   "list_metadata": {

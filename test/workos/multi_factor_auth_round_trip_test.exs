@@ -142,34 +142,4 @@ defmodule WorkOS.MultiFactorAuthRoundTripTest do
            |> WorkOS.UserAuthenticationFactorEnrollResponse.from_map()
            |> WorkOS.UserAuthenticationFactorEnrollResponse.to_map() == serialized
   end
-
-  test "UserAuthenticationFactorList round-trips between wire and struct" do
-    data = %{
-      "object" => "list",
-      "data" => [
-        %{
-          "object" => "authentication_factor",
-          "id" => "id",
-          "type" => "generic_otp",
-          "user_id" => "user_id",
-          "sms" => %{"phone_number" => "phone_number"},
-          "totp" => %{"issuer" => "issuer", "user" => "user"},
-          "created_at" => "2024-01-01T00:00:00.000Z",
-          "updated_at" => "2024-01-01T00:00:00.000Z"
-        }
-      ],
-      "list_metadata" => %{"before" => "before", "after" => "after"}
-    }
-
-    serialized =
-      data
-      |> WorkOS.UserAuthenticationFactorList.from_map()
-      |> WorkOS.UserAuthenticationFactorList.to_map()
-
-    assert serialized == data
-
-    assert serialized
-           |> WorkOS.UserAuthenticationFactorList.from_map()
-           |> WorkOS.UserAuthenticationFactorList.to_map() == serialized
-  end
 end

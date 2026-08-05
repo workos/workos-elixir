@@ -16,7 +16,7 @@ defmodule WorkOS.FeatureFlags do
     * `opts` — per-request options (see `WorkOS.Client.request/5`)
   """
   @spec list_feature_flags(WorkOS.Client.t(), map(), keyword()) ::
-          {:ok, WorkOS.Page.t(WorkOS.FlagList.t())} | {:error, WorkOS.Error.error()}
+          {:ok, WorkOS.Page.t(WorkOS.Flag.t())} | {:error, WorkOS.Error.error()}
   def list_feature_flags(client, params \\ %{}, opts \\ []) do
     with {:ok, body} <- WorkOS.Client.request(client, :get, "/feature-flags", params, opts) do
       fetch_next = fn cursor ->
@@ -27,7 +27,7 @@ defmodule WorkOS.FeatureFlags do
         )
       end
 
-      {:ok, WorkOS.Page.from_map(body, "data", &WorkOS.FlagList.from_map/1, fetch_next)}
+      {:ok, WorkOS.Page.from_map(body, "data", &WorkOS.Flag.from_map/1, fetch_next)}
     end
   end
 
@@ -164,7 +164,7 @@ defmodule WorkOS.FeatureFlags do
     * `opts` — per-request options (see `WorkOS.Client.request/5`)
   """
   @spec list_organization_feature_flags(WorkOS.Client.t(), String.t(), map(), keyword()) ::
-          {:ok, WorkOS.Page.t(WorkOS.FlagList.t())} | {:error, WorkOS.Error.error()}
+          {:ok, WorkOS.Page.t(WorkOS.Flag.t())} | {:error, WorkOS.Error.error()}
   def list_organization_feature_flags(client, organization_id, params \\ %{}, opts \\ []) do
     with {:ok, body} <-
            WorkOS.Client.request(
@@ -183,7 +183,7 @@ defmodule WorkOS.FeatureFlags do
         )
       end
 
-      {:ok, WorkOS.Page.from_map(body, "data", &WorkOS.FlagList.from_map/1, fetch_next)}
+      {:ok, WorkOS.Page.from_map(body, "data", &WorkOS.Flag.from_map/1, fetch_next)}
     end
   end
 
@@ -199,7 +199,7 @@ defmodule WorkOS.FeatureFlags do
     * `opts` — per-request options (see `WorkOS.Client.request/5`)
   """
   @spec list_user_feature_flags(WorkOS.Client.t(), String.t(), map(), keyword()) ::
-          {:ok, WorkOS.Page.t(WorkOS.FlagList.t())} | {:error, WorkOS.Error.error()}
+          {:ok, WorkOS.Page.t(WorkOS.Flag.t())} | {:error, WorkOS.Error.error()}
   def list_user_feature_flags(client, user_id, params \\ %{}, opts \\ []) do
     with {:ok, body} <-
            WorkOS.Client.request(
@@ -218,7 +218,7 @@ defmodule WorkOS.FeatureFlags do
         )
       end
 
-      {:ok, WorkOS.Page.from_map(body, "data", &WorkOS.FlagList.from_map/1, fetch_next)}
+      {:ok, WorkOS.Page.from_map(body, "data", &WorkOS.Flag.from_map/1, fetch_next)}
     end
   end
 end

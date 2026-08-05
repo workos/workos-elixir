@@ -74,8 +74,10 @@ defmodule WorkOS.MultiFactorAuthTest do
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("multi_factor_auth/list_user_auth_factors"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.UserAuthenticationFactorList{object: "list"} | _]}} =
-             WorkOS.MultiFactorAuth.list_user_auth_factors(client, "test_userland_user_id")
+    assert {:ok,
+            %WorkOS.Page{
+              data: [%WorkOS.AuthenticationFactor{object: "authentication_factor", id: "id"} | _]
+            }} = WorkOS.MultiFactorAuth.list_user_auth_factors(client, "test_userland_user_id")
   end
 
   test "list_user_auth_factors handles an empty page", %{client: client} do

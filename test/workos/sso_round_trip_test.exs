@@ -23,33 +23,6 @@ defmodule WorkOS.SSORoundTripTest do
     assert serialized |> WorkOS.Connection.from_map() |> WorkOS.Connection.to_map() == serialized
   end
 
-  test "ConnectionList round-trips between wire and struct" do
-    data = %{
-      "object" => "list",
-      "data" => [
-        %{
-          "object" => "connection",
-          "id" => "id",
-          "organization_id" => "organization_id",
-          "connection_type" => "Pending",
-          "name" => "name",
-          "state" => "requires_type",
-          "status" => "linked",
-          "domains" => [%{}],
-          "created_at" => "2024-01-01T00:00:00.000Z",
-          "updated_at" => "2024-01-01T00:00:00.000Z"
-        }
-      ],
-      "list_metadata" => %{"before" => "before", "after" => "after"}
-    }
-
-    serialized = data |> WorkOS.ConnectionList.from_map() |> WorkOS.ConnectionList.to_map()
-    assert serialized == data
-
-    assert serialized |> WorkOS.ConnectionList.from_map() |> WorkOS.ConnectionList.to_map() ==
-             serialized
-  end
-
   test "Profile round-trips between wire and struct" do
     data = %{
       "object" => "profile",

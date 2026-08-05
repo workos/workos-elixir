@@ -20,8 +20,10 @@ defmodule WorkOS.PipesTest do
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("pipes/list_data_integrations"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.DataIntegrationList{object: "list"} | _]}} =
-             WorkOS.Pipes.list_data_integrations(client)
+    assert {:ok,
+            %WorkOS.Page{
+              data: [%WorkOS.DataIntegration{object: "data_integration", id: "id"} | _]
+            }} = WorkOS.Pipes.list_data_integrations(client)
   end
 
   test "list_data_integrations handles an empty page", %{client: client} do

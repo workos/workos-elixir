@@ -20,7 +20,7 @@ defmodule WorkOS.SSOTest do
       Req.Test.json(conn, WorkOS.TestFixtures.fixture("sso/list_connections"))
     end)
 
-    assert {:ok, %WorkOS.Page{data: [%WorkOS.ConnectionList{object: "list"} | _]}} =
+    assert {:ok, %WorkOS.Page{data: [%WorkOS.Connection{object: "connection", id: "id"} | _]}} =
              WorkOS.SSO.list_connections(client)
   end
 

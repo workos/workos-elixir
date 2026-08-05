@@ -46,40 +46,34 @@ defmodule WorkOS.UserManagementRoundTripTest do
            |> WorkOS.AuthenticateResponse.to_map() == serialized
   end
 
-  test "AuthorizedConnectApplicationList round-trips between wire and struct" do
+  test "AuthorizedConnectApplicationListData round-trips between wire and struct" do
     data = %{
-      "object" => "list",
-      "data" => [
-        %{
-          "object" => "authorized_connect_application",
-          "id" => "id",
-          "granted_scopes" => ["granted_scopes"],
-          "oauth_resource" => "oauth_resource",
-          "application" => %{
-            "object" => "connect_application",
-            "id" => "id",
-            "client_id" => "client_id",
-            "description" => "description",
-            "name" => "name",
-            "scopes" => [],
-            "created_at" => "2024-01-01T00:00:00.000Z",
-            "updated_at" => "2024-01-01T00:00:00.000Z"
-          }
-        }
-      ],
-      "list_metadata" => %{"before" => "before", "after" => "after"}
+      "object" => "authorized_connect_application",
+      "id" => "id",
+      "granted_scopes" => ["granted_scopes"],
+      "oauth_resource" => "oauth_resource",
+      "application" => %{
+        "object" => "connect_application",
+        "id" => "id",
+        "client_id" => "client_id",
+        "description" => "description",
+        "name" => "name",
+        "scopes" => ["scopes"],
+        "created_at" => "2024-01-01T00:00:00.000Z",
+        "updated_at" => "2024-01-01T00:00:00.000Z"
+      }
     }
 
     serialized =
       data
-      |> WorkOS.AuthorizedConnectApplicationList.from_map()
-      |> WorkOS.AuthorizedConnectApplicationList.to_map()
+      |> WorkOS.AuthorizedConnectApplicationListData.from_map()
+      |> WorkOS.AuthorizedConnectApplicationListData.to_map()
 
     assert serialized == data
 
     assert serialized
-           |> WorkOS.AuthorizedConnectApplicationList.from_map()
-           |> WorkOS.AuthorizedConnectApplicationList.to_map() == serialized
+           |> WorkOS.AuthorizedConnectApplicationListData.from_map()
+           |> WorkOS.AuthorizedConnectApplicationListData.to_map() == serialized
   end
 
   test "CORSOriginResponse round-trips between wire and struct" do
@@ -470,31 +464,24 @@ defmodule WorkOS.UserManagementRoundTripTest do
     assert serialized |> WorkOS.User.from_map() |> WorkOS.User.to_map() == serialized
   end
 
-  test "UserApiKeyList round-trips between wire and struct" do
+  test "UserApiKey round-trips between wire and struct" do
     data = %{
-      "object" => "list",
-      "data" => [
-        %{
-          "object" => "api_key",
-          "id" => "id",
-          "owner" => %{"type" => "user", "id" => "id", "organization_id" => "organization_id"},
-          "name" => "name",
-          "obfuscated_value" => "obfuscated_value",
-          "last_used_at" => "2024-01-01T00:00:00.000Z",
-          "expires_at" => "2024-01-01T00:00:00.000Z",
-          "permissions" => ["permissions"],
-          "created_at" => "2024-01-01T00:00:00.000Z",
-          "updated_at" => "2024-01-01T00:00:00.000Z"
-        }
-      ],
-      "list_metadata" => %{"before" => "before", "after" => "after"}
+      "object" => "api_key",
+      "id" => "id",
+      "owner" => %{"type" => "user", "id" => "id", "organization_id" => "organization_id"},
+      "name" => "name",
+      "obfuscated_value" => "obfuscated_value",
+      "last_used_at" => "2024-01-01T00:00:00.000Z",
+      "expires_at" => "2024-01-01T00:00:00.000Z",
+      "permissions" => ["permissions"],
+      "created_at" => "2024-01-01T00:00:00.000Z",
+      "updated_at" => "2024-01-01T00:00:00.000Z"
     }
 
-    serialized = data |> WorkOS.UserApiKeyList.from_map() |> WorkOS.UserApiKeyList.to_map()
+    serialized = data |> WorkOS.UserApiKey.from_map() |> WorkOS.UserApiKey.to_map()
     assert serialized == data
 
-    assert serialized |> WorkOS.UserApiKeyList.from_map() |> WorkOS.UserApiKeyList.to_map() ==
-             serialized
+    assert serialized |> WorkOS.UserApiKey.from_map() |> WorkOS.UserApiKey.to_map() == serialized
   end
 
   test "UserApiKeyWithValue round-trips between wire and struct" do
@@ -587,68 +574,6 @@ defmodule WorkOS.UserManagementRoundTripTest do
     assert serialized == data
 
     assert serialized |> WorkOS.UserInvite.from_map() |> WorkOS.UserInvite.to_map() == serialized
-  end
-
-  test "UserInviteList round-trips between wire and struct" do
-    data = %{
-      "object" => "list",
-      "data" => [
-        %{
-          "object" => "invitation",
-          "id" => "id",
-          "email" => "email",
-          "state" => "pending",
-          "accepted_at" => "2024-01-01T00:00:00.000Z",
-          "revoked_at" => "2024-01-01T00:00:00.000Z",
-          "expires_at" => "2024-01-01T00:00:00.000Z",
-          "organization_id" => "organization_id",
-          "inviter_user_id" => "inviter_user_id",
-          "accepted_user_id" => "accepted_user_id",
-          "role_slug" => "role_slug",
-          "created_at" => "2024-01-01T00:00:00.000Z",
-          "updated_at" => "2024-01-01T00:00:00.000Z",
-          "token" => "token",
-          "accept_invitation_url" => "accept_invitation_url"
-        }
-      ],
-      "list_metadata" => %{"before" => "before", "after" => "after"}
-    }
-
-    serialized = data |> WorkOS.UserInviteList.from_map() |> WorkOS.UserInviteList.to_map()
-    assert serialized == data
-
-    assert serialized |> WorkOS.UserInviteList.from_map() |> WorkOS.UserInviteList.to_map() ==
-             serialized
-  end
-
-  test "UserList round-trips between wire and struct" do
-    data = %{
-      "object" => "list",
-      "data" => [
-        %{
-          "object" => "user",
-          "id" => "id",
-          "first_name" => "first_name",
-          "last_name" => "last_name",
-          "name" => "name",
-          "profile_picture_url" => "profile_picture_url",
-          "email" => "email",
-          "email_verified" => true,
-          "external_id" => "external_id",
-          "metadata" => %{},
-          "last_sign_in_at" => "2024-01-01T00:00:00.000Z",
-          "locale" => "locale",
-          "created_at" => "2024-01-01T00:00:00.000Z",
-          "updated_at" => "2024-01-01T00:00:00.000Z"
-        }
-      ],
-      "list_metadata" => %{"before" => "before", "after" => "after"}
-    }
-
-    serialized = data |> WorkOS.UserList.from_map() |> WorkOS.UserList.to_map()
-    assert serialized == data
-
-    assert serialized |> WorkOS.UserList.from_map() |> WorkOS.UserList.to_map() == serialized
   end
 
   test "UserSessionsListItem round-trips between wire and struct" do

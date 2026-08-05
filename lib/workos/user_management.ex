@@ -622,7 +622,7 @@ defmodule WorkOS.UserManagement do
     * `opts` — per-request options (see `WorkOS.Client.request/5`)
   """
   @spec list_users(WorkOS.Client.t(), map(), keyword()) ::
-          {:ok, WorkOS.Page.t(WorkOS.UserList.t())} | {:error, WorkOS.Error.error()}
+          {:ok, WorkOS.Page.t(WorkOS.User.t())} | {:error, WorkOS.Error.error()}
   def list_users(client, params \\ %{}, opts \\ []) do
     with {:ok, body} <-
            WorkOS.Client.request(client, :get, "/user_management/users", params, opts) do
@@ -634,7 +634,7 @@ defmodule WorkOS.UserManagement do
         )
       end
 
-      {:ok, WorkOS.Page.from_map(body, "data", &WorkOS.UserList.from_map/1, fetch_next)}
+      {:ok, WorkOS.Page.from_map(body, "data", &WorkOS.User.from_map/1, fetch_next)}
     end
   end
 
@@ -930,7 +930,7 @@ defmodule WorkOS.UserManagement do
     * `opts` — per-request options (see `WorkOS.Client.request/5`)
   """
   @spec list_invitations(WorkOS.Client.t(), map(), keyword()) ::
-          {:ok, WorkOS.Page.t(WorkOS.UserInviteList.t())} | {:error, WorkOS.Error.error()}
+          {:ok, WorkOS.Page.t(WorkOS.UserInvite.t())} | {:error, WorkOS.Error.error()}
   def list_invitations(client, params \\ %{}, opts \\ []) do
     with {:ok, body} <-
            WorkOS.Client.request(client, :get, "/user_management/invitations", params, opts) do
@@ -942,7 +942,7 @@ defmodule WorkOS.UserManagement do
         )
       end
 
-      {:ok, WorkOS.Page.from_map(body, "data", &WorkOS.UserInviteList.from_map/1, fetch_next)}
+      {:ok, WorkOS.Page.from_map(body, "data", &WorkOS.UserInvite.from_map/1, fetch_next)}
     end
   end
 
@@ -1254,7 +1254,7 @@ defmodule WorkOS.UserManagement do
     * `opts` — per-request options (see `WorkOS.Client.request/5`)
   """
   @spec list_user_authorized_applications(WorkOS.Client.t(), String.t(), map(), keyword()) ::
-          {:ok, WorkOS.Page.t(WorkOS.AuthorizedConnectApplicationList.t())}
+          {:ok, WorkOS.Page.t(WorkOS.AuthorizedConnectApplicationListData.t())}
           | {:error, WorkOS.Error.error()}
   def list_user_authorized_applications(client, user_id, params \\ %{}, opts \\ []) do
     with {:ok, body} <-
@@ -1278,7 +1278,7 @@ defmodule WorkOS.UserManagement do
        WorkOS.Page.from_map(
          body,
          "data",
-         &WorkOS.AuthorizedConnectApplicationList.from_map/1,
+         &WorkOS.AuthorizedConnectApplicationListData.from_map/1,
          fetch_next
        )}
     end
@@ -1319,7 +1319,7 @@ defmodule WorkOS.UserManagement do
     * `opts` — per-request options (see `WorkOS.Client.request/5`)
   """
   @spec list_user_api_keys(WorkOS.Client.t(), String.t(), map(), keyword()) ::
-          {:ok, WorkOS.Page.t(WorkOS.UserApiKeyList.t())} | {:error, WorkOS.Error.error()}
+          {:ok, WorkOS.Page.t(WorkOS.UserApiKey.t())} | {:error, WorkOS.Error.error()}
   def list_user_api_keys(client, user_id, params \\ %{}, opts \\ []) do
     with {:ok, body} <-
            WorkOS.Client.request(
@@ -1338,7 +1338,7 @@ defmodule WorkOS.UserManagement do
         )
       end
 
-      {:ok, WorkOS.Page.from_map(body, "data", &WorkOS.UserApiKeyList.from_map/1, fetch_next)}
+      {:ok, WorkOS.Page.from_map(body, "data", &WorkOS.UserApiKey.from_map/1, fetch_next)}
     end
   end
 

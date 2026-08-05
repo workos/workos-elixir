@@ -1,20 +1,12 @@
 {
   "data": [
     {
-      "object": "list",
-      "data": [
-        {
-          "object": "event",
-          "id": "id",
-          "event": "event",
-          "data": {},
-          "created_at": "2024-01-01T00:00:00.000Z",
-          "context": {}
-        }
-      ],
-      "list_metadata": {
-        "after": "after"
-      }
+      "object": "event",
+      "id": "id",
+      "event": "event",
+      "data": {},
+      "created_at": "2024-01-01T00:00:00.000Z",
+      "context": {}
     }
   ],
   "list_metadata": {
