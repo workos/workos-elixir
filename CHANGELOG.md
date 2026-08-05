@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.1](https://github.com/workos/workos-elixir/compare/v3.0.0...v3.0.1) (2026-08-05)
+
+
+### Bug Fixes
+
+* Cast paginated list items to their element type ([#113](https://github.com/workos/workos-elixir/issues/113)) ([44d886b](https://github.com/workos/workos-elixir/commit/44d886b1c65cb78efe8f428b8b2e8401ac7660f2))
+
 ## [3.0.0](https://github.com/workos/workos-elixir/compare/v2.0.0...v3.0.0) (2026-07-29)
 
 
