@@ -6,7 +6,7 @@ defmodule WorkOS.ActionsTest do
   alias WorkOS.Webhooks.Signature
 
   @secret "actions_secret_123"
-  @payload ~s({"id":"event_123","event":"authentication.action","data":{"user":{"id":"user_123"}},"created_at":"2026-01-01T00:00:00.000Z"})
+  @payload ~s({"object":"authentication_action_context","id":"action_01","user":{"object":"user","id":"user_01","email":"test@example.com"},"ip_address":"1.2.3.4","device_fingerprint":"fp_123","issuer":"https://auth.example.com"})
 
   defp signed_header(payload, now_ms) do
     timestamp = Integer.to_string(now_ms)
@@ -36,14 +36,33 @@ defmodule WorkOS.ActionsTest do
     assert :ok = WorkOS.Actions.verify_header(@payload, header, @secret, tolerance: 3600)
   end
 
-  test "construct_action verifies and deserializes the request" do
+  test "construct_action verifies and deserializes an authentication request" do
     header = signed_header(@payload, System.system_time(:millisecond))
 
-    assert {:ok, %WorkOS.EventSchema{} = action} =
+    assert {:ok, %WorkOS.ActionContext{} = action} =
              WorkOS.Actions.construct_action(@payload, header, @secret)
 
-    assert action.event == "authentication.action"
-    assert action.data["user"]["id"] == "user_123"
+    assert action.object == "authentication_action_context"
+    assert action.id == "action_01"
+    assert action.user.id == "user_01"
+    assert action.user.email == "test@example.com"
+    assert action.ip_address == "1.2.3.4"
+    assert action.issuer == "https://auth.example.com"
+  end
+
+  test "construct_action deserializes a user_registration request" do
+    payload =
+      ~s({"object":"user_registration_action_context","id":"action_02","user_data":{"object":"user_data","email":"new@example.com","first_name":"New","last_name":"User","name":null},"ip_address":"5.6.7.8","device_fingerprint":"fp_456"})
+
+    header = signed_header(payload, System.system_time(:millisecond))
+
+    assert {:ok, %WorkOS.ActionContext{} = action} =
+             WorkOS.Actions.construct_action(payload, header, @secret)
+
+    assert action.object == "user_registration_action_context"
+    assert action.user_data.email == "new@example.com"
+    assert action.user_data.first_name == "New"
+    assert action.user == nil
   end
 
   test "sign_response produces a payload the verifier accepts" do

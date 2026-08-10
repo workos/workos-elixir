@@ -46,15 +46,15 @@ defmodule WorkOS.Actions do
   end
 
   @doc """
-  Verifies and deserializes an Actions request into a `WorkOS.EventSchema`.
+  Verifies and deserializes an Actions request into a `WorkOS.ActionContext`.
   """
   @spec construct_action(String.t(), String.t(), String.t(), [option()]) ::
-          {:ok, WorkOS.EventSchema.t()}
+          {:ok, WorkOS.ActionContext.t()}
           | {:error, WorkOS.Webhooks.Signature.verification_error()}
   def construct_action(payload, sig_header, secret, opts \\ []) do
     with :ok <- verify_header(payload, sig_header, secret, opts) do
       case JSON.decode(payload) do
-        {:ok, decoded} when is_map(decoded) -> {:ok, WorkOS.EventSchema.from_map(decoded)}
+        {:ok, decoded} when is_map(decoded) -> {:ok, WorkOS.ActionContext.from_map(decoded)}
         _ -> {:error, :invalid_json}
       end
     end
