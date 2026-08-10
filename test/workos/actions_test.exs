@@ -65,30 +65,41 @@ defmodule WorkOS.ActionsTest do
     assert action.user == nil
   end
 
-  test "sign_response produces a payload the verifier accepts" do
-    assert {:ok, %{payload: payload, sig: sig}} =
+  test "sign_response produces a workos-node-compatible Allow response" do
+    now_ms = 1_700_000_000_000
+
+    assert {:ok, %{object: object, payload: payload, signature: signature}} =
              WorkOS.Actions.sign_response(
                %{type: "authentication", verdict: "Allow"},
-               @secret
+               @secret,
+               now_ms: now_ms
              )
 
-    decoded = payload |> Base.decode64!() |> JSON.decode!()
-    assert decoded["type"] == "authentication"
-    assert decoded["verdict"] == "Allow"
+    assert object == "authentication_action_response"
+    assert payload == %{"timestamp" => now_ms, "verdict" => "Allow"}
 
-    # The signature is over the base64 payload, in the standard header format.
-    assert :ok = WorkOS.Actions.verify_header(payload, sig, @secret)
+    expected =
+      Signature.compute_signature(@secret, Integer.to_string(now_ms), JSON.encode!(payload))
+
+    assert signature == expected
   end
 
   test "sign_response carries a deny error message" do
-    assert {:ok, %{payload: payload}} =
+    now_ms = 1_700_000_000_000
+
+    assert {:ok, %{object: object, payload: payload, signature: signature}} =
              WorkOS.Actions.sign_response(
                %{type: "user_registration", verdict: "Deny", error_message: "Blocked"},
-               @secret
+               @secret,
+               now_ms: now_ms
              )
 
-    decoded = payload |> Base.decode64!() |> JSON.decode!()
-    assert decoded["verdict"] == "Deny"
-    assert decoded["error_message"] == "Blocked"
+    assert object == "user_registration_action_response"
+    assert payload == %{"timestamp" => now_ms, "verdict" => "Deny", "error_message" => "Blocked"}
+
+    expected =
+      Signature.compute_signature(@secret, Integer.to_string(now_ms), JSON.encode!(payload))
+
+    assert signature == expected
   end
 end

@@ -14,12 +14,18 @@ defmodule WorkOS.Actions do
           secret
         )
 
-  `response.payload` and `response.sig` form the action webhook response body.
+  `response.object`, `response.payload`, and `response.signature` form the
+  action webhook response body (`{object, payload, signature}`).
   """
 
   alias WorkOS.Webhooks.Signature
 
   @default_tolerance_seconds 30
+
+  @action_type_to_response_object %{
+    "authentication" => "authentication_action_response",
+    "user_registration" => "user_registration_action_response"
+  }
 
   @typedoc """
   Options for verification and signing.
@@ -72,23 +78,27 @@ defmodule WorkOS.Actions do
   Returns `{:ok, %{payload: base64_payload, sig: "t=<ms>,v1=<hex>"}}`.
   """
   @spec sign_response(map(), String.t(), [option()]) ::
-          {:ok, %{payload: String.t(), sig: String.t()}}
+          {:ok, %{object: String.t(), payload: map(), signature: String.t()}}
   def sign_response(response, secret, opts \\ []) do
     now_ms = Keyword.get_lazy(opts, :now_ms, fn -> System.system_time(:millisecond) end)
 
+    type = to_string(Map.get(response, :type) || Map.get(response, "type"))
+    verdict = to_string(Map.get(response, :verdict) || Map.get(response, "verdict"))
+    error_message = Map.get(response, :error_message) || Map.get(response, "error_message")
+
+    object = Map.fetch!(@action_type_to_response_object, type)
+
     payload =
-      %{
-        "type" => to_string(Map.get(response, :type) || Map.get(response, "type")),
-        "verdict" => to_string(Map.get(response, :verdict) || Map.get(response, "verdict")),
-        "error_message" =>
-          to_string(Map.get(response, :error_message) || Map.get(response, "error_message") || "")
-      }
-      |> JSON.encode!()
-      |> Base.encode64()
+      if verdict == "Deny" and is_binary(error_message) and error_message != "" do
+        %{"timestamp" => now_ms, "verdict" => verdict, "error_message" => error_message}
+      else
+        %{"timestamp" => now_ms, "verdict" => verdict}
+      end
 
     timestamp = Integer.to_string(now_ms)
-    signature = Signature.compute_signature(secret, timestamp, payload)
+    payload_json = JSON.encode!(payload)
+    signature = Signature.compute_signature(secret, timestamp, payload_json)
 
-    {:ok, %{payload: payload, sig: "t=#{timestamp},v1=#{signature}"}}
+    {:ok, %{object: object, payload: payload, signature: signature}}
   end
 end
