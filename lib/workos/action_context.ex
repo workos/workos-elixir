@@ -18,6 +18,7 @@ defmodule WorkOS.ActionContext do
   defstruct [
     :object,
     :id,
+    :authentication_method,
     :ip_address,
     :user_agent,
     :device_fingerprint,
@@ -32,6 +33,7 @@ defmodule WorkOS.ActionContext do
   @type t :: %__MODULE__{
           object: String.t() | nil,
           id: String.t() | nil,
+          authentication_method: WorkOS.AuthenticateResponseAuthenticationMethod.t() | nil,
           ip_address: String.t() | nil,
           user_agent: String.t() | nil,
           device_fingerprint: String.t() | nil,
@@ -49,6 +51,8 @@ defmodule WorkOS.ActionContext do
     %__MODULE__{
       object: map["object"],
       id: map["id"],
+      authentication_method:
+        WorkOS.AuthenticateResponseAuthenticationMethod.cast(map["authentication_method"]),
       ip_address: map["ip_address"],
       user_agent: map["user_agent"],
       device_fingerprint: map["device_fingerprint"],
