@@ -11,8 +11,9 @@ defmodule WorkOS.ActionContext do
       `organization_membership`, `issuer`
     * `"user_registration_action_context"` — `user_data`, `invitation`
 
-  `ip_address`, `user_agent`, and `device_fingerprint` are shared by both
-  context types; fields specific to the other variant are `nil`.
+  `authentication_method`, `ip_address`, `user_agent`, and
+  `device_fingerprint` are shared by both context types; fields specific to
+  the other variant are `nil`.
   """
 
   defstruct [
@@ -52,7 +53,10 @@ defmodule WorkOS.ActionContext do
       object: map["object"],
       id: map["id"],
       authentication_method:
-        WorkOS.AuthenticateResponseAuthenticationMethod.cast(map["authentication_method"]),
+        WorkOS.Cast.enum(
+          map["authentication_method"],
+          &WorkOS.AuthenticateResponseAuthenticationMethod.cast/1
+        ),
       ip_address: map["ip_address"],
       user_agent: map["user_agent"],
       device_fingerprint: map["device_fingerprint"],

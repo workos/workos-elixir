@@ -67,6 +67,32 @@ defmodule WorkOS.ActionsTest do
     assert action.user == nil
   end
 
+  test "construct_action leaves authentication_method nil when the field is absent" do
+    payload =
+      ~s({"object":"authentication_action_context","id":"action_03","user":{"object":"user","id":"user_03","email":"absent@example.com"},"ip_address":"9.10.11.12"})
+
+    header = signed_header(payload, System.system_time(:millisecond))
+
+    assert {:ok, %WorkOS.ActionContext{} = action} =
+             WorkOS.Actions.construct_action(payload, header, @secret)
+
+    assert action.id == "action_03"
+    assert action.authentication_method == nil
+  end
+
+  test "construct_action passes an unknown authentication_method through unchanged" do
+    payload =
+      ~s({"object":"authentication_action_context","id":"action_04","authentication_method":"FutureMethod","user":{"object":"user","id":"user_04","email":"future@example.com"},"ip_address":"13.14.15.16"})
+
+    header = signed_header(payload, System.system_time(:millisecond))
+
+    assert {:ok, %WorkOS.ActionContext{} = action} =
+             WorkOS.Actions.construct_action(payload, header, @secret)
+
+    assert action.id == "action_04"
+    assert action.authentication_method == "FutureMethod"
+  end
+
   test "sign_response produces a workos-node-compatible Allow response" do
     now_ms = 1_700_000_000_000
 
