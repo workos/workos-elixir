@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.1.0](https://github.com/workos/workos-elixir/compare/v3.0.1...v3.1.0) (2026-08-13)
+
+
+### Features
+
+* expose authentication method on action contexts ([#117](https://github.com/workos/workos-elixir/issues/117)) ([62c075b](https://github.com/workos/workos-elixir/commit/62c075bda16248dadc5c2249b7e226d962f4a2ee))
+
+
+### Bug Fixes
+
+* parse AuthKit Actions request into flat ActionContext ([#115](https://github.com/workos/workos-elixir/issues/115)) ([bd0a7a0](https://github.com/workos/workos-elixir/commit/bd0a7a06d1f0cc31a60e7fbf353f2941e397b1ae))
+
 ## [3.0.1](https://github.com/workos/workos-elixir/compare/v3.0.0...v3.0.1) (2026-08-05)
 
 
