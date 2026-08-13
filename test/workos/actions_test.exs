@@ -6,7 +6,7 @@ defmodule WorkOS.ActionsTest do
   alias WorkOS.Webhooks.Signature
 
   @secret "actions_secret_123"
-  @payload ~s({"object":"authentication_action_context","id":"action_01","user":{"object":"user","id":"user_01","email":"test@example.com"},"ip_address":"1.2.3.4","device_fingerprint":"fp_123","issuer":"https://auth.example.com"})
+  @payload ~s({"object":"authentication_action_context","id":"action_01","authentication_method":"Password","user":{"object":"user","id":"user_01","email":"test@example.com"},"ip_address":"1.2.3.4","device_fingerprint":"fp_123","issuer":"https://auth.example.com"})
 
   defp signed_header(payload, now_ms) do
     timestamp = Integer.to_string(now_ms)
@@ -44,6 +44,7 @@ defmodule WorkOS.ActionsTest do
 
     assert action.object == "authentication_action_context"
     assert action.id == "action_01"
+    assert action.authentication_method == :password
     assert action.user.id == "user_01"
     assert action.user.email == "test@example.com"
     assert action.ip_address == "1.2.3.4"
@@ -52,7 +53,7 @@ defmodule WorkOS.ActionsTest do
 
   test "construct_action deserializes a user_registration request" do
     payload =
-      ~s({"object":"user_registration_action_context","id":"action_02","user_data":{"object":"user_data","email":"new@example.com","first_name":"New","last_name":"User","name":null},"ip_address":"5.6.7.8","device_fingerprint":"fp_456"})
+      ~s({"object":"user_registration_action_context","id":"action_02","authentication_method":"GoogleOAuth","user_data":{"object":"user_data","email":"new@example.com","first_name":"New","last_name":"User","name":null},"ip_address":"5.6.7.8","device_fingerprint":"fp_456"})
 
     header = signed_header(payload, System.system_time(:millisecond))
 
@@ -60,9 +61,36 @@ defmodule WorkOS.ActionsTest do
              WorkOS.Actions.construct_action(payload, header, @secret)
 
     assert action.object == "user_registration_action_context"
+    assert action.authentication_method == :google_oauth
     assert action.user_data.email == "new@example.com"
     assert action.user_data.first_name == "New"
     assert action.user == nil
+  end
+
+  test "construct_action leaves authentication_method nil when the field is absent" do
+    payload =
+      ~s({"object":"authentication_action_context","id":"action_03","user":{"object":"user","id":"user_03","email":"absent@example.com"},"ip_address":"9.10.11.12"})
+
+    header = signed_header(payload, System.system_time(:millisecond))
+
+    assert {:ok, %WorkOS.ActionContext{} = action} =
+             WorkOS.Actions.construct_action(payload, header, @secret)
+
+    assert action.id == "action_03"
+    assert action.authentication_method == nil
+  end
+
+  test "construct_action passes an unknown authentication_method through unchanged" do
+    payload =
+      ~s({"object":"authentication_action_context","id":"action_04","authentication_method":"FutureMethod","user":{"object":"user","id":"user_04","email":"future@example.com"},"ip_address":"13.14.15.16"})
+
+    header = signed_header(payload, System.system_time(:millisecond))
+
+    assert {:ok, %WorkOS.ActionContext{} = action} =
+             WorkOS.Actions.construct_action(payload, header, @secret)
+
+    assert action.id == "action_04"
+    assert action.authentication_method == "FutureMethod"
   end
 
   test "sign_response produces a workos-node-compatible Allow response" do
