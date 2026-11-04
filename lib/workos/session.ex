@@ -392,31 +392,54 @@ defmodule WorkOS.Session do
       claims["sub_profile"] in [nil, "user"] and is_nil(claims["sub_type"])
   end
 
-  # JWKS are cached per URL. An unknown `kid` triggers a refetch (to pick up
-  # rotated keys), at most once per @jwks_refetch_interval_s.
+  # JWKS are cached per URL. A missing or unknown `kid` triggers a refetch (to
+  # pick up rotated keys), at most once per @jwks_refetch_interval_s; a failed
+  # fetch is re-raised until then. Fetches for a URL are serialized so
+  # concurrent callers share one request.
   defp signing_key(client, kid) do
     url = WorkOS.JWKS.url(client)
+
+    case cached_signing_key(url, kid) do
+      :miss ->
+        :global.trans(
+          {{__MODULE__, :jwks, url}, self()},
+          fn -> fetch_unless_cached(client, url, kid) end,
+          [node()]
+        )
+
+      result ->
+        result
+    end
+  end
+
+  defp fetch_unless_cached(client, url, kid) do
+    case cached_signing_key(url, kid) do
+      :miss -> fetch_signing_key(client, url, kid)
+      result -> result
+    end
+  end
+
+  defp cached_signing_key(url, kid) do
     now = System.monotonic_time(:second)
+    cache = :persistent_term.get({__MODULE__, :jwks, url}, nil)
 
-    case :persistent_term.get({__MODULE__, :jwks, url}, nil) do
-      {fetched_at, keys} when now - fetched_at < @jwks_cache_ttl_s ->
-        case keys do
-          %{^kid => jwk} ->
-            {:ok, jwk}
+    case cache do
+      %{fetched_at: fetched_at, keys: %{^kid => jwk}} when now - fetched_at < @jwks_cache_ttl_s ->
+        {:ok, jwk}
 
-          _ when now - fetched_at >= @jwks_refetch_interval_s ->
-            fetch_signing_key(client, url, kid)
-
-          _ ->
-            {:error, :invalid_jwt}
-        end
+      %{attempted_at: attempted_at, error: error}
+      when now - attempted_at < @jwks_refetch_interval_s ->
+        if error, do: raise(error), else: {:error, :invalid_jwt}
 
       _ ->
-        fetch_signing_key(client, url, kid)
+        :miss
     end
   end
 
   defp fetch_signing_key(client, url, kid) do
+    cache_key = {__MODULE__, :jwks, url}
+    now = System.monotonic_time(:second)
+
     case WorkOS.JWKS.fetch(client) do
       {:ok, %WorkOS.JwksResponse{keys: keys}} ->
         jwks =
@@ -424,7 +447,12 @@ defmodule WorkOS.Session do
             {key.kid, key |> WorkOS.JwksResponseKeys.to_map() |> JOSE.JWK.from_map()}
           end)
 
-        :persistent_term.put({__MODULE__, :jwks, url}, {System.monotonic_time(:second), jwks})
+        :persistent_term.put(cache_key, %{
+          fetched_at: now,
+          keys: jwks,
+          attempted_at: now,
+          error: nil
+        })
 
         case jwks do
           %{^kid => jwk} -> {:ok, jwk}
@@ -432,6 +460,8 @@ defmodule WorkOS.Session do
         end
 
       {:error, error} ->
+        cache = :persistent_term.get(cache_key, %{fetched_at: now, keys: %{}})
+        :persistent_term.put(cache_key, Map.merge(cache, %{attempted_at: now, error: error}))
         raise error
     end
   end

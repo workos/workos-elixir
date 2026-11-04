@@ -248,6 +248,44 @@ defmodule WorkOS.SessionTest do
 
       assert_raise WorkOS.ApiError, fn -> authenticate(sealed_session()) end
     end
+
+    test "re-raises a failed JWKS fetch without refetching during the cooldown" do
+      test_pid = self()
+
+      Req.Test.stub(WorkOS.Client, fn conn ->
+        send(test_pid, :jwks_fetched)
+        conn |> Plug.Conn.put_status(404) |> Req.Test.json(%{"message" => "Not found"})
+      end)
+
+      session = WorkOS.Session.new(build_client(), sealed_session(), @cookie_password)
+
+      assert_raise WorkOS.ApiError, fn -> WorkOS.Session.authenticate(session) end
+      assert_raise WorkOS.ApiError, fn -> WorkOS.Session.authenticate(session) end
+
+      assert_received :jwks_fetched
+      refute_received :jwks_fetched
+    end
+
+    test "concurrent authentications share one JWKS fetch" do
+      test_pid = self()
+
+      Req.Test.stub(WorkOS.Client, fn conn ->
+        send(test_pid, :jwks_fetched)
+        Process.sleep(50)
+        Req.Test.json(conn, %{"keys" => [public_jwk(@signing_key)]})
+      end)
+
+      session = WorkOS.Session.new(build_client(), sealed_session(), @cookie_password)
+
+      results =
+        1..5
+        |> Enum.map(fn _ -> Task.async(fn -> WorkOS.Session.authenticate(session) end) end)
+        |> Task.await_many()
+
+      assert Enum.all?(results, & &1.authenticated)
+      assert_received :jwks_fetched
+      refute_received :jwks_fetched
+    end
   end
 
   describe "authenticate without a client (deprecated)" do
