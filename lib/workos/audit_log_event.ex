@@ -7,20 +7,20 @@ defmodule WorkOS.AuditLogEvent do
 
   defstruct [
     :action,
-    :occurred_at,
     :actor,
     :targets,
     :context,
+    :occurred_at,
     :metadata,
     :version
   ]
 
   @type t :: %__MODULE__{
           action: String.t(),
-          occurred_at: String.t(),
           actor: WorkOS.AuditLogEventActor.t(),
           targets: [WorkOS.AuditLogEventTarget.t()],
           context: WorkOS.AuditLogEventContext.t(),
+          occurred_at: String.t() | nil,
           metadata: %{optional(String.t()) => String.t() | number() | boolean()} | nil,
           version: integer() | nil
         }
@@ -30,10 +30,10 @@ defmodule WorkOS.AuditLogEvent do
   def from_map(map) when is_map(map) do
     %__MODULE__{
       action: map["action"],
-      occurred_at: map["occurred_at"],
       actor: WorkOS.Cast.nested(map["actor"], &WorkOS.AuditLogEventActor.from_map/1),
       targets: WorkOS.Cast.list(map["targets"], &WorkOS.AuditLogEventTarget.from_map/1),
       context: WorkOS.Cast.nested(map["context"], &WorkOS.AuditLogEventContext.from_map/1),
+      occurred_at: map["occurred_at"],
       metadata: map["metadata"],
       version: map["version"]
     }
@@ -44,13 +44,13 @@ defmodule WorkOS.AuditLogEvent do
   def to_map(%__MODULE__{} = struct) do
     WorkOS.Cast.drop_nils(%{
       "action" => struct.action,
-      "occurred_at" => struct.occurred_at,
       "actor" => WorkOS.Cast.dump_struct(struct.actor, &WorkOS.AuditLogEventActor.to_map/1),
       "targets" =>
         WorkOS.Cast.list(struct.targets, fn item ->
           WorkOS.Cast.dump_struct(item, &WorkOS.AuditLogEventTarget.to_map/1)
         end),
       "context" => WorkOS.Cast.dump_struct(struct.context, &WorkOS.AuditLogEventContext.to_map/1),
+      "occurred_at" => struct.occurred_at,
       "metadata" => struct.metadata,
       "version" => struct.version
     })
