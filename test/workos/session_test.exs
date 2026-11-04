@@ -395,4 +395,43 @@ defmodule WorkOS.SessionTest do
     assert result.authenticated
     assert %WorkOS.User{id: "user_123"} = result.user
   end
+
+  describe "authenticate with jwt_issuer" do
+    @issuer "https://api.workos.com/user_management/client_123"
+
+    defp authenticate_with_issuer(jwt_issuer, claim_overrides) do
+      stub_api(fn conn -> Plug.Conn.send_resp(conn, 500, "") end)
+
+      WorkOS.Client.new(
+        api_key: "sk_test_key",
+        client_id: "client_#{System.unique_integer([:positive])}",
+        jwt_issuer: jwt_issuer,
+        req_options: [plug: {Req.Test, WorkOS.Client}]
+      )
+      |> WorkOS.Session.new(sealed_session(claim_overrides), @cookie_password)
+      |> WorkOS.Session.authenticate()
+    end
+
+    test "accepts a token whose iss matches" do
+      assert %{authenticated: true} = authenticate_with_issuer(@issuer, %{"iss" => @issuer})
+    end
+
+    test "accepts any issuer in a list" do
+      assert %{authenticated: true} =
+               authenticate_with_issuer(["https://auth.example.com", @issuer], %{"iss" => @issuer})
+    end
+
+    test "rejects a token with a different or missing iss" do
+      assert %{authenticated: false, reason: "invalid_jwt"} =
+               authenticate_with_issuer(@issuer, %{"iss" => "https://other.example.com"})
+
+      assert %{authenticated: false, reason: "invalid_jwt"} =
+               authenticate_with_issuer(@issuer, %{})
+    end
+
+    test "splits comma-separated issuers" do
+      client = WorkOS.Client.new(api_key: "sk_test_key", jwt_issuer: " a , b,")
+      assert client.jwt_issuer == ["a", "b"]
+    end
+  end
 end

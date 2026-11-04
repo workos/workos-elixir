@@ -109,8 +109,9 @@ defmodule WorkOS.Session do
 
   When the session has a client, the access token's RS256 signature is
   verified against the client's JWKS (fetched with `WorkOS.JWKS.fetch/1` and
-  cached), and the token must be a user access token. Tokens that fail either
-  check return reason `"invalid_jwt"`. Raises if the JWKS cannot be fetched.
+  cached), and the token must be a user access token. When the client sets
+  `:jwt_issuer`, the token's `iss` claim must match one of the accepted
+  issuers. Tokens that fail any check return reason `"invalid_jwt"`. Raises if the JWKS cannot be fetched.
 
   Without a client (deprecated), the claims are read without verifying the
   signature.
@@ -361,9 +362,14 @@ defmodule WorkOS.Session do
     with {:ok, kid} <- token_kid(token),
          {:ok, jwk} <- signing_key(client, kid),
          {:ok, claims} <- verify_signature(jwk, token) do
-      if user_access_token?(claims), do: {:ok, claims}, else: {:error, :invalid_jwt}
+      if user_access_token?(claims) and accepted_issuer?(client, claims),
+        do: {:ok, claims},
+        else: {:error, :invalid_jwt}
     end
   end
+
+  defp accepted_issuer?(%WorkOS.Client{jwt_issuer: nil}, _claims), do: true
+  defp accepted_issuer?(%WorkOS.Client{jwt_issuer: issuers}, claims), do: claims["iss"] in issuers
 
   defp token_kid(token) do
     with {:ok, header} <- JSON.decode(JOSE.JWS.peek_protected(token)),
