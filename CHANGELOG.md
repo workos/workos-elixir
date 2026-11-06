@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.1](https://github.com/workos/workos-elixir/compare/v3.1.0...v3.1.1) (2026-11-06)
+
+
+### Bug Fixes
+
+* **session:** Verify access token signatures when authenticating with a client ([#120](https://github.com/workos/workos-elixir/issues/120)) ([7956969](https://github.com/workos/workos-elixir/commit/795696973c4ec5372e15c5ca15ad739a359ac30d))
+
 ## [3.1.0](https://github.com/workos/workos-elixir/compare/v3.0.1...v3.1.0) (2026-08-13)
 
 
