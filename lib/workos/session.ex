@@ -16,9 +16,12 @@ defmodule WorkOS.Session do
       {:ok, refreshed} = WorkOS.Session.refresh(session)
       refreshed.sealed_session
 
+  With a client, `authenticate/1` verifies the access token's signature
+  against the client's JWKS and checks that it is a user access token.
+
   Convenience entry points that skip building the struct:
 
-    * `authenticate/2` — one-shot authentication from a sealed value
+    * `authenticate/2` — deprecated; one-shot authentication without a client
     * `refresh_session/4` — one-shot refresh from a sealed value
     * `seal_session_from_auth_response/2` — seal an `WorkOS.AuthenticateResponse`
     * `seal_data/2` / `unseal_data/2` — raw seal/unseal for arbitrary data
@@ -30,6 +33,8 @@ defmodule WorkOS.Session do
   @default_base_url "https://api.workos.com"
   @nonce_size 12
   @tag_size 16
+  @jwks_cache_ttl_s 300
+  @jwks_refetch_interval_s 30
 
   defstruct [:client, :sealed_session, :cookie_password]
 
@@ -89,7 +94,9 @@ defmodule WorkOS.Session do
   @doc """
   Builds a session helper from a sealed cookie value.
 
-  `client` may be `nil` for authenticate-only usage; `refresh/2` requires it.
+  `client` is required by `refresh/2` and for `authenticate/1` to verify the
+  access token. Passing `nil` is deprecated: `authenticate/1` then reads the
+  access token's claims without verifying its signature.
   """
   @spec new(WorkOS.Client.t() | nil, String.t() | nil, String.t()) :: t()
   def new(client, sealed_session, cookie_password) do
@@ -100,8 +107,14 @@ defmodule WorkOS.Session do
   Validates the sealed session: unseals the cookie, checks the access token,
   and extracts its JWT claims. See `t:auth_result/0`.
 
-  `authenticate/2` is the one-shot variant taking the sealed value and cookie
-  password directly.
+  When the session has a client, the access token's RS256 signature is
+  verified against the client's JWKS (fetched with `WorkOS.JWKS.fetch/1` and
+  cached), and the token must be a user access token. When the client sets
+  `:jwt_issuer`, the token's `iss` claim must match one of the accepted
+  issuers. Tokens that fail any check return reason `"invalid_jwt"`. Raises if the JWKS cannot be fetched.
+
+  Without a client (deprecated), the claims are read without verifying the
+  signature.
   """
   @spec authenticate(t()) :: auth_result()
   def authenticate(%__MODULE__{sealed_session: sealed}) when sealed in [nil, ""] do
@@ -110,7 +123,7 @@ defmodule WorkOS.Session do
 
   def authenticate(%__MODULE__{} = session) do
     with {:ok, data} <- unseal_session(session.sealed_session, session.cookie_password),
-         {:ok, claims} <- claims_for(data) do
+         {:ok, claims} <- claims_for(session.client, data) do
       base = %{
         session_id: claims["sid"],
         organization_id: claims["org_id"],
@@ -134,8 +147,11 @@ defmodule WorkOS.Session do
 
   @doc """
   One-shot session authentication from a sealed value and cookie password.
-  No client is required.
+
+  Deprecated: this does not verify the access token's signature. Use
+  `new/3` with a client, then `authenticate/1`.
   """
+  @deprecated "Use WorkOS.Session.new/3 with a client, then WorkOS.Session.authenticate/1"
   @spec authenticate(String.t() | nil, String.t()) :: auth_result()
   def authenticate(sealed_session, cookie_password) do
     nil |> new(sealed_session, cookie_password) |> authenticate()
@@ -337,11 +353,126 @@ defmodule WorkOS.Session do
     end
   end
 
-  defp claims_for(%{access_token: token}) when token in [nil, ""], do: {:error, :invalid_jwt}
-  defp claims_for(%{access_token: token}), do: decode_jwt_claims(token)
+  defp claims_for(_client, %{access_token: token}) when token in [nil, ""],
+    do: {:error, :invalid_jwt}
 
-  # Decodes the payload of a JWT without verifying its signature — the token
-  # came out of a cookie we sealed, so it is trusted after unsealing.
+  defp claims_for(nil, %{access_token: token}), do: decode_jwt_claims(token)
+
+  defp claims_for(client, %{access_token: token}) do
+    with {:ok, kid} <- token_kid(token),
+         {:ok, jwk} <- signing_key(client, kid),
+         {:ok, claims} <- verify_signature(jwk, token) do
+      if user_access_token?(claims) and accepted_issuer?(client, claims),
+        do: {:ok, claims},
+        else: {:error, :invalid_jwt}
+    end
+  end
+
+  defp accepted_issuer?(%WorkOS.Client{jwt_issuer: nil}, _claims), do: true
+  defp accepted_issuer?(%WorkOS.Client{jwt_issuer: issuers}, claims), do: claims["iss"] in issuers
+
+  defp token_kid(token) do
+    with {:ok, header} <- JSON.decode(JOSE.JWS.peek_protected(token)),
+         %{"alg" => "RS256", "kid" => kid} when is_binary(kid) <- header do
+      {:ok, kid}
+    else
+      _ -> {:error, :invalid_jwt}
+    end
+  rescue
+    _ -> {:error, :invalid_jwt}
+  end
+
+  defp verify_signature(jwk, token) do
+    case JOSE.JWT.verify_strict(jwk, ["RS256"], token) do
+      {true, %JOSE.JWT{fields: claims}, _jws} -> {:ok, claims}
+      _ -> {:error, :invalid_jwt}
+    end
+  rescue
+    _ -> {:error, :invalid_jwt}
+  end
+
+  # Other token types signed by the same environment key (agent and widget
+  # tokens) carry `sub_profile` or `sub_type`, or lack `sid`/`auth_time`.
+  defp user_access_token?(claims) do
+    is_binary(claims["sid"]) and is_number(claims["auth_time"]) and
+      claims["sub_profile"] in [nil, "user"] and is_nil(claims["sub_type"])
+  end
+
+  # JWKS are cached per URL. A missing or unknown `kid` triggers a refetch (to
+  # pick up rotated keys), at most once per @jwks_refetch_interval_s; a failed
+  # fetch is re-raised until then. Fetches for a URL are serialized so
+  # concurrent callers share one request.
+  defp signing_key(client, kid) do
+    url = WorkOS.JWKS.url(client)
+
+    case cached_signing_key(url, kid) do
+      :miss ->
+        :global.trans(
+          {{__MODULE__, :jwks, url}, self()},
+          fn -> fetch_unless_cached(client, url, kid) end,
+          [node()]
+        )
+
+      result ->
+        result
+    end
+  end
+
+  defp fetch_unless_cached(client, url, kid) do
+    case cached_signing_key(url, kid) do
+      :miss -> fetch_signing_key(client, url, kid)
+      result -> result
+    end
+  end
+
+  defp cached_signing_key(url, kid) do
+    now = System.monotonic_time(:second)
+    cache = :persistent_term.get({__MODULE__, :jwks, url}, nil)
+
+    case cache do
+      %{fetched_at: fetched_at, keys: %{^kid => jwk}} when now - fetched_at < @jwks_cache_ttl_s ->
+        {:ok, jwk}
+
+      %{attempted_at: attempted_at, error: error}
+      when now - attempted_at < @jwks_refetch_interval_s ->
+        if error, do: raise(error), else: {:error, :invalid_jwt}
+
+      _ ->
+        :miss
+    end
+  end
+
+  defp fetch_signing_key(client, url, kid) do
+    cache_key = {__MODULE__, :jwks, url}
+    now = System.monotonic_time(:second)
+
+    case WorkOS.JWKS.fetch(client) do
+      {:ok, %WorkOS.JwksResponse{keys: keys}} ->
+        jwks =
+          Map.new(List.wrap(keys), fn key ->
+            {key.kid, key |> WorkOS.JwksResponseKeys.to_map() |> JOSE.JWK.from_map()}
+          end)
+
+        :persistent_term.put(cache_key, %{
+          fetched_at: now,
+          keys: jwks,
+          attempted_at: now,
+          error: nil
+        })
+
+        case jwks do
+          %{^kid => jwk} -> {:ok, jwk}
+          _ -> {:error, :invalid_jwt}
+        end
+
+      {:error, error} ->
+        cache = :persistent_term.get(cache_key, %{fetched_at: now, keys: %{}})
+        :persistent_term.put(cache_key, Map.merge(cache, %{attempted_at: now, error: error}))
+        raise error
+    end
+  end
+
+  # Decodes the payload of a JWT without verifying its signature.
   defp decode_jwt_claims(token) do
     with [_header, payload, _signature] <- String.split(token, "."),
          {:ok, decoded} <- Base.url_decode64(payload, padding: false),

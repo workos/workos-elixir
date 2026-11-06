@@ -60,6 +60,7 @@ defmodule WorkOS.MixProject do
   defp deps do
     [
       {:req, "~> 0.5"},
+      {:jose, "~> 1.11"},
       {:plug, "~> 1.16", only: :test},
       {:ex_doc, "~> 0.34", only: :dev, runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},

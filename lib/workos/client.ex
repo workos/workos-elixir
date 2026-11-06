@@ -16,6 +16,10 @@ defmodule WorkOS.Client do
     * `:client_id` — client ID used by authentication flows and URL builders
       (falls back to the `WORKOS_CLIENT_ID` environment variable)
     * `:base_url` — override the API base URL
+    * `:jwt_issuer` — accepted `iss` claim (a string or a list of strings) for
+      session access tokens verified by `WorkOS.Session.authenticate/1`; falls
+      back to the comma-separated `WORKOS_ISSUER` environment variable. When
+      unset, the issuer is not checked.
     * `:timeout` — receive timeout in milliseconds
     * `:max_retries` — maximum retry attempts for retryable failures
     * `:req_options` — extra `Req` options merged into every request
@@ -24,12 +28,13 @@ defmodule WorkOS.Client do
 
   import Bitwise
 
-  defstruct [:api_key, :client_id, :base_url, :timeout, :max_retries, :req_options]
+  defstruct [:api_key, :client_id, :base_url, :jwt_issuer, :timeout, :max_retries, :req_options]
 
   @type t :: %__MODULE__{
           api_key: String.t(),
           client_id: String.t() | nil,
           base_url: String.t(),
+          jwt_issuer: [String.t()] | nil,
           timeout: pos_integer(),
           max_retries: non_neg_integer(),
           req_options: keyword()
@@ -37,6 +42,7 @@ defmodule WorkOS.Client do
 
   @api_key_env "WORKOS_API_KEY"
   @client_id_env "WORKOS_CLIENT_ID"
+  @issuer_env "WORKOS_ISSUER"
   @default_base_url "https://api.workos.com"
   @default_timeout_ms 60_000
   @default_max_retries 3
@@ -64,6 +70,7 @@ defmodule WorkOS.Client do
       api_key: api_key,
       client_id: opts[:client_id] || System.get_env(@client_id_env),
       base_url: String.trim_trailing(opts[:base_url] || @default_base_url, "/"),
+      jwt_issuer: normalize_issuers(Keyword.get_lazy(opts, :jwt_issuer, &issuer_from_env/0)),
       timeout: opts[:timeout] || @default_timeout_ms,
       max_retries: opts[:max_retries] || @default_max_retries,
       req_options: opts[:req_options] || []
@@ -192,6 +199,22 @@ defmodule WorkOS.Client do
     req_options
     |> Keyword.put(:body, JSON.encode_to_iodata!(body))
     |> Keyword.update!(:headers, &[{"content-type", "application/json"} | &1])
+  end
+
+  defp issuer_from_env, do: System.get_env(@issuer_env)
+
+  defp normalize_issuers(nil), do: nil
+
+  defp normalize_issuers(issuers) do
+    issuers
+    |> List.wrap()
+    |> Enum.flat_map(&String.split(&1, ","))
+    |> Enum.map(&String.trim/1)
+    |> Enum.reject(&(&1 == ""))
+    |> case do
+      [] -> nil
+      list -> list
+    end
   end
 
   defp normalize_base_url(nil), do: nil
