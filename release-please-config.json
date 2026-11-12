@@ -4,7 +4,12 @@
     ".": {
       "release-type": "elixir",
       "bump-minor-pre-major": true,
-      "bump-patch-for-minor-pre-major": true
+      "bump-patch-for-minor-pre-major": true,
+      "exclude-paths": [
+        "workload_identity_github_actions",
+        "workload_identity_gcp",
+        "workload_identity_aws"
+      ]
     },
     "workload_identity_github_actions": {
       "release-type": "elixir",
