@@ -77,7 +77,7 @@ defmodule WorkOS.WorkloadIdentity.GCPTest do
     assert message =~ "could not be reached"
   end
 
-  test "the request never goes through a proxy the application gave :httpc" do
+  test "WIF-GCP-03 the request never goes through a proxy the application gave :httpc" do
     # The default :httpc profile is shared with the application. Give it a
     # proxy: a listener that reports any connection and closes it.
     {:ok, proxy} = :gen_tcp.listen(0, [:binary, active: false, ip: {127, 0, 0, 1}])
