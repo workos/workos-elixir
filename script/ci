@@ -27,4 +27,29 @@ mix dialyzer
 echo "==> Running tests..."
 mix test
 
+# Each workload identity provider package is its own Mix project with its own
+# release, so each has to pass on its own. Dialyzer is not run on them: they
+# are one small module each and carry no dialyxir dependency.
+for package in workload_identity_*/; do
+  package="${package%/}"
+  (
+    cd "$package"
+
+    echo "==> ${package}: fetching dependencies..."
+    mix deps.get
+
+    echo "==> ${package}: compiling (warnings as errors)..."
+    mix compile --warnings-as-errors
+
+    echo "==> ${package}: checking formatting..."
+    mix format --check-formatted
+
+    echo "==> ${package}: credo (lint)..."
+    mix credo --strict -a
+
+    echo "==> ${package}: running tests..."
+    mix test
+  )
+done
+
 echo "==> All checks passed."

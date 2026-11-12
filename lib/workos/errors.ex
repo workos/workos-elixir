@@ -5,7 +5,8 @@ defmodule WorkOS.Error do
   Union of the error values SDK functions can return in `{:error, error}` tuples.
   """
 
-  @type error :: WorkOS.ApiError.t() | WorkOS.TransportError.t()
+  @type error ::
+          WorkOS.ApiError.t() | WorkOS.TransportError.t() | WorkOS.WorkloadIdentityError.t()
 end
 
 defmodule WorkOS.ApiError do

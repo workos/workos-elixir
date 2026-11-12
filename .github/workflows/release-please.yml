@@ -24,10 +24,18 @@ jobs:
   # (changelog enrichment, release notes) can fail it.
   release-please:
     runs-on: ubuntu-latest
+    # `release_created` and `tag_name` describe the SDK (the root package)
+    # only. Each provider package has its own release PR, tag
+    # (`<package>-vX.Y.Z`) and outputs, keyed by its path. Publishing does not
+    # read these outputs: release.yml publishes on the `release: published`
+    # event and picks the package from the tag.
     outputs:
-      pr: ${{ steps.release.outputs.pr }}
+      prs: ${{ steps.release.outputs.prs }}
       release_created: ${{ steps.release.outputs.release_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}
+      github_actions_release_created: ${{ steps.release.outputs['workload_identity_github_actions--release_created'] }}
+      gcp_release_created: ${{ steps.release.outputs['workload_identity_gcp--release_created'] }}
+      aws_release_created: ${{ steps.release.outputs['workload_identity_aws--release_created'] }}
     steps:
       - name: Generate token
         id: generate-token
@@ -48,10 +56,32 @@ jobs:
   # release or any publish that depends on release-please.
   enrich-release-pr:
     needs: release-please
-    if: needs.release-please.outputs.pr
+    if: needs.release-please.outputs.prs
     runs-on: ubuntu-latest
     steps:
+      # Release PRs are separate per package, so `prs` can also hold a
+      # provider package's PR. Only the SDK's own PR is enriched: the
+      # .changelog-pending fragments and the root CHANGELOG.md belong to it.
+      # The provider PRs are the ones that name a workload_identity package
+      # in their branch or title.
+      - name: Select the SDK release PR
+        id: sdk-pr
+        env:
+          PRS_JSON: ${{ needs.release-please.outputs.prs }}
+        run: |
+          set -euo pipefail
+          pr="$(jq -c '[.[] | select((.headBranchName + " " + .title) | test("workload_identity") | not)][0] // empty' <<<"$PRS_JSON")"
+          if [ -z "$pr" ]; then
+            echo "No SDK release PR in this run; nothing to enrich."
+            exit 0
+          fi
+          {
+            echo "branch=$(jq -r '.headBranchName' <<<"$pr")"
+            echo "title=$(jq -r '.title' <<<"$pr")"
+          } >> "$GITHUB_OUTPUT"
+
       - name: Generate token
+        if: steps.sdk-pr.outputs.branch
         id: generate-token
         uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         with:
@@ -61,9 +91,10 @@ jobs:
           permission-pull-requests: write
 
       - name: Checkout release PR branch
+        if: steps.sdk-pr.outputs.branch
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
-          ref: ${{ fromJSON(needs.release-please.outputs.pr).headBranchName }}
+          ref: ${{ steps.sdk-pr.outputs.branch }}
           token: ${{ steps.generate-token.outputs.token }}
 
       # Inline pending changelog fragments under the version heading
@@ -74,8 +105,9 @@ jobs:
       # release-please wrote. Fragments are deleted in the same commit.
       # Idempotent: if no fragments exist, skip silently.
       - name: Inline rich changelog fragments
+        if: steps.sdk-pr.outputs.branch
         env:
-          PR_JSON: ${{ needs.release-please.outputs.pr }}
+          PR_TITLE: ${{ steps.sdk-pr.outputs.title }}
         run: |
           set -euo pipefail
           shopt -s nullglob
@@ -85,7 +117,7 @@ jobs:
             exit 0
           fi
 
-          VERSION=$(echo "$PR_JSON" | jq -r '.title' | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+          VERSION=$(echo "$PR_TITLE" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
           export VERSION
 
           python3 - <<'PY'
@@ -157,7 +189,9 @@ jobs:
   # After release-please tags the release and creates the GitHub Release,
   # replace its body with the rich section from CHANGELOG.md (release-please
   # writes only its terse default rendering). Cosmetic-only: never fails the
-  # release if the section can't be found.
+  # release if the section can't be found. SDK releases only: the plain
+  # `release_created` and `tag_name` outputs are the root package's, and
+  # provider releases keep release-please's default notes.
   update-release-notes:
     needs: release-please
     if: needs.release-please.outputs.release_created == 'true'

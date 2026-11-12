@@ -1,9 +1,34 @@
 {
+  "separate-pull-requests": true,
   "packages": {
     ".": {
       "release-type": "elixir",
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": true
+    },
+    "workload_identity_github_actions": {
+      "release-type": "elixir",
+      "initial-version": "0.1.0",
+      "component": "workos_workload_identity_github_actions",
+      "package-name": "workos_workload_identity_github_actions",
+      "include-component-in-tag": true,
+      "changelog-path": "CHANGELOG.md"
+    },
+    "workload_identity_gcp": {
+      "release-type": "elixir",
+      "initial-version": "0.1.0",
+      "component": "workos_workload_identity_gcp",
+      "package-name": "workos_workload_identity_gcp",
+      "include-component-in-tag": true,
+      "changelog-path": "CHANGELOG.md"
+    },
+    "workload_identity_aws": {
+      "release-type": "elixir",
+      "initial-version": "0.1.0",
+      "component": "workos_workload_identity_aws",
+      "package-name": "workos_workload_identity_aws",
+      "include-component-in-tag": true,
+      "changelog-path": "CHANGELOG.md"
     }
   },
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json"

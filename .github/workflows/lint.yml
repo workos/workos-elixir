@@ -75,6 +75,68 @@ jobs:
     - name: Run Credo
       run: mix credo --strict -a
 
+  # The same checks for each workload identity provider package. Each is its
+  # own Mix project, so the root checks above do not reach them.
+  lint-providers:
+    name: Format & Credo (${{ matrix.package }})
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ matrix.package }}
+    strategy:
+      fail-fast: false
+      matrix:
+        package:
+          - workload_identity_github_actions
+          - workload_identity_gcp
+          - workload_identity_aws
+    steps:
+    - name: Check out this repository
+      uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+    - name: Set up Elixir and Erlang/OTP
+      uses: erlef/setup-beam@54075bcc5e249e4758d363f27d099f55d843f124 # v1.24.1
+      id: beam
+      with:
+        elixir-version: ${{ env.ELIXIR_VERSION }}
+        otp-version: ${{ env.OTP_VERSION }}
+
+    - name: Restore dependencies and build cache
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      id: mix-cache
+      with:
+        path: |
+          ${{ matrix.package }}/deps
+          ${{ matrix.package }}/_build
+        key: ${{ runner.os }}-otp-${{ steps.beam.outputs.otp-version }}-elixir-${{ steps.beam.outputs.elixir-version }}-mix-${{ env.MIX_ENV }}-${{ matrix.package }}-${{ hashFiles(format('{0}/mix.lock', matrix.package)) }}
+
+    - name: Install and compile dependencies
+      if: steps.mix-cache.outputs.cache-hit != 'true'
+      run: |
+        mix deps.get
+        mix deps.compile
+
+    - name: Save dependencies and build cache
+      uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      if: steps.mix-cache.outputs.cache-hit != 'true'
+      with:
+        path: |
+          ${{ matrix.package }}/deps
+          ${{ matrix.package }}/_build
+        key: ${{ steps.mix-cache.outputs.cache-primary-key }}
+
+    - name: Check for unused dependencies
+      run: mix deps.unlock --check-unused
+
+    - name: Check formatting
+      run: mix format --check-formatted
+
+    - name: Compile with warnings as errors
+      run: mix compile --warnings-as-errors
+
+    - name: Run Credo
+      run: mix credo --strict -a
+
   dialyzer:
     name: Dialyzer
     runs-on: ubuntu-latest

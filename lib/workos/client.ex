@@ -10,9 +10,19 @@ defmodule WorkOS.Client do
 
   The API key falls back to the `WORKOS_API_KEY` environment variable.
 
+  To authenticate with workload identity federation instead of an API key,
+  start a `WorkOS.WorkloadIdentity.Credentials` process and pass it in:
+
+      client = WorkOS.Client.new(credentials: credentials)
+
   ## Options for `new/1`
 
-    * `:api_key` — API key (required unless the env var is set)
+    * `:api_key` — API key (required unless the env var is set or
+      `:credentials` is given)
+    * `:credentials` — the pid or registered name of a started
+      `WorkOS.WorkloadIdentity.Credentials` process. Passing both `:api_key`
+      and `:credentials` raises `WorkOS.ConfigurationError`. With
+      `:credentials`, `WORKOS_API_KEY` is ignored and never sent.
     * `:client_id` — client ID used by authentication flows and URL builders
       (falls back to the `WORKOS_CLIENT_ID` environment variable)
     * `:base_url` — override the API base URL
@@ -28,10 +38,20 @@ defmodule WorkOS.Client do
 
   import Bitwise
 
-  defstruct [:api_key, :client_id, :base_url, :jwt_issuer, :timeout, :max_retries, :req_options]
+  defstruct [
+    :api_key,
+    :credentials,
+    :client_id,
+    :base_url,
+    :jwt_issuer,
+    :timeout,
+    :max_retries,
+    :req_options
+  ]
 
   @type t :: %__MODULE__{
-          api_key: String.t(),
+          api_key: String.t() | nil,
+          credentials: WorkOS.Credentials.t() | nil,
           client_id: String.t() | nil,
           base_url: String.t(),
           jwt_issuer: [String.t()] | nil,
@@ -54,20 +74,21 @@ defmodule WorkOS.Client do
   @idempotency_header "idempotency-key"
   @request_id_header "x-request-id"
 
+  # Req private keys. Private data survives Req's own retries and redirects,
+  # so the one 401 recovery a logical request is allowed cannot be reset.
+  @snapshot_key :workos_credential_snapshot
+  @recovery_used_key :workos_credential_recovery_used
+
   @doc """
   Builds a new client. See the module documentation for options.
   """
   @spec new(keyword()) :: t()
   def new(opts \\ []) do
-    api_key = opts[:api_key] || System.get_env(@api_key_env)
-
-    if !(is_binary(api_key) and api_key != "") do
-      raise WorkOS.ConfigurationError,
-        message: "Missing API key. Pass `api_key:` to WorkOS.Client.new/1 or set WORKOS_API_KEY."
-    end
+    {api_key, credentials} = authentication(opts)
 
     %__MODULE__{
       api_key: api_key,
+      credentials: credentials,
       client_id: opts[:client_id] || System.get_env(@client_id_env),
       base_url: String.trim_trailing(opts[:base_url] || @default_base_url, "/"),
       jwt_issuer: normalize_issuers(Keyword.get_lazy(opts, :jwt_issuer, &issuer_from_env/0)),
@@ -106,15 +127,16 @@ defmodule WorkOS.Client do
     body = if query_method?, do: nil, else: params
 
     max_retries = opts[:max_retries] || client.max_retries
+    timeout = opts[:timeout] || client.timeout
+    credentials = credentials(client)
 
     req_options =
       [
         method: method,
         url: path,
         base_url: normalize_base_url(opts[:base_url]) || client.base_url,
-        auth: {:bearer, client.api_key},
         headers: build_headers(client, method, opts, max_retries),
-        receive_timeout: opts[:timeout] || client.timeout,
+        receive_timeout: timeout,
         retry: &retryable?/2,
         retry_delay: &retry_delay/1,
         max_retries: max_retries,
@@ -123,16 +145,174 @@ defmodule WorkOS.Client do
       |> put_query(query)
       |> put_body(body)
 
-    req = Req.new(req_options) |> Req.merge(client.req_options)
+    req =
+      req_options
+      |> Req.new()
+      |> Req.merge(client.req_options)
+      |> Req.Request.append_request_steps(
+        workos_credentials: &put_credentials(&1, credentials, timeout)
+      )
+      |> Req.Request.prepend_response_steps(
+        workos_credential_recovery: &recover_credentials(&1, credentials)
+      )
 
     req |> Req.request() |> handle_response()
   end
+
+  # -- credentials ------------------------------------------------------------
+  #
+  # Every client authenticates through `WorkOS.Credentials`. A static API key
+  # is the trivial implementation; a client built by hand with only a key
+  # (as `WorkOS.PublicClient` does) gets it too.
+
+  defp credentials(%__MODULE__{credentials: nil, api_key: api_key}),
+    do: {WorkOS.Credentials.StaticKey, api_key}
+
+  defp credentials(%__MODULE__{credentials: credentials}), do: credentials
+
+  # Authentication precedence, in order: an explicit key together with
+  # explicit credentials is an error; explicit credentials are used and
+  # WORKOS_API_KEY is ignored; an explicit key is used; only when neither is
+  # passed does WORKOS_API_KEY apply.
+  defp authentication(opts) do
+    case {opts[:api_key], opts[:credentials]} do
+      {api_key, nil} ->
+        {api_key!(api_key || System.get_env(@api_key_env)), nil}
+
+      {nil, server} ->
+        {nil, {WorkOS.WorkloadIdentity.Credentials, credentials_server!(server)}}
+
+      {_api_key, _server} ->
+        raise WorkOS.ConfigurationError,
+          message:
+            "Pass either `api_key:` or `credentials:` to WorkOS.Client.new/1, not both. " <>
+              "A client authenticates with one or the other."
+    end
+  end
+
+  defp api_key!(api_key) when is_binary(api_key) and api_key != "", do: api_key
+
+  defp api_key!(_missing) do
+    raise WorkOS.ConfigurationError,
+      message: "Missing API key. Pass `api_key:` to WorkOS.Client.new/1 or set WORKOS_API_KEY."
+  end
+
+  # Anything `GenServer.call/3` can address.
+  defp credentials_server!(server) when is_pid(server), do: server
+
+  defp credentials_server!(server) when is_atom(server) and not is_boolean(server),
+    do: server
+
+  defp credentials_server!({:global, _name} = server), do: server
+  defp credentials_server!({:via, module, _name} = server) when is_atom(module), do: server
+
+  defp credentials_server!({name, node} = server) when is_atom(name) and is_atom(node),
+    do: server
+
+  defp credentials_server!(_other) do
+    raise WorkOS.ConfigurationError,
+      message:
+        "`credentials:` must be the pid or registered name of a started " <>
+          "WorkOS.WorkloadIdentity.Credentials process."
+  end
+
+  # Request step. Req runs request steps once per `Req.request/1`, but calls
+  # the adapter for every HTTP attempt: the first one, each transport retry,
+  # each redirect and the 401 recovery. Wrapping the adapter is therefore what
+  # resolves the credentials before every attempt, so a retry never sends an
+  # expired token. It runs last, after Req has chosen the adapter.
+  defp put_credentials(%Req.Request{} = request, credentials, timeout) do
+    adapter = request.adapter
+    origin = origin(request.url)
+
+    %{request | adapter: &send_attempt(&1, adapter, credentials, timeout, origin)}
+  end
+
+  defp send_attempt(request, adapter, credentials, timeout, origin) do
+    if origin(request.url) == origin or request.options[:redirect_trusted] == true do
+      send_with_credentials(request, adapter, credentials, timeout)
+    else
+      # A redirect to another origin. Req has already removed the
+      # Authorization header; keep every credential header off the request.
+      run_adapter(adapter, drop_credentials(request))
+    end
+  end
+
+  defp send_with_credentials(request, adapter, credentials, timeout) do
+    case WorkOS.Credentials.resolve(credentials, timeout) do
+      {:ok, %WorkOS.CredentialSnapshot{} = snapshot} ->
+        run_adapter(adapter, put_snapshot(request, snapshot))
+
+      {:error, exception} ->
+        # Terminal for the request: `retryable?/2` only retries Req's own
+        # transport errors.
+        {request, exception}
+    end
+  end
+
+  # The snapshot's headers overwrite any the request already has. The snapshot
+  # is kept so a 401 invalidates this credential, not whichever one is
+  # current by then.
+  defp put_snapshot(request, snapshot) do
+    snapshot.headers
+    |> Enum.reduce(request, fn {name, value}, request ->
+      Req.Request.put_header(request, name, value)
+    end)
+    |> Req.Request.put_private(@snapshot_key, snapshot)
+  end
+
+  defp run_adapter(adapter, request) when is_function(adapter, 1), do: adapter.(request)
+
+  defp run_adapter({module, function, args}, request),
+    do: apply(module, function, [request | args])
+
+  defp drop_credentials(request) do
+    headers =
+      case Req.Request.get_private(request, @snapshot_key) do
+        %WorkOS.CredentialSnapshot{headers: headers} -> headers
+        nil -> []
+      end
+
+    headers
+    |> Enum.reduce(request, fn {name, _value}, request ->
+      Req.Request.delete_header(request, name)
+    end)
+    |> Req.Request.put_private(@snapshot_key, nil)
+  end
+
+  defp origin(%URI{scheme: scheme, host: host, port: port}), do: {scheme, host, port}
+
+  # Response step, ahead of Req's retry step. On a 401 for a recoverable
+  # snapshot it invalidates that snapshot's generation and sends the same
+  # request again (same body, same idempotency key), once per logical
+  # request. The resend does not count against the retry limit and does not
+  # wait for a backoff. Whatever comes back is handled as a normal response.
+  defp recover_credentials({request, %Req.Response{status: 401} = response}, credentials) do
+    snapshot = Req.Request.get_private(request, @snapshot_key)
+    recovery_used? = Req.Request.get_private(request, @recovery_used_key, false)
+
+    if match?(%WorkOS.CredentialSnapshot{recoverable: true}, snapshot) and not recovery_used? do
+      request = Req.Request.put_private(request, @recovery_used_key, true)
+      :ok = WorkOS.Credentials.invalidate(credentials, snapshot.generation)
+
+      {request, response_or_exception} = Req.Request.run_request(%{request | halted: false})
+      Req.Request.halt(request, response_or_exception)
+    else
+      {request, response}
+    end
+  end
+
+  defp recover_credentials(request_and_response, _credentials), do: request_and_response
 
   defp handle_response({:ok, %Req.Response{status: status} = response})
        when status in 200..299,
        do: {:ok, decode_body(response)}
 
   defp handle_response({:ok, %Req.Response{} = response}), do: {:error, api_error(response)}
+
+  # Errors from resolving credentials are already typed.
+  defp handle_response({:error, %WorkOS.WorkloadIdentityError{} = error}), do: {:error, error}
+  defp handle_response({:error, %WorkOS.TransportError{} = error}), do: {:error, error}
 
   defp handle_response({:error, %{__exception__: true} = exception}),
     do: {:error, %WorkOS.TransportError{message: Exception.message(exception), reason: exception}}
@@ -241,7 +421,15 @@ defmodule WorkOS.Client do
     end
   end
 
-  defp user_agent, do: "workos-elixir/#{Application.spec(:workos, :vsn)}"
+  @doc false
+  @spec user_agent() :: String.t()
+  def user_agent, do: "workos-elixir/#{Application.spec(:workos, :vsn)}"
+
+  # The retry count and backoff are shared with the workload identity token
+  # exchange, so there is one set of values.
+  @doc false
+  @spec default_max_retries() :: non_neg_integer()
+  def default_max_retries, do: @default_max_retries
 
   defp retryable?(_request, %Req.Response{status: status}),
     do: status in @retryable_status_codes
@@ -249,7 +437,9 @@ defmodule WorkOS.Client do
   defp retryable?(_request, %Req.TransportError{}), do: true
   defp retryable?(_request, _other), do: false
 
-  defp retry_delay(attempt) do
+  @doc false
+  @spec retry_delay(non_neg_integer()) :: non_neg_integer()
+  def retry_delay(attempt) do
     base =
       min(@initial_retry_delay_ms * :math.pow(@retry_multiplier, attempt), @max_retry_delay_ms)
 

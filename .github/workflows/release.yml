@@ -8,9 +8,14 @@ defaults:
   run:
     shell: bash
 
+# Every package in this repo has its own release and tag: `vX.Y.Z` for the SDK
+# and `<package>-vX.Y.Z` for each workload identity provider package. Each
+# published release runs this workflow once, and the tag decides which one job
+# publishes.
 jobs:
   publish:
     name: Publish to Hex
+    if: startsWith(github.event.release.tag_name, 'v')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -39,6 +44,120 @@ jobs:
           MIX_VERSION="$(grep -oE '@version "[^"]+"' mix.exs | cut -d'"' -f2)"
           if [ "$TAG_VERSION" != "$MIX_VERSION" ]; then
             echo "Tag $GITHUB_REF_NAME does not match mix.exs version $MIX_VERSION" >&2
+            exit 1
+          fi
+
+      - name: Publish to Hex
+        run: mix hex.publish --yes
+        env:
+          HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
+
+  publish-workload-identity-github-actions:
+    name: Publish workos_workload_identity_github_actions to Hex
+    if: startsWith(github.event.release.tag_name, 'workos_workload_identity_github_actions-v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        shell: bash
+        working-directory: workload_identity_github_actions
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Set up Elixir and Erlang/OTP
+        uses: erlef/setup-beam@54075bcc5e249e4758d363f27d099f55d843f124 # v1.24.1
+        with:
+          # The minimum supported pair, as for the SDK.
+          elixir-version: '1.18'
+          otp-version: '27'
+
+      - name: Install dependencies
+        run: mix deps.get
+
+      - name: Verify tag matches mix.exs version
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#workos_workload_identity_github_actions-v}"
+          MIX_VERSION="$(grep -oE '@version "[^"]+"' mix.exs | cut -d'"' -f2)"
+          if [ "$TAG_VERSION" != "$MIX_VERSION" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match workload_identity_github_actions/mix.exs version $MIX_VERSION" >&2
+            exit 1
+          fi
+
+      - name: Publish to Hex
+        run: mix hex.publish --yes
+        env:
+          HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
+
+  publish-workload-identity-gcp:
+    name: Publish workos_workload_identity_gcp to Hex
+    if: startsWith(github.event.release.tag_name, 'workos_workload_identity_gcp-v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        shell: bash
+        working-directory: workload_identity_gcp
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Set up Elixir and Erlang/OTP
+        uses: erlef/setup-beam@54075bcc5e249e4758d363f27d099f55d843f124 # v1.24.1
+        with:
+          # The minimum supported pair, as for the SDK.
+          elixir-version: '1.18'
+          otp-version: '27'
+
+      - name: Install dependencies
+        run: mix deps.get
+
+      - name: Verify tag matches mix.exs version
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#workos_workload_identity_gcp-v}"
+          MIX_VERSION="$(grep -oE '@version "[^"]+"' mix.exs | cut -d'"' -f2)"
+          if [ "$TAG_VERSION" != "$MIX_VERSION" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match workload_identity_gcp/mix.exs version $MIX_VERSION" >&2
+            exit 1
+          fi
+
+      - name: Publish to Hex
+        run: mix hex.publish --yes
+        env:
+          HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
+
+  publish-workload-identity-aws:
+    name: Publish workos_workload_identity_aws to Hex
+    if: startsWith(github.event.release.tag_name, 'workos_workload_identity_aws-v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        shell: bash
+        working-directory: workload_identity_aws
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Set up Elixir and Erlang/OTP
+        uses: erlef/setup-beam@54075bcc5e249e4758d363f27d099f55d843f124 # v1.24.1
+        with:
+          # The minimum supported pair, as for the SDK.
+          elixir-version: '1.18'
+          otp-version: '27'
+
+      - name: Install dependencies
+        run: mix deps.get
+
+      - name: Verify tag matches mix.exs version
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#workos_workload_identity_aws-v}"
+          MIX_VERSION="$(grep -oE '@version "[^"]+"' mix.exs | cut -d'"' -f2)"
+          if [ "$TAG_VERSION" != "$MIX_VERSION" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match workload_identity_aws/mix.exs version $MIX_VERSION" >&2
             exit 1
           fi
 
