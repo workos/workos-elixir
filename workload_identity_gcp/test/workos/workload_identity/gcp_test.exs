@@ -77,6 +77,37 @@ defmodule WorkOS.WorkloadIdentity.GCPTest do
     assert message =~ "could not be reached"
   end
 
+  test "the request never goes through a proxy the application gave :httpc" do
+    # The default :httpc profile is shared with the application. Give it a
+    # proxy: a listener that reports any connection and closes it.
+    {:ok, proxy} = :gen_tcp.listen(0, [:binary, active: false, ip: {127, 0, 0, 1}])
+    {:ok, proxy_port} = :inet.port(proxy)
+    test = self()
+
+    spawn_link(fn ->
+      with {:ok, socket} <- :gen_tcp.accept(proxy) do
+        send(test, :proxy_contacted)
+        :gen_tcp.close(socket)
+      end
+    end)
+
+    :ok = :httpc.set_options(proxy: {{~c"127.0.0.1", proxy_port}, []})
+
+    # `:httpc` cannot take a proxy off a profile again, so restart the profile.
+    on_exit(fn ->
+      :ok = :inets.stop(:httpc, :default)
+      {:ok, _pid} = :inets.start(:httpc, profile: :default)
+    end)
+
+    server = TestServer.start([{200, [], "gcp-jwt"}])
+
+    assert provider(server).() == {:ok, "gcp-jwt"}
+
+    ref = server.ref
+    assert_receive {:request, ^ref, _request}
+    refute_receive :proxy_contacted
+  end
+
   test "the audience is required" do
     assert_raise FunctionClauseError, fn -> GCP.gcp_metadata("") end
   end

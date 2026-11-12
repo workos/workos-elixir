@@ -32,4 +32,4 @@ end
 client = WorkOS.Client.new(credentials: credentials)
 ```
 
-`gcp_metadata/1` takes the audience and returns a zero-arity function. Each call makes one GET to the metadata server with a 10-second timeout, follows no redirect, and returns `{:ok, token}` or `{:error, %WorkOS.WorkloadIdentity.GCP.Error{}}`.
+`gcp_metadata/1` takes the audience and returns a zero-arity function. Each call makes one GET to the metadata server with a 10-second timeout, follows no redirect, and returns `{:ok, token}` or `{:error, %WorkOS.WorkloadIdentity.GCP.Error{}}`. The request never goes through a proxy, even when the application has given `:httpc` one: the metadata server exists only inside the workload's own VM or container, so a proxy cannot reach it.

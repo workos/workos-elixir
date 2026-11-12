@@ -25,6 +25,9 @@ defmodule WorkOS.WorkloadIdentity.GCP do
   The provider holds no cache and does not retry; the WorkOS SDK retries it as
   part of the token exchange. The token is never logged and never placed in
   an error.
+
+  The request to the metadata server never goes through a proxy, even when
+  the application has given `:httpc` one with `:httpc.set_options/1`.
   """
 
   defmodule Error do
@@ -40,6 +43,14 @@ defmodule WorkOS.WorkloadIdentity.GCP do
   @metadata_base_url "http://metadata.google.internal"
   @identity_path "/computeMetadata/v1/instance/service-accounts/default/identity"
   @timeout_ms 10_000
+
+  # The provider's own `:httpc` profile. The default profile is shared with
+  # the application, which may have given it a proxy (`:httpc.set_options/1`).
+  # The metadata server is an address inside the workload's own VM or
+  # container. A proxy is another machine: it cannot reach that server, and it
+  # could answer with its own identity. Nothing ever sets a proxy on this
+  # profile, so the request always goes direct.
+  @httpc_profile :workos_workload_identity_gcp
 
   @type provider :: (-> {:ok, String.t()} | {:error, Error.t()})
 
@@ -68,17 +79,32 @@ defmodule WorkOS.WorkloadIdentity.GCP do
     headers = [{~c"metadata-flavor", ~c"Google"}]
     http_options = [timeout: @timeout_ms, connect_timeout: @timeout_ms, autoredirect: false]
 
-    case :httpc.request(:get, {String.to_charlist(url), headers}, http_options,
-           body_format: :binary
-         ) do
-      {:ok, {{_version, 200, _reason}, _headers, body}} ->
-        token(body)
-
+    with :ok <- ensure_profile(),
+         {:ok, {{_version, 200, _reason}, _headers, body}} <-
+           :httpc.request(
+             :get,
+             {String.to_charlist(url), headers},
+             http_options,
+             [body_format: :binary],
+             @httpc_profile
+           ) do
+      token(body)
+    else
       {:ok, {{_version, status, _reason}, _headers, _body}} ->
         error("The Google Cloud metadata server returned HTTP #{status}.")
 
       {:error, reason} ->
         error("The Google Cloud metadata server could not be reached: #{describe(reason)}.")
+    end
+  end
+
+  # Starts the profile on first use. It runs under `:inets`, so it outlives
+  # the calling process; later calls find it already started.
+  defp ensure_profile do
+    case :inets.start(:httpc, profile: @httpc_profile) do
+      {:ok, _pid} -> :ok
+      {:error, {:already_started, _pid}} -> :ok
+      {:error, _reason} -> {:error, :profile_not_started}
     end
   end
 
@@ -99,6 +125,7 @@ defmodule WorkOS.WorkloadIdentity.GCP do
     end
   end
 
+  defp describe(:profile_not_started), do: "the HTTP client did not start"
   defp describe(_reason), do: "request failed"
 
   defp error(message), do: {:error, %Error{message: message}}
