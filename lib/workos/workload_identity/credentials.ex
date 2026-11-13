@@ -39,8 +39,13 @@ defmodule WorkOS.WorkloadIdentity.Credentials do
       `WORKOS_CLIENT_ID` environment variable.
     * `:token_url` — the exchange endpoint. Falls back to
       `WORKOS_WIF_TOKEN_URL`. There is no built-in default.
-    * `:environment_id` — sent as the `x-url-environment-id` header on every
-      API request. Falls back to `WORKOS_ENVIRONMENT_ID`.
+    * `:environment_id` — optional. Falls back to `WORKOS_ENVIRONMENT_ID`.
+      When set, it is sent as the `x-url-environment-id` header on every API
+      request; when not set, the header is not sent. An empty string counts
+      as not set. The server binds a workload identity client to exactly one
+      environment, so the header selects nothing. Setting it is a safety
+      check: a value that names a different environment gets
+      `403 environment_mismatch`.
     * `:resource` — the `resource` form field. Defaults to
       `https://api.workos.com`.
     * `:scope` — the `scope` form field. Falls back to `WORKOS_WIF_SCOPE`;
@@ -108,7 +113,7 @@ defmodule WorkOS.WorkloadIdentity.Credentials do
 
   @doc """
   Returns the snapshot to send one HTTP attempt with: the access token as a
-  bearer header, plus the environment header.
+  bearer header, plus the environment header when an environment ID is set.
 
   Waits for a token exchange when no fresh token is cached, for at most
   `timeout` milliseconds. Giving up does not stop the exchange.
@@ -164,13 +169,14 @@ defmodule WorkOS.WorkloadIdentity.Credentials do
 
     with {:ok, client_id} <- required(opts, :client_id, @client_id_env),
          {:ok, token_url} <- required(opts, :token_url, @token_url_env),
-         {:ok, environment_id} <- required(opts, :environment_id, @environment_id_env),
          {:ok, provider} <- provider(opts[:identity_token_provider]) do
       {:ok,
        %{
          client_id: client_id,
          token_url: token_url,
-         environment_id: environment_id,
+         # Optional: nil when neither the option nor the variable is set.
+         environment_id:
+           present(opts[:environment_id]) || present(System.get_env(@environment_id_env)),
          resource: present(opts[:resource]) || @default_resource,
          scope: present(opts[:scope]) || present(System.get_env(@scope_env)),
          identity_token_provider: provider,
@@ -297,13 +303,17 @@ defmodule WorkOS.WorkloadIdentity.Credentials do
   defp snapshot(state) do
     %CredentialSnapshot{
       headers: [
-        {"authorization", "Bearer " <> state.token.()},
-        {@environment_header, state.config.environment_id}
+        {"authorization", "Bearer " <> state.token.()}
+        | environment_headers(state.config.environment_id)
       ],
       generation: state.generation,
       recoverable: true
     }
   end
+
+  # The environment header is sent only when an environment ID is set.
+  defp environment_headers(nil), do: []
+  defp environment_headers(environment_id), do: [{@environment_header, environment_id}]
 
   # -- shared exchange ----------------------------------------------------------
 

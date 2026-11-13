@@ -264,21 +264,49 @@ defmodule WorkOS.WorkloadIdentityTest do
     scoped = token_endpoint()
 
     assert {:ok, _} =
-             scoped |> start_credentials(scope: "organizations:write") |> client(api()) |> get()
+             scoped |> start_credentials(scope: "orgs:write") |> client(api()) |> get()
 
     assert [exchange] = requests(scoped)
-    assert exchange.form["scope"] == "organizations:write"
+    assert exchange.form["scope"] == "orgs:write"
     refute Map.has_key?(exchange.form, "client_secret")
     assert exchange.authorization == nil
   end
 
-  test "WIF-02 the API request carries the access token and the environment header" do
+  test "WIF-02 (a) the API request carries the access token and the environment header" do
     api = api()
     assert {:ok, _} = token_endpoint() |> start_credentials() |> client(api) |> get()
 
     assert [request] = requests(api)
     assert request.authorization == "Bearer access-1"
     assert request.environment_id == "environment_wif_test"
+  end
+
+  test "WIF-02 (b) with no environment ID the API request carries no environment header" do
+    # The setup removed WORKOS_ENVIRONMENT_ID and puts it back afterwards.
+    assert System.get_env("WORKOS_ENVIRONMENT_ID") == nil
+
+    api = api()
+    options = token_endpoint() |> credentials_options([]) |> Keyword.delete(:environment_id)
+
+    assert {:ok, credentials} = Credentials.start_link(options)
+    assert {:ok, _} = credentials |> client(api) |> get()
+
+    assert [request] = requests(api)
+    assert request.authorization == "Bearer access-1"
+    # nil means the header was absent, not present and empty.
+    assert request.environment_id == nil
+  end
+
+  test "WIF-02 an empty environment ID counts as not set" do
+    System.put_env("WORKOS_ENVIRONMENT_ID", "")
+    api = api()
+
+    assert {:ok, _} =
+             token_endpoint() |> start_credentials(environment_id: "") |> client(api) |> get()
+
+    assert [request] = requests(api)
+    assert request.authorization == "Bearer access-1"
+    assert request.environment_id == nil
   end
 
   # -- cache and refresh --------------------------------------------------------
@@ -941,8 +969,7 @@ defmodule WorkOS.WorkloadIdentityTest do
   test "WIF-20 every required option is checked when the credentials are constructed" do
     for {key, variable} <- [
           client_id: "WORKOS_CLIENT_ID",
-          token_url: "WORKOS_WIF_TOKEN_URL",
-          environment_id: "WORKOS_ENVIRONMENT_ID"
+          token_url: "WORKOS_WIF_TOKEN_URL"
         ] do
       options = token_endpoint() |> credentials_options([]) |> Keyword.delete(key)
 

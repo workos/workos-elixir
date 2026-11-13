@@ -65,6 +65,8 @@ client = WorkOS.Client.new(credentials: credentials)
 
 `:client_id`, `:token_url`, `:environment_id` and `:scope` fall back to the `WORKOS_CLIENT_ID`, `WORKOS_WIF_TOKEN_URL`, `WORKOS_ENVIRONMENT_ID` and `WORKOS_WIF_SCOPE` environment variables. Passing both `api_key:` and `credentials:` raises `WorkOS.ConfigurationError`. With `credentials:`, `WORKOS_API_KEY` is ignored.
 
+`:environment_id` is optional. The server binds a workload identity client to exactly one environment, so the `x-url-environment-id` header selects nothing, and the SDK sends it only when an environment ID is set. Setting it is a safety check: a value that names a different environment gets `403 environment_mismatch`.
+
 In an application, supervise the process under a name of your choosing and build clients from the name:
 
 ```elixir
@@ -107,6 +109,8 @@ provider = WorkOS.WorkloadIdentity.token_file("/var/run/secrets/tokens/workos")
 provider = WorkOS.WorkloadIdentity.token_env("MY_IDENTITY_TOKEN")
 provider = fn -> MyApp.Identity.fetch_token() end
 ```
+
+The server accepts an identity token for one exchange. `token_file/1` and `token_env/1` return whatever the file or variable holds, and the SDK exchanges again about every four minutes. If the file or variable still holds the same token at the next exchange, that exchange fails with `invalid_grant`. So use these two for a source that something rewrites before each exchange, or for a job shorter than five minutes. The platform providers (GitHub Actions, GCP, AWS) fetch a new token every time.
 
 When the exchange fails, API functions return `{:error, %WorkOS.WorkloadIdentityError{}}`. Its `:code` is the OAuth error code from the token endpoint (for example `"invalid_grant"`), and its `:hint` says what to check.
 
