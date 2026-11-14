@@ -25,6 +25,7 @@ defmodule WorkOS.WorkloadIdentity.Credentials do
       children = [
         {WorkOS.WorkloadIdentity.Credentials,
          name: MyApp.WorkOSCredentials,
+         token_url: "https://.../oauth2/token",
          identity_token_provider: WorkOS.WorkloadIdentity.token_env("MY_IDENTITY_TOKEN")}
       ]
 
@@ -37,8 +38,8 @@ defmodule WorkOS.WorkloadIdentity.Credentials do
       `{:error, reason}`. See `WorkOS.WorkloadIdentity`.
     * `:client_id` — the M2M application's client ID. Falls back to the
       `WORKOS_CLIENT_ID` environment variable.
-    * `:token_url` — the exchange endpoint. Falls back to
-      `WORKOS_WIF_TOKEN_URL`. There is no built-in default.
+    * `:token_url` — required. The exchange endpoint. There is no built-in
+      default, and no environment variable is read for it.
     * `:environment_id` — optional, and set only here: no environment
       variable is read for it. When set, it is sent as the
       `x-url-environment-id` header on every API request. When it is left
@@ -48,17 +49,18 @@ defmodule WorkOS.WorkloadIdentity.Credentials do
       different environment gets `403 environment_mismatch`.
     * `:resource` — the `resource` form field. Defaults to
       `https://api.workos.com`.
-    * `:scope` — the `scope` form field. Falls back to `WORKOS_WIF_SCOPE`;
-      left out of the exchange when unset.
+    * `:scope` — optional. The `scope` form field. It is left out of the
+      exchange when it is not set, `nil` or an empty string. No environment
+      variable is read for it.
     * `:name` — registers the process, as in `GenServer.start_link/3`.
     * `:req_options` — extra `Req` options merged into the exchange request
       (advanced; used by tests to inject `plug:`). The exchange never
       retries through Req, never follows a redirect and never sends an
       `Authorization` header, whatever is passed here.
 
-  An explicit option always wins over its environment variable. The
-  environment variables only fill in omitted options; they never turn
-  workload identity on by themselves. Configuration is fixed once the process
+  `WORKOS_CLIENT_ID` is the only environment variable the credentials read.
+  An explicit `:client_id` always wins over it, and the variable never turns
+  workload identity on by itself. Configuration is fixed once the process
   starts. A missing required option makes `start_link/1` return
   `{:error, %WorkOS.WorkloadIdentityError{code: "invalid_configuration"}}`.
 
@@ -91,9 +93,8 @@ defmodule WorkOS.WorkloadIdentity.Credentials do
   @refresh_threshold_ms 60_000
   @refresh_lifetime_divisor 5
 
+  # The only environment variable the credentials read.
   @client_id_env "WORKOS_CLIENT_ID"
-  @token_url_env "WORKOS_WIF_TOKEN_URL"
-  @scope_env "WORKOS_WIF_SCOPE"
 
   # -- public API -------------------------------------------------------------
 
@@ -167,7 +168,7 @@ defmodule WorkOS.WorkloadIdentity.Credentials do
       ])
 
     with {:ok, client_id} <- required(opts, :client_id, @client_id_env),
-         {:ok, token_url} <- required(opts, :token_url, @token_url_env),
+         {:ok, token_url} <- required(opts, :token_url),
          {:ok, provider} <- provider(opts[:identity_token_provider]) do
       {:ok,
        %{
@@ -176,7 +177,7 @@ defmodule WorkOS.WorkloadIdentity.Credentials do
          # Optional, and only from the caller: no environment variable is read.
          environment_id: present(opts[:environment_id]),
          resource: present(opts[:resource]) || @default_resource,
-         scope: present(opts[:scope]) || present(System.get_env(@scope_env)),
+         scope: present(opts[:scope]),
          identity_token_provider: provider,
          req_options: opts[:req_options],
          clock: opts[:clock],
@@ -189,6 +190,13 @@ defmodule WorkOS.WorkloadIdentity.Credentials do
   defp required(opts, key, env) do
     case present(opts[key]) || present(System.get_env(env)) do
       nil -> invalid_configuration("#{key} is required (or set #{env})")
+      value -> {:ok, value}
+    end
+  end
+
+  defp required(opts, key) do
+    case present(opts[key]) do
+      nil -> invalid_configuration("#{key} is required")
       value -> {:ok, value}
     end
   end

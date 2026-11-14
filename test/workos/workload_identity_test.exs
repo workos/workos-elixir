@@ -272,6 +272,18 @@ defmodule WorkOS.WorkloadIdentityTest do
     assert exchange.authorization == nil
   end
 
+  test "WIF-01 a nil or empty scope leaves the scope field out of the form" do
+    for scope <- [nil, ""] do
+      token_endpoint = token_endpoint()
+
+      assert {:ok, _} =
+               token_endpoint |> start_credentials(scope: scope) |> client(api()) |> get()
+
+      assert [exchange] = requests(token_endpoint)
+      refute Map.has_key?(exchange.form, "scope")
+    end
+  end
+
   test "WIF-02 (a) the API request carries the access token and the environment header" do
     api = api()
     assert {:ok, _} = token_endpoint() |> start_credentials() |> client(api) |> get()
@@ -952,13 +964,13 @@ defmodule WorkOS.WorkloadIdentityTest do
     assert client.api_key == nil
     assert {:ok, _} = get(client)
 
-    # (b) No token URL, explicitly or in the environment.
+    # (b) No token URL.
     options = token_endpoint() |> credentials_options([]) |> Keyword.delete(:token_url)
 
     assert {:error, %WorkloadIdentityError{code: "invalid_configuration"} = error} =
              Credentials.start_link(options)
 
-    assert error.description == "token_url is required (or set WORKOS_WIF_TOKEN_URL)"
+    assert error.description == "token_url is required"
 
     # (c) Valid credentials whose exchange fails.
     failing = token_endpoint([{:oauth_error, "invalid_client", "Unknown client."}])
@@ -971,17 +983,28 @@ defmodule WorkOS.WorkloadIdentityTest do
   end
 
   test "WIF-20 every required option is checked when the credentials are constructed" do
-    for {key, variable} <- [
-          client_id: "WORKOS_CLIENT_ID",
-          token_url: "WORKOS_WIF_TOKEN_URL"
+    # Only client_id has an environment variable to name.
+    for {key, description} <- [
+          client_id: "client_id is required (or set WORKOS_CLIENT_ID)",
+          token_url: "token_url is required"
         ] do
       options = token_endpoint() |> credentials_options([]) |> Keyword.delete(key)
 
       assert {:error, %WorkloadIdentityError{code: "invalid_configuration"} = error} =
                Credentials.start_link(options)
 
-      assert error.description == "#{key} is required (or set #{variable})"
+      assert error.description == description
       assert Exception.message(error) =~ "missing a required setting"
+    end
+
+    # A nil or empty token URL is a missing one.
+    for token_url <- [nil, ""] do
+      options = credentials_options(token_endpoint(), token_url: token_url)
+
+      assert {:error, %WorkloadIdentityError{code: "invalid_configuration"} = error} =
+               Credentials.start_link(options)
+
+      assert error.description == "token_url is required"
     end
 
     options =
@@ -1110,32 +1133,34 @@ defmodule WorkOS.WorkloadIdentityTest do
     end
   end
 
-  test "WIF-22 omitted fields default from the environment, and explicit values win" do
+  test "WIF-22 only client_id defaults from the environment, and an explicit value wins" do
     System.put_env("WORKOS_CLIENT_ID", "client_env")
-    System.put_env("WORKOS_WIF_TOKEN_URL", "https://env.wif.test/oauth2/token")
+    System.put_env("WORKOS_WIF_TOKEN_URL", "https://ignored.example.test/oauth2/token")
     System.put_env("WORKOS_WIF_SCOPE", "scope_env")
 
     provider = fn -> {:ok, "assertion-1"} end
 
-    # (c) Only a provider is passed.
+    # (c) A provider and the token URL, and nothing else. The SDK reads
+    # neither WORKOS_WIF_TOKEN_URL nor WORKOS_WIF_SCOPE.
     token_endpoint = token_endpoint()
     api = api()
 
     assert {:ok, credentials} =
              Credentials.start_link(
                identity_token_provider: provider,
+               token_url: @token_url,
                req_options: [plug: token_plug(token_endpoint)]
              )
 
     assert {:ok, _} = credentials |> client(api) |> get()
 
     assert [exchange] = requests(token_endpoint)
-    assert exchange.host == "env.wif.test"
+    assert exchange.host == "auth.wif.test"
     assert exchange.path == "/oauth2/token"
     assert exchange.form["client_id"] == "client_env"
-    assert exchange.form["scope"] == "scope_env"
+    refute Map.has_key?(exchange.form, "scope")
 
-    # (d) The same environment, with explicit values.
+    # (d) The same environment, with an explicit client ID.
     token_endpoint = token_endpoint()
     api = api()
 
@@ -1143,7 +1168,7 @@ defmodule WorkOS.WorkloadIdentityTest do
              Credentials.start_link(
                identity_token_provider: provider,
                client_id: "client_explicit",
-               scope: "scope_explicit",
+               token_url: @token_url,
                req_options: [plug: token_plug(token_endpoint)]
              )
 
@@ -1151,7 +1176,15 @@ defmodule WorkOS.WorkloadIdentityTest do
 
     assert [exchange] = requests(token_endpoint)
     assert exchange.form["client_id"] == "client_explicit"
-    assert exchange.form["scope"] == "scope_explicit"
+
+    # (e) The same environment, with no token URL.
+    assert {:error, %WorkloadIdentityError{code: "invalid_configuration"} = error} =
+             Credentials.start_link(
+               identity_token_provider: provider,
+               req_options: [plug: token_plug(token_endpoint())]
+             )
+
+    assert error.description == "token_url is required"
   end
 
   # -- redirects ----------------------------------------------------------------------

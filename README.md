@@ -63,7 +63,7 @@ Start a credentials process and pass it to the client:
 client = WorkOS.Client.new(credentials: credentials)
 ```
 
-`:client_id`, `:token_url` and `:scope` fall back to the `WORKOS_CLIENT_ID`, `WORKOS_WIF_TOKEN_URL` and `WORKOS_WIF_SCOPE` environment variables. Passing both `api_key:` and `credentials:` raises `WorkOS.ConfigurationError`. With `credentials:`, `WORKOS_API_KEY` is ignored.
+`:client_id` falls back to the `WORKOS_CLIENT_ID` environment variable. That is the only variable the credentials read: `:token_url` (required) and `:scope` (optional) are set only in code. Passing both `api_key:` and `credentials:` raises `WorkOS.ConfigurationError`. With `credentials:`, `WORKOS_API_KEY` is ignored.
 
 `:environment_id` is optional, and it is set only in code: the SDK reads no environment variable for it. The server binds a workload identity client to exactly one environment, so the `x-url-environment-id` header selects nothing, and the SDK sends it only when an environment ID is set. Setting it is a safety check: a value that names a different environment gets `403 environment_mismatch`.
 
@@ -71,7 +71,10 @@ In an application, supervise the process under a name of your choosing and build
 
 ```elixir
 children = [
-  {WorkOS.WorkloadIdentity.Credentials, name: MyApp.WorkOSCredentials, identity_token_provider: provider}
+  {WorkOS.WorkloadIdentity.Credentials,
+   name: MyApp.WorkOSCredentials,
+   token_url: "https://.../oauth2/token",
+   identity_token_provider: provider}
 ]
 
 client = WorkOS.Client.new(credentials: MyApp.WorkOSCredentials)
