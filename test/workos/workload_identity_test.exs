@@ -282,8 +282,8 @@ defmodule WorkOS.WorkloadIdentityTest do
   end
 
   test "WIF-02 (b) with no environment ID the API request carries no environment header" do
-    # The setup removed WORKOS_ENVIRONMENT_ID and puts it back afterwards.
-    assert System.get_env("WORKOS_ENVIRONMENT_ID") == nil
+    # The SDK does not read this variable. The setup puts it back afterwards.
+    System.put_env("WORKOS_ENVIRONMENT_ID", "environment_env")
 
     api = api()
     options = token_endpoint() |> credentials_options([]) |> Keyword.delete(:environment_id)
@@ -297,16 +297,20 @@ defmodule WorkOS.WorkloadIdentityTest do
     assert request.environment_id == nil
   end
 
-  test "WIF-02 an empty environment ID counts as not set" do
-    System.put_env("WORKOS_ENVIRONMENT_ID", "")
-    api = api()
+  test "WIF-02 a nil or empty environment ID counts as not set" do
+    for environment_id <- [nil, ""] do
+      api = api()
 
-    assert {:ok, _} =
-             token_endpoint() |> start_credentials(environment_id: "") |> client(api) |> get()
+      assert {:ok, _} =
+               token_endpoint()
+               |> start_credentials(environment_id: environment_id)
+               |> client(api)
+               |> get()
 
-    assert [request] = requests(api)
-    assert request.authorization == "Bearer access-1"
-    assert request.environment_id == nil
+      assert [request] = requests(api)
+      assert request.authorization == "Bearer access-1"
+      assert request.environment_id == nil
+    end
   end
 
   # -- cache and refresh --------------------------------------------------------
@@ -1110,7 +1114,6 @@ defmodule WorkOS.WorkloadIdentityTest do
     System.put_env("WORKOS_CLIENT_ID", "client_env")
     System.put_env("WORKOS_WIF_TOKEN_URL", "https://env.wif.test/oauth2/token")
     System.put_env("WORKOS_WIF_SCOPE", "scope_env")
-    System.put_env("WORKOS_ENVIRONMENT_ID", "environment_env")
 
     provider = fn -> {:ok, "assertion-1"} end
 
@@ -1131,7 +1134,6 @@ defmodule WorkOS.WorkloadIdentityTest do
     assert exchange.path == "/oauth2/token"
     assert exchange.form["client_id"] == "client_env"
     assert exchange.form["scope"] == "scope_env"
-    assert [%{environment_id: "environment_env"}] = requests(api)
 
     # (d) The same environment, with explicit values.
     token_endpoint = token_endpoint()
@@ -1142,7 +1144,6 @@ defmodule WorkOS.WorkloadIdentityTest do
                identity_token_provider: provider,
                client_id: "client_explicit",
                scope: "scope_explicit",
-               environment_id: "environment_explicit",
                req_options: [plug: token_plug(token_endpoint)]
              )
 
@@ -1151,7 +1152,6 @@ defmodule WorkOS.WorkloadIdentityTest do
     assert [exchange] = requests(token_endpoint)
     assert exchange.form["client_id"] == "client_explicit"
     assert exchange.form["scope"] == "scope_explicit"
-    assert [%{environment_id: "environment_explicit"}] = requests(api)
   end
 
   # -- redirects ----------------------------------------------------------------------

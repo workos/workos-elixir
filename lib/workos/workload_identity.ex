@@ -15,7 +15,7 @@ defmodule WorkOS.WorkloadIdentity do
   that returns `{:ok, token}` or `{:error, reason}`. It is called again for
   every exchange attempt, so it needs no cache and no retries of its own.
 
-  This module has the two providers that read a token the platform has
+  This module has the two providers that read a token another process has
   already written somewhere: `token_file/1` and `token_env/1`. Any function of
   the same shape works as a custom provider:
 
@@ -33,12 +33,14 @@ defmodule WorkOS.WorkloadIdentity do
           (-> {:ok, String.t()} | {:error, term()}) | {module(), atom(), [term()]}
 
   @doc """
-  Returns a provider that reads the token from a file.
+  Returns a provider that reads the token from a file: one that another
+  process writes, such as a sidecar or an earlier CI step that fetches a new
+  token.
 
   The file is read again on every call, so a rotated token is picked up.
   Surrounding whitespace is trimmed. A missing or empty file is an error.
 
-      WorkOS.WorkloadIdentity.token_file("/var/run/secrets/tokens/workos")
+      WorkOS.WorkloadIdentity.token_file("/run/workos/identity-token")
   """
   @spec token_file(Path.t()) :: (-> {:ok, String.t()} | {:error, String.t()})
   def token_file(path) when is_binary(path), do: fn -> read_file(path) end

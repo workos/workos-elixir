@@ -14,7 +14,7 @@ defmodule WorkOS.WorkloadIdentity.Credentials do
           client_id: "client_...",
           environment_id: "environment_...",
           token_url: "https://.../oauth2/token",
-          identity_token_provider: WorkOS.WorkloadIdentity.token_file("/var/run/secrets/token")
+          identity_token_provider: WorkOS.WorkloadIdentity.token_file("/run/workos/identity-token")
         )
 
       client = WorkOS.Client.new(credentials: credentials)
@@ -39,13 +39,13 @@ defmodule WorkOS.WorkloadIdentity.Credentials do
       `WORKOS_CLIENT_ID` environment variable.
     * `:token_url` — the exchange endpoint. Falls back to
       `WORKOS_WIF_TOKEN_URL`. There is no built-in default.
-    * `:environment_id` — optional. Falls back to `WORKOS_ENVIRONMENT_ID`.
-      When set, it is sent as the `x-url-environment-id` header on every API
-      request; when not set, the header is not sent. An empty string counts
-      as not set. The server binds a workload identity client to exactly one
-      environment, so the header selects nothing. Setting it is a safety
-      check: a value that names a different environment gets
-      `403 environment_mismatch`.
+    * `:environment_id` — optional, and set only here: no environment
+      variable is read for it. When set, it is sent as the
+      `x-url-environment-id` header on every API request. When it is left
+      out, `nil` or an empty string, the header is not sent. The server binds
+      a workload identity client to exactly one environment, so the header
+      selects nothing. Setting it is a safety check: a value that names a
+      different environment gets `403 environment_mismatch`.
     * `:resource` — the `resource` form field. Defaults to
       `https://api.workos.com`.
     * `:scope` — the `scope` form field. Falls back to `WORKOS_WIF_SCOPE`;
@@ -94,7 +94,6 @@ defmodule WorkOS.WorkloadIdentity.Credentials do
   @client_id_env "WORKOS_CLIENT_ID"
   @token_url_env "WORKOS_WIF_TOKEN_URL"
   @scope_env "WORKOS_WIF_SCOPE"
-  @environment_id_env "WORKOS_ENVIRONMENT_ID"
 
   # -- public API -------------------------------------------------------------
 
@@ -174,9 +173,8 @@ defmodule WorkOS.WorkloadIdentity.Credentials do
        %{
          client_id: client_id,
          token_url: token_url,
-         # Optional: nil when neither the option nor the variable is set.
-         environment_id:
-           present(opts[:environment_id]) || present(System.get_env(@environment_id_env)),
+         # Optional, and only from the caller: no environment variable is read.
+         environment_id: present(opts[:environment_id]),
          resource: present(opts[:resource]) || @default_resource,
          scope: present(opts[:scope]) || present(System.get_env(@scope_env)),
          identity_token_provider: provider,
