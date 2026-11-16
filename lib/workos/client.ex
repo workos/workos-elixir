@@ -75,9 +75,11 @@ defmodule WorkOS.Client do
   @request_id_header "x-request-id"
 
   # Req private keys. Private data survives Req's own retries and redirects,
-  # so the one 401 recovery a logical request is allowed cannot be reset.
+  # so the one 401 recovery a logical request is allowed cannot be reset, and
+  # the origin the request was first sent to is still known after a redirect.
   @snapshot_key :workos_credential_snapshot
   @recovery_used_key :workos_credential_recovery_used
+  @origin_key :workos_credential_origin
 
   @doc """
   Builds a new client. See the module documentation for options.
@@ -216,37 +218,59 @@ defmodule WorkOS.Client do
           "WorkOS.WorkloadIdentity.Credentials process."
   end
 
-  # Request step. Req runs request steps once per `Req.request/1`, but calls
-  # the adapter for every HTTP attempt: the first one, each transport retry,
-  # each redirect and the 401 recovery. Wrapping the adapter is therefore what
-  # resolves the credentials before every attempt, so a retry never sends an
-  # expired token. It runs last, after Req has chosen the adapter.
-  defp put_credentials(%Req.Request{} = request, credentials, timeout) do
-    adapter = request.adapter
-    origin = origin(request.url)
+  # Request step, appended last. Credentials are resolved before every HTTP
+  # attempt: the first one, each transport retry, each redirect and the 401
+  # recovery, so a retry never sends an expired token. What Req runs again for
+  # the later attempts depends on its version:
+  #
+  #   * Req 0.7 and later run every request step again, so this step
+  #     authorizes each attempt itself. The adapter (a module there) is left
+  #     alone.
+  #   * Req 0.5 and 0.6 run the request steps once per `Req.request/1` and
+  #     call only the adapter (a function there) for the later attempts, so
+  #     this step wraps the adapter. It runs last, after Req has chosen it.
+  #
+  # The origin of the first attempt is kept in the request's private data, so
+  # a redirect is always compared with where the request was first sent.
+  defp put_credentials(%Req.Request{adapter: adapter} = request, credentials, timeout) do
+    # Set by the first run only; a later run keeps it.
+    request = Req.Request.update_private(request, @origin_key, origin(request.url), & &1)
 
-    %{request | adapter: &send_attempt(&1, adapter, credentials, timeout, origin)}
-  end
-
-  defp send_attempt(request, adapter, credentials, timeout, origin) do
-    if origin(request.url) == origin or request.options[:redirect_trusted] == true do
-      send_with_credentials(request, adapter, credentials, timeout)
+    if request_steps_run_once?(request) do
+      %{request | adapter: &send_attempt(&1, adapter, credentials, timeout)}
     else
-      # A redirect to another origin. Req has already removed the
-      # Authorization header; keep every credential header off the request.
-      run_adapter(adapter, drop_credentials(request))
+      authorize_attempt(request, credentials, timeout)
     end
   end
 
-  defp send_with_credentials(request, adapter, credentials, timeout) do
-    case WorkOS.Credentials.resolve(credentials, timeout) do
-      {:ok, %WorkOS.CredentialSnapshot{} = snapshot} ->
-        run_adapter(adapter, put_snapshot(request, snapshot))
+  # Up to Req 0.6 a request tracks the request steps it has not run yet in
+  # `:current_request_steps`, and a retry or a redirect resumes from that
+  # (empty) list. Req 0.7 removed the field: every run starts from the first
+  # step.
+  defp request_steps_run_once?(request), do: is_map_key(request, :current_request_steps)
 
-      {:error, exception} ->
-        # Terminal for the request: `retryable?/2` only retries Req's own
-        # transport errors.
-        {request, exception}
+  defp send_attempt(request, adapter, credentials, timeout) do
+    case authorize_attempt(request, credentials, timeout) do
+      %Req.Request{} = request -> run_adapter(adapter, request)
+      {request, exception} -> {request, exception}
+    end
+  end
+
+  # Returns the request to send, or `{request, exception}` when the
+  # credentials cannot be resolved. That is terminal for the request:
+  # `retryable?/2` only retries Req's own transport errors.
+  defp authorize_attempt(request, credentials, timeout) do
+    same_origin? = origin(request.url) == Req.Request.get_private(request, @origin_key)
+
+    if same_origin? or request.options[:redirect_trusted] == true do
+      case WorkOS.Credentials.resolve(credentials, timeout) do
+        {:ok, %WorkOS.CredentialSnapshot{} = snapshot} -> put_snapshot(request, snapshot)
+        {:error, exception} -> {request, exception}
+      end
+    else
+      # A redirect to another origin. Req has already removed the
+      # Authorization header; keep every credential header off the request.
+      drop_credentials(request)
     end
   end
 
@@ -261,6 +285,7 @@ defmodule WorkOS.Client do
     |> Req.Request.put_private(@snapshot_key, snapshot)
   end
 
+  # The adapter shapes Req 0.5 and 0.6 accept.
   defp run_adapter(adapter, request) when is_function(adapter, 1), do: adapter.(request)
 
   defp run_adapter({module, function, args}, request),
