@@ -24,6 +24,10 @@ defmodule WorkOS.WorkloadIdentity.Exchange do
   # `:follow_redirects` option, which Req reads ahead of `:redirect`, and adds
   # a last request step that removes any `authorization` header, so it does
   # not matter which option or step put one there.
+  #
+  # `post/2` sets the URL again after the caller's options too. The token URL
+  # was checked to be https when the credentials were started, and a `:url`
+  # among the Req options must not send the identity token anywhere else.
   @fixed_options [retry: false, redirect: false, decode_body: false, auth: nil]
 
   @redacted "[REDACTED]"
@@ -113,7 +117,7 @@ defmodule WorkOS.WorkloadIdentity.Exchange do
       ]
       |> Req.new()
       |> Req.merge(config.req_options)
-      |> Req.merge(@fixed_options)
+      |> Req.merge([url: config.token_url] ++ @fixed_options)
       |> Req.Request.delete_option(:follow_redirects)
       |> Req.Request.append_request_steps(
         workos_no_authorization: &Req.Request.delete_header(&1, "authorization")

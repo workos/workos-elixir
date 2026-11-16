@@ -1017,6 +1017,98 @@ defmodule WorkOS.WorkloadIdentityTest do
              Credentials.start_link(Keyword.put(options, :identity_token_provider, "a string"))
   end
 
+  # -- the token URL must be https --------------------------------------------------
+  #
+  # The exchange POST carries the identity token and the response carries the
+  # access token. The tests in this file never open a socket: the token
+  # endpoint is a plug behind an https URL, so nothing here needs the check
+  # relaxed, and nothing relaxes it.
+
+  for {token_url, why} <- [
+        {"http://example.com/oauth2/token", "an http URL"},
+        {"http://localhost:4000/oauth2/token", "http to localhost"},
+        {"http://127.0.0.1/oauth2/token", "http to a loopback address"},
+        {"http://[::1]:4000/oauth2/token", "http to the IPv6 loopback address"},
+        {"https:///oauth2/token", "an https URL with no host"},
+        {"https://", "an https URL with nothing after the scheme"},
+        {"https:auth.wif.test/oauth2/token", "an https URL with no authority"},
+        {"auth.wif.test/oauth2/token", "a URL with no scheme"},
+        {"//auth.wif.test/oauth2/token", "a scheme-relative URL"},
+        {"/oauth2/token", "a path"},
+        {"ftp://auth.wif.test/oauth2/token", "another scheme"},
+        {"httpss://auth.wif.test/oauth2/token", "a scheme that only starts with https"},
+        {" https://auth.wif.test/oauth2/token", "a URL with a leading space"},
+        {"https://auth.wif test/oauth2/token", "a URL with a space in the host"}
+      ] do
+    test "the token URL must be an absolute https URL: #{why} is refused (#{inspect(token_url)})" do
+      token_endpoint = token_endpoint()
+      options = credentials_options(token_endpoint, token_url: unquote(token_url))
+
+      assert {:error, %WorkloadIdentityError{code: "invalid_configuration"} = error} =
+               Credentials.start_link(options)
+
+      assert error.description == "token_url must be an absolute https URL"
+      assert requests(token_endpoint) == []
+    end
+  end
+
+  test "the token URL scheme is not case-sensitive: HTTPS:// is accepted and used" do
+    token_endpoint = token_endpoint()
+
+    credentials =
+      start_credentials(token_endpoint, token_url: "HTTPS://auth.wif.test/oauth2/token")
+
+    assert {:ok, _} = credentials |> client(api()) |> get()
+
+    assert [%{method: "POST", host: "auth.wif.test", path: "/oauth2/token"}] =
+             requests(token_endpoint)
+  end
+
+  test "Req options do not reach the https check" do
+    token_endpoint = token_endpoint()
+
+    options =
+      credentials_options(token_endpoint,
+        token_url: "http://localhost:4000/oauth2/token",
+        req_options: [
+          plug: token_plug(token_endpoint),
+          url: @token_url,
+          base_url: "https://auth.wif.test"
+        ]
+      )
+
+    assert {:error, %WorkloadIdentityError{code: "invalid_configuration"} = error} =
+             Credentials.start_link(options)
+
+    assert error.description == "token_url must be an absolute https URL"
+    assert requests(token_endpoint) == []
+  end
+
+  test "no Req option sends the exchange anywhere but the token URL" do
+    token_endpoint = token_endpoint()
+    test = self()
+
+    plug = fn conn ->
+      send(test, {:exchange_sent_to, conn.scheme, conn.host, conn.request_path})
+      token_plug(token_endpoint).(conn)
+    end
+
+    req_options = [
+      plug: plug,
+      url: "http://elsewhere.wif.test/collect",
+      base_url: "http://elsewhere.wif.test"
+    ]
+
+    assert {:ok, _} =
+             token_endpoint
+             |> start_credentials(req_options: req_options)
+             |> client(api())
+             |> get()
+
+    assert_received {:exchange_sent_to, :https, "auth.wif.test", "/oauth2/token"}
+    refute_received {:exchange_sent_to, _scheme, _host, _path}
+  end
+
   test "the credentials option must name a process" do
     assert_raise WorkOS.ConfigurationError, ~r/credentials/, fn ->
       WorkOS.Client.new(credentials: "not a process")

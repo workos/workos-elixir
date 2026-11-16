@@ -38,8 +38,13 @@ defmodule WorkOS.WorkloadIdentity.Credentials do
       `{:error, reason}`. See `WorkOS.WorkloadIdentity`.
     * `:client_id` — the M2M application's client ID. Falls back to the
       `WORKOS_CLIENT_ID` environment variable.
-    * `:token_url` — required. The exchange endpoint. There is no built-in
-      default, and no environment variable is read for it.
+    * `:token_url` — required. The exchange endpoint. It must be an absolute
+      `https` URL with a host, because the request carries the workload's
+      identity token and the response carries the access token. Anything
+      else is refused when the credentials are started: an `http://` URL
+      (`localhost` and loopback addresses included), a URL with no scheme or
+      no host, any other scheme. Nothing turns the check off. There is no
+      built-in default, and no environment variable is read for it.
     * `:environment_id` — optional, and set only here: no environment
       variable is read for it. When set, it is sent as the
       `x-url-environment-id` header on every API request. When it is left
@@ -54,15 +59,19 @@ defmodule WorkOS.WorkloadIdentity.Credentials do
       variable is read for it.
     * `:name` — registers the process, as in `GenServer.start_link/3`.
     * `:req_options` — extra `Req` options merged into the exchange request
-      (advanced; used by tests to inject `plug:`). The exchange never
-      retries through Req, never follows a redirect and never sends an
-      `Authorization` header, whatever is passed here.
+      (advanced; used by tests to inject `plug:`). The exchange is always
+      sent to `:token_url`, never retries through Req, never follows a
+      redirect and never sends an `Authorization` header, whatever is passed
+      here.
 
   `WORKOS_CLIENT_ID` is the only environment variable the credentials read.
   An explicit `:client_id` always wins over it, and the variable never turns
   workload identity on by itself. Configuration is fixed once the process
-  starts. A missing required option makes `start_link/1` return
+  starts. A missing required option, or a token URL that is not an absolute
+  `https` URL, makes `start_link/1` return
   `{:error, %WorkOS.WorkloadIdentityError{code: "invalid_configuration"}}`.
+  Its `:description` says which: for example `token_url is required`, or
+  `token_url must be an absolute https URL`.
 
   ## Behavior
 
@@ -169,6 +178,7 @@ defmodule WorkOS.WorkloadIdentity.Credentials do
 
     with {:ok, client_id} <- required(opts, :client_id, @client_id_env),
          {:ok, token_url} <- required(opts, :token_url),
+         {:ok, token_url} <- https_url(token_url),
          {:ok, provider} <- provider(opts[:identity_token_provider]) do
       {:ok,
        %{
@@ -198,6 +208,20 @@ defmodule WorkOS.WorkloadIdentity.Credentials do
     case present(opts[key]) do
       nil -> invalid_configuration("#{key} is required")
       value -> {:ok, value}
+    end
+  end
+
+  # https only: the exchange POST carries the workload's identity token and
+  # the response carries the access token. `localhost` and loopback addresses
+  # get no exception, and nothing turns the check off: no option, no
+  # application config, no environment variable. `URI.new/1` also refuses
+  # what is not a URL at all, such as one with a space in it.
+  defp https_url(token_url) do
+    with {:ok, %URI{scheme: scheme, host: host}} when is_binary(scheme) <- URI.new(token_url),
+         true <- String.downcase(scheme) == "https" and is_binary(host) and host != "" do
+      {:ok, token_url}
+    else
+      _not_https -> invalid_configuration("token_url must be an absolute https URL")
     end
   end
 

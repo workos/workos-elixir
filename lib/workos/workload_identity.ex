@@ -9,6 +9,9 @@ defmodule WorkOS.WorkloadIdentity do
   for a short-lived WorkOS access token, caches the token, and refreshes it
   before it expires. See `WorkOS.WorkloadIdentity.Credentials` to set it up.
 
+  The exchange endpoint (`:token_url`) must be an `https` URL: the request
+  carries the identity token and the response carries the access token.
+
   ## Identity token providers
 
   A provider is a zero-arity function, or a `{module, function, args}` tuple,

@@ -65,6 +65,8 @@ client = WorkOS.Client.new(credentials: credentials)
 
 `:client_id` falls back to the `WORKOS_CLIENT_ID` environment variable. That is the only variable the credentials read: `:token_url` (required) and `:scope` (optional) are set only in code. Passing both `api_key:` and `credentials:` raises `WorkOS.ConfigurationError`. With `credentials:`, `WORKOS_API_KEY` is ignored.
 
+`:token_url` must be an absolute `https` URL with a host. The request to it carries the workload's identity token and the response carries the access token, so anything else is refused when the credentials start: an `http://` URL, a URL with no scheme or no host, any other scheme. There is no exception for `localhost` or loopback addresses, and no option or environment variable turns the check off. `start_link/1` then returns `{:error, %WorkOS.WorkloadIdentityError{code: "invalid_configuration"}}` with the description `token_url must be an absolute https URL`.
+
 `:environment_id` is optional, and it is set only in code: the SDK reads no environment variable for it. The server binds a workload identity client to exactly one environment, so the `x-url-environment-id` header selects nothing, and the SDK sends it only when an environment ID is set. Setting it is a safety check: a value that names a different environment gets `403 environment_mismatch`.
 
 In an application, supervise the process under a name of your choosing and build clients from the name:
