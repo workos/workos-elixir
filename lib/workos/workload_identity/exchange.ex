@@ -128,8 +128,12 @@ defmodule WorkOS.WorkloadIdentity.Exchange do
         {:ok, response}
 
       {:error, exception} ->
-        {:retry, WorkloadIdentityError.new("exchange_failed", "", transport_reason(exception)),
-         nil}
+        {:retry,
+         WorkloadIdentityError.new(
+           "exchange_failed",
+           transport_description(exception, config.token_url),
+           transport_reason(exception)
+         ), nil}
     end
   end
 
@@ -225,10 +229,34 @@ defmodule WorkOS.WorkloadIdentity.Exchange do
 
   defp retry_after(_response), do: nil
 
-  # Req's own transport errors carry a reason atom and nothing from the
-  # request. Any other exception is reduced to its module name.
+  # Req's own transport errors carry the socket's reason, an atom or a TLS
+  # alert, and nothing from the request. Any other exception is reduced to
+  # its module name.
   defp transport_reason(%Req.TransportError{} = exception), do: exception
   defp transport_reason(%{__struct__: module}), do: module
+
+  # The same failure in words, so that a host name that does not resolve
+  # reads differently from a refused connection, a timeout and a TLS failure.
+  # Of the token URL, only the host and port are named. The usual reasons get
+  # a phrase of their own. Any other transport error is put in Req's words,
+  # on one line; Req inspects a reason it does not know.
+  defp transport_description(exception, token_url) do
+    %URI{host: host, port: port} = URI.parse(token_url)
+    "the request to #{host}:#{port} failed: #{transport_phrase(exception)}"
+  end
+
+  defp transport_phrase(%Req.TransportError{reason: :nxdomain}),
+    do: "the host name could not be resolved (nxdomain)"
+
+  defp transport_phrase(%Req.TransportError{reason: :econnrefused}),
+    do: "the connection was refused (econnrefused)"
+
+  defp transport_phrase(%Req.TransportError{reason: :timeout}), do: "it timed out (timeout)"
+
+  defp transport_phrase(%Req.TransportError{} = exception),
+    do: exception |> Exception.message() |> String.replace(~r/\s+/, " ") |> String.trim()
+
+  defp transport_phrase(%{__struct__: module}), do: inspect(module)
 
   defp unexpected(what) do
     WorkloadIdentityError.new(

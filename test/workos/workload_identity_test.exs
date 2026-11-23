@@ -935,6 +935,82 @@ defmodule WorkOS.WorkloadIdentityTest do
     end
   end
 
+  test "an exchange that gets no answer says why: name resolution, refused connection, timeout, TLS" do
+    tls_alert =
+      {:tls_alert,
+       {:bad_certificate,
+        ~c"TLS client: In state certify generated CLIENT ALERT: Fatal - Bad Certificate\n selfsigned_peer"}}
+
+    for {reason, why} <- [
+          {:nxdomain, "the host name could not be resolved (nxdomain)"},
+          {:econnrefused, "the connection was refused (econnrefused)"},
+          {:timeout, "it timed out (timeout)"},
+          # Any other reason is put in Req's words, on one line.
+          {tls_alert,
+           "TLS client: In state certify generated CLIENT ALERT: Fatal - Bad Certificate selfsigned_peer"}
+        ] do
+      token_endpoint = mock({:transport_error, reason}, [])
+
+      assert {:error, %WorkloadIdentityError{code: "exchange_failed"} = error} =
+               token_endpoint
+               |> start_credentials(
+                 identity_token_provider: fn -> {:ok, "SECRET-ASSERTION-VALUE"} end
+               )
+               |> client(api())
+               |> get()
+
+      assert error.description == "the request to auth.wif.test:443 failed: " <> why
+
+      assert Exception.message(error) ==
+               "exchange_failed: The token endpoint could not be reached or kept failing. " <>
+                 "Check the token URL and try again. " <> error.description
+
+      # The transport error is still on the struct, and it was retried as before.
+      assert error.reason == %Req.TransportError{reason: reason}
+      assert length(requests(token_endpoint)) == WorkOS.Client.default_max_retries() + 1
+      refute inspect(error) =~ "SECRET-ASSERTION-VALUE"
+    end
+  end
+
+  test "the reason an exchange got no answer takes only the host and port from the token URL" do
+    token_endpoint = mock({:transport_error, :econnrefused}, [])
+
+    assert {:error, %WorkloadIdentityError{code: "exchange_failed"} = error} =
+             token_endpoint
+             |> start_credentials(
+               token_url:
+                 "https://user:SECRET-USERINFO@auth.wif.test:8443/oauth2/token?k=SECRET-QUERY"
+             )
+             |> client(api())
+             |> get()
+
+    assert error.description ==
+             "the request to auth.wif.test:8443 failed: the connection was refused (econnrefused)"
+  end
+
+  test "an exchange that fails with another Req error names the error's module and nothing from it" do
+    token_endpoint = token_endpoint()
+
+    # A response checksum that cannot match makes Req return an exception
+    # that is not a transport error.
+    req_options = [
+      plug: token_plug(token_endpoint),
+      checksum: "sha256:" <> String.duplicate("0", 64)
+    ]
+
+    assert {:error, %WorkloadIdentityError{code: "exchange_failed"} = error} =
+             token_endpoint
+             |> start_credentials(req_options: req_options)
+             |> client(api())
+             |> get()
+
+    assert error.description ==
+             "the request to auth.wif.test:443 failed: Req.ChecksumMismatchError"
+
+    assert error.reason == Req.ChecksumMismatchError
+    assert length(requests(token_endpoint)) == WorkOS.Client.default_max_retries() + 1
+  end
+
   # -- authentication precedence ---------------------------------------------------
 
   test "WIF-19 passing both an API key and credentials is a configuration error" do
