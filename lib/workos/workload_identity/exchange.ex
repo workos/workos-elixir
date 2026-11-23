@@ -87,7 +87,7 @@ defmodule WorkOS.WorkloadIdentity.Exchange do
         )
     end
   rescue
-    exception -> provider_failed(Exception.message(exception), exception)
+    exception -> provider_raised(exception)
   catch
     kind, _value -> provider_failed("the provider stopped with a #{kind}", kind)
   end
@@ -98,8 +98,18 @@ defmodule WorkOS.WorkloadIdentity.Exchange do
   defp provider_failed(description, reason),
     do: {:retry, WorkloadIdentityError.new("provider_failed", description, reason), nil}
 
-  # A provider's error is described only when it is already text. Other terms
-  # are kept in `:reason` and never interpolated.
+  # An exception the provider raises is reported by its module name alone:
+  # neither its message nor the exception itself is kept. Both can hold the
+  # token. A provider that matches on the response it fetched raises a
+  # `MatchError` when the match fails, and that error prints the whole
+  # response. A provider that wants its own words in the error returns
+  # `{:error, reason}`.
+  defp provider_raised(%{__struct__: module}),
+    do: provider_failed("the provider raised #{inspect(module)}", module)
+
+  # The reason a provider returns is its own choice of words, so it is shown.
+  # It is described only when it is already text. Other terms are kept in
+  # `:reason` and never interpolated.
   defp describe(%{__exception__: true} = exception), do: Exception.message(exception)
   defp describe(reason) when is_binary(reason), do: reason
   defp describe(reason) when is_atom(reason), do: Atom.to_string(reason)

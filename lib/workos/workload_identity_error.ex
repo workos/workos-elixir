@@ -11,8 +11,9 @@ defmodule WorkOS.WorkloadIdentityError do
     * `:description` — the token endpoint's `error_description`, cut to 500
       characters, or a short detail for an SDK code; `""` when there is none
     * `:hint` — one sentence on what to check; never empty
-    * `:reason` — the underlying error when there is one (the provider's
-      error, or the transport exception), otherwise `nil`
+    * `:reason` — the underlying error when there is one, otherwise `nil`:
+      the reason the provider returned, the name of the exception the
+      provider raised, or the transport exception
 
   The message is `<code>: <hint>`, followed by the description when there is
   one. Neither the identity token nor the access token ever appears in it.

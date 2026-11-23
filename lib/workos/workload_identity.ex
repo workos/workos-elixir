@@ -18,6 +18,14 @@ defmodule WorkOS.WorkloadIdentity do
   that returns `{:ok, token}` or `{:error, reason}`. It is called again for
   every exchange attempt, so it needs no cache and no retries of its own.
 
+  The `reason` a provider returns ends up in the
+  `WorkOS.WorkloadIdentityError`: as its `:reason`, and in its message when
+  it is a string, an atom or an exception. So a provider never puts the token
+  in it. An exception a provider raises is reported by its module name only,
+  because the message of an exception such as `MatchError` prints the value
+  that failed to match, and that value can be the response that holds the
+  token.
+
   This module has the two providers that read a token another process has
   already written somewhere: `token_file/1` and `token_env/1`. Any function of
   the same shape works as a custom provider:

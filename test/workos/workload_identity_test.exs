@@ -846,6 +846,76 @@ defmodule WorkOS.WorkloadIdentityTest do
     refute inspect(error) =~ "SECRET-ASSERTION-VALUE"
   end
 
+  # What a token source answers with, as a term the compiler knows nothing
+  # about, so that a failed match on it is a runtime error.
+  defp identity_response(token), do: JSON.decode!(JSON.encode!(%{"value" => token}))
+
+  test "WIF-17 a token inside an exception the provider raises stays out of the error" do
+    secret = "SECRET-ASSERTION-VALUE"
+
+    raising_providers = [
+      # A failed match: the message of a MatchError prints the whole term.
+      {MatchError,
+       fn ->
+         %{"token" => token} = identity_response(secret)
+         {:ok, token}
+       end},
+      # A missing key: the message of a KeyError prints the whole map.
+      {KeyError, fn -> {:ok, Map.fetch!(identity_response(secret), "token")} end},
+      # An exception of the provider's own, with the response in its message.
+      {ArgumentError, fn -> raise ArgumentError, "unexpected response: #{secret}" end}
+    ]
+
+    for {exception, provider} <- raising_providers do
+      token_endpoint = token_endpoint()
+
+      {result, log} =
+        with_log([level: :debug], fn ->
+          token_endpoint
+          |> start_credentials(identity_token_provider: provider)
+          |> client(api())
+          |> get()
+        end)
+
+      assert {:error, %WorkloadIdentityError{code: "provider_failed"} = error} = result
+      assert requests(token_endpoint) == []
+
+      # Only the exception's name is kept: not its message, not its fields.
+      assert error.description == "the provider raised #{inspect(exception)}"
+      assert error.reason == exception
+
+      for text <- [
+            log,
+            Exception.message(error),
+            inspect(error),
+            inspect(error, structs: false, limit: :infinity, printable_limit: :infinity)
+          ] do
+        refute text =~ secret
+      end
+    end
+  end
+
+  test "WIF-17 a reason the provider returns is still described in the provider's words" do
+    reasons = [
+      {"the vault is sealed", "the vault is sealed"},
+      {:vault_sealed, "vault_sealed"},
+      {%RuntimeError{message: "the vault is sealed"}, "the vault is sealed"},
+      # A term that is not text is kept, and never interpolated.
+      {{:vault, :sealed}, ""}
+    ]
+
+    for {reason, description} <- reasons do
+      assert {:error, %WorkloadIdentityError{code: "provider_failed"} = error} =
+               token_endpoint()
+               |> start_credentials(identity_token_provider: fn -> {:error, reason} end)
+               |> client(api())
+               |> get()
+
+      assert error.description == description
+      assert error.reason == reason
+    end
+  end
+
   test "WIF-18 the exchange request does not follow redirects" do
     elsewhere = token_endpoint()
 
