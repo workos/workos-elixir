@@ -33,6 +33,6 @@ end
 client = WorkOS.Client.new(credentials: credentials)
 ```
 
-`aws_sts/2` takes the audience and an optional region, and returns a zero-arity function. Without a region argument it uses `AWS_REGION`, then `AWS_DEFAULT_REGION`, then the region the credential chain reports; it raises `ArgumentError` when none is found. Each call makes one signed request to the regional STS endpoint, asks for an `RS256` token, and returns `{:ok, token}` or `{:error, %WorkOS.WorkloadIdentity.AWS.Error{}}`.
+`aws_sts/2` takes the audience and an optional region, and returns a zero-arity function. Without a region argument it uses `AWS_REGION`, then `AWS_DEFAULT_REGION`, then the region the credential chain reports; it raises `ArgumentError` when none is found. Each call makes one signed request to the regional STS endpoint, asks for an `RS256` token, and returns `{:ok, token}` or `{:error, %WorkOS.WorkloadIdentity.AWS.Error{}}`. The request is not sent again when STS throttles the caller or answers with a server error, because the WorkOS SDK calls the provider again as part of the token exchange, and it has 10 seconds to connect and 10 seconds to be answered.
 
 AWS credentials come from the `aws_credentials` application's default chain: environment variables, shared credential files, ECS task roles, EKS Pod Identity, IAM roles for service accounts, and EC2 instance profiles. See its documentation to change the chain.

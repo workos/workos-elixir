@@ -29,8 +29,10 @@ defmodule WorkOS.WorkloadIdentity.AWS do
         )
 
   The provider holds no cache and does not retry; the WorkOS SDK retries it as
-  part of the token exchange. The token is never logged and never placed in
-  an error.
+  part of the token exchange. One call of the provider is one request to STS,
+  also when STS throttles the caller or answers with a server error, and the
+  request has 10 seconds to connect and 10 seconds to be answered. The token
+  is never logged and never placed in an error.
   """
 
   alias WorkOS.WorkloadIdentity.AWS.HTTPClient
@@ -113,12 +115,22 @@ defmodule WorkOS.WorkloadIdentity.AWS do
   defp get_web_identity_token(region, input) do
     case credentials() do
       %{access_key_id: _, secret_access_key: _} = credentials ->
-        credentials |> __client__(region) |> AWS.STS.get_web_identity_token(input)
+        credentials |> __client__(region) |> __get_web_identity_token__(input)
 
       _none ->
         {:error, :no_credentials}
     end
   end
+
+  # The one STS request of a provider call. `aws` sends a request again only
+  # when it is asked to, and here it is told not to: the WorkOS SDK calls the
+  # provider again as part of the token exchange, so a retry in here would
+  # multiply the requests.
+  @doc false
+  @spec __get_web_identity_token__(AWS.Client.t(), map()) ::
+          {:ok, map() | nil, term()} | {:error, term()}
+  def __get_web_identity_token__(%AWS.Client{} = client, input),
+    do: AWS.STS.get_web_identity_token(client, input, enable_retries?: false)
 
   # An `aws` client for the regional STS endpoint, from one set of credentials
   # out of the chain. Building it is a struct literal: it holds no connection,

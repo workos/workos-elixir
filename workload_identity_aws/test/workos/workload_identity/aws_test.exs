@@ -84,7 +84,27 @@ defmodule WorkOS.WorkloadIdentity.AWSTest do
       |> Provider.__client__("us-east-1")
       |> AWS.Client.put_http_client({StubHTTPClient, [test: self(), response: response]})
 
-    fn "us-east-1", input -> AWS.STS.get_web_identity_token(client, input) end
+    fn "us-east-1", input -> Provider.__get_web_identity_token__(client, input) end
+  end
+
+  # The `aws` client the provider builds, its `:httpc` adapter and the call
+  # the provider makes, sent to a local server instead of STS. Only the
+  # address differs. `http_options` can shorten the adapter's time limit.
+  defp local_sts(url, http_options \\ []) do
+    %URI{host: host, port: port} = URI.parse(url)
+
+    client =
+      %{access_key_id: "AKIDEXAMPLE", secret_access_key: "secret", token: "session-token"}
+      |> Provider.__client__("us-east-1")
+      |> Map.merge(%{proto: "http", endpoint: host, port: port})
+      |> AWS.Client.put_http_client({HTTPClient, http_options})
+
+    fn "us-east-1", input -> Provider.__get_web_identity_token__(client, input) end
+  end
+
+  defp error_xml(code) do
+    "<ErrorResponse><Error><Type>Sender</Type><Code>#{code}</Code>" <>
+      "<Message>mock</Message></Error></ErrorResponse>"
   end
 
   test "WIF-AWS-01 calls STS GetWebIdentityToken with the audience and RS256 in the given region" do
@@ -194,6 +214,55 @@ defmodule WorkOS.WorkloadIdentity.AWSTest do
 
     assert message =~ "Throttling"
     refute inspect(error) =~ "SECRET-TOKEN-VALUE"
+  end
+
+  test "one provider call is one STS request, also when STS throttles the caller or fails" do
+    failures = [
+      {400, "Throttling"},
+      {429, "Throttling"},
+      {500, "InternalFailure"},
+      {503, "ServiceUnavailable"}
+    ]
+
+    for {status, code} <- failures do
+      server = TestServer.start([{status, [], error_xml(code)}])
+      provider = Provider.__provider__(@audience, "us-east-1", local_sts(server.url))
+
+      assert {:error, %Error{message: message}} = provider.()
+      assert message =~ "sts:GetWebIdentityToken failed: STS returned #{code} (HTTP #{status})"
+
+      # A retry would have been sent before the provider returned.
+      ref = server.ref
+      assert_received {:request, ^ref, %{method: "POST", target: "/"}}
+      refute_received {:request, ^ref, _second_request}
+    end
+  end
+
+  test "an STS request that gets no answer fails at the time limit" do
+    # A socket that completes the connection and never answers.
+    {:ok, listener} =
+      :gen_tcp.listen(0, [:binary, active: false, reuseaddr: true, ip: {127, 0, 0, 1}])
+
+    {:ok, port} = :inet.port(listener)
+    sts = local_sts("http://127.0.0.1:#{port}", timeout_ms: 200)
+
+    {microseconds, result} =
+      :timer.tc(fn -> Provider.__provider__(@audience, "us-east-1", sts).() end)
+
+    assert {:error, %Error{message: message}} = result
+    assert message =~ "sts:GetWebIdentityToken failed: timeout"
+
+    # It waited for the limit it was given, not for the 10 seconds it has
+    # when nothing shortens it.
+    assert microseconds >= 200_000
+    assert microseconds < 5_000_000
+  end
+
+  test "the time limit is 10 seconds, and the provider's client does not change it" do
+    assert HTTPClient.timeout_ms() == 10_000
+
+    credentials = %{access_key_id: "AKIDEXAMPLE", secret_access_key: "secret"}
+    assert Provider.__client__(credentials, "us-east-1").http_client == {HTTPClient, []}
   end
 
   test "a response with no token is an error" do

@@ -9,18 +9,26 @@ defmodule WorkOS.WorkloadIdentity.AWS.HTTPClient do
 
   @behaviour AWS.HTTPClient
 
+  # The limit on connecting and the limit on the request, each. It is the
+  # limit the GitHub Actions and Google Cloud providers use.
   @timeout_ms 10_000
 
+  @spec timeout_ms() :: pos_integer()
+  def timeout_ms, do: @timeout_ms
+
+  # `:timeout_ms` among the options is a test seam. The provider sets no
+  # options, so its requests always get the limit above.
   @impl AWS.HTTPClient
-  def request(method, url, body, headers, _options) do
+  def request(method, url, body, headers, options) do
     {content_type, headers} = pop_content_type(headers)
+    timeout_ms = Keyword.get(options, :timeout_ms, @timeout_ms)
 
     request =
       {String.to_charlist(url), Enum.map(headers, &to_charlists/1), content_type,
        IO.iodata_to_binary(body)}
 
     http_options =
-      [timeout: @timeout_ms, connect_timeout: @timeout_ms, autoredirect: false] ++
+      [timeout: timeout_ms, connect_timeout: timeout_ms, autoredirect: false] ++
         ssl_options(url)
 
     case :httpc.request(method, request, http_options, body_format: :binary) do
