@@ -31,7 +31,7 @@ client = WorkOS.client(api_key: "sk_example_123456789")
 
 All API functions take the client as their first argument and return `{:ok, result}` or `{:error, error}` tuples. Errors are typed: `WorkOS.ApiError` for non-2xx API responses (with a `:kind` atom such as `:not_found`) and `WorkOS.TransportError` for network failures.
 
-Client configuration is per-instance — there is no global state. Options: `:api_key`, `:base_url`, `:timeout`, `:max_retries`, `:req_options`. Per-request options (`:headers`, `:timeout`, `:idempotency_key`, `:query`) can be passed as the final argument to any API function.
+Client configuration is per-instance — there is no global state. Options: `:api_key`, `:credentials`, `:base_url`, `:timeout`, `:max_retries`, `:req_options`. Per-request options (`:headers`, `:timeout`, `:idempotency_key`, `:query`) can be passed as the final argument to any API function.
 
 ### Pagination
 
@@ -44,6 +44,83 @@ page
 |> WorkOS.Page.stream()
 |> Enum.each(&IO.inspect/1)
 ```
+
+### Workload identity
+
+A workload that already has an identity from its platform (a GitHub Actions job, a Google Cloud service account, an AWS role) can authenticate without a stored API key. The SDK exchanges the platform's identity token for a short-lived WorkOS access token, caches it, and refreshes it before it expires.
+
+Start a credentials process and pass it to the client:
+
+```elixir
+{:ok, credentials} =
+  WorkOS.WorkloadIdentity.Credentials.start_link(
+    client_id: "client_...",
+    environment_id: "environment_...",
+    token_url: "https://.../oauth2/token",
+    identity_token_provider: provider
+  )
+
+client = WorkOS.Client.new(credentials: credentials)
+```
+
+`:client_id` falls back to the `WORKOS_CLIENT_ID` environment variable. That is the only variable the credentials read: `:token_url` (required) and `:scope` (optional) are set only in code. Passing both `api_key:` and `credentials:` raises `WorkOS.ConfigurationError`. With `credentials:`, `WORKOS_API_KEY` is ignored.
+
+A client built with `credentials:` has no API key, so use a client built with `api_key:` for the calls that send the key as the client secret: `WorkOS.SSO.get_profile_and_token/3`, the `WorkOS.UserManagement.authenticate_with_*` functions other than `authenticate_with_device_code/3`, and the helpers that call them (`WorkOS.AuthKit.pkce_code_exchange/3`, `WorkOS.SSO.PKCE.code_exchange/3`, `WorkOS.Session.refresh/2` and `WorkOS.Session.refresh_session/4`).
+
+`:token_url` must be an absolute `https` URL with a host. The request to it carries the workload's identity token and the response carries the access token, so anything else is refused when the credentials start: an `http://` URL, a URL with no scheme or no host, any other scheme. There is no exception for `localhost` or loopback addresses, and no option or environment variable turns the check off. `start_link/1` then returns `{:error, %WorkOS.WorkloadIdentityError{code: "invalid_configuration"}}` with the description `token_url must be an absolute https URL`.
+
+`:environment_id` is optional, and it is set only in code: the SDK reads no environment variable for it. The server binds a workload identity client to exactly one environment, so the `x-url-environment-id` header selects nothing, and the SDK sends it only when an environment ID is set. Setting it is a safety check: a value that names a different environment gets `403 environment_mismatch`.
+
+In an application, supervise the process under a name of your choosing and build clients from the name:
+
+```elixir
+children = [
+  {WorkOS.WorkloadIdentity.Credentials,
+   name: MyApp.WorkOSCredentials,
+   token_url: "https://.../oauth2/token",
+   identity_token_provider: provider}
+]
+
+client = WorkOS.Client.new(credentials: MyApp.WorkOSCredentials)
+```
+
+The `provider` returns the workload's identity token. Each platform's provider is its own package, with no dependency on `workos`. Add the one you need:
+
+```elixir
+def deps do
+  [
+    {:workos_workload_identity_github_actions, "~> 0.1"},
+    # or {:workos_workload_identity_gcp, "~> 0.1"}
+    # or {:workos_workload_identity_aws, "~> 0.1"}
+  ]
+end
+```
+
+```elixir
+# GitHub Actions. The workflow or job needs `permissions: id-token: write`.
+provider = WorkOS.WorkloadIdentity.GitHubActions.github_actions("https://api.workos.com")
+
+# Google Cloud: Compute Engine, GKE, Cloud Run, Cloud Functions, App Engine.
+provider = WorkOS.WorkloadIdentity.GCP.gcp_metadata("https://api.workos.com")
+
+# AWS: Lambda, EC2, ECS, EKS. The region is optional when AWS_REGION is set.
+provider = WorkOS.WorkloadIdentity.AWS.aws_sts("https://api.workos.com", "us-east-1")
+```
+
+The argument is the audience the identity token is requested for.
+
+No package is needed when the token is already in a file or an environment variable, or when you fetch it yourself. A provider is any zero-arity function (or `{module, function, args}` tuple) that returns `{:ok, token}` or `{:error, reason}`:
+
+```elixir
+# A file that another process writes, such as a sidecar or an earlier CI step that fetches a new token.
+provider = WorkOS.WorkloadIdentity.token_file("/run/workos/identity-token")
+provider = WorkOS.WorkloadIdentity.token_env("MY_IDENTITY_TOKEN")
+provider = fn -> MyApp.Identity.fetch_token() end
+```
+
+The server accepts an identity token for one exchange. `token_file/1` and `token_env/1` return whatever the file or variable holds, and the SDK exchanges again about every four minutes. If the file or variable still holds the same token at the next exchange, that exchange fails with `invalid_grant`. So use these two for a source that something rewrites before each exchange, or for a job shorter than four minutes. The platform providers (GitHub Actions, GCP, AWS) fetch a new token every time.
+
+When the exchange fails, API functions return `{:error, %WorkOS.WorkloadIdentityError{}}`. Its `:code` is the OAuth error code from the token endpoint (for example `"invalid_grant"`), and its `:hint` says what to check.
 
 ## SDK Versioning
 
