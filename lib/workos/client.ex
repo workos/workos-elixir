@@ -390,6 +390,33 @@ defmodule WorkOS.Client do
   def put_inferred(params, _key, nil), do: params
   def put_inferred(params, key, value), do: Map.put_new(params, key, value)
 
+  # Fills `client_secret` for a request that sends the API key as the client
+  # secret: the sign-in calls and the SSO token exchange. `function` is the
+  # name of the calling function, for the error message. `params` has string
+  # keys by now (`merge_defaults/2`).
+  #
+  # A `client_secret` the caller passed is kept. A client that authenticates
+  # with workload identity credentials has no API key to send, so the call is
+  # refused here, before any request is sent and before the credentials are
+  # asked for a token. Every other client is handled as before: a key is
+  # filled in, and a client with no credentials and no key
+  # (`WorkOS.PublicClient`) gets what it got before.
+  @doc false
+  @spec put_client_secret(map(), t(), String.t()) :: map()
+  def put_client_secret(%{"client_secret" => _passed} = params, _client, _function), do: params
+
+  def put_client_secret(_params, %__MODULE__{api_key: key, credentials: credentials}, function)
+      when not is_nil(credentials) and key in [nil, ""] do
+    raise WorkOS.ConfigurationError,
+      message:
+        "#{function} needs an API key: this request sends it as the client secret. " <>
+          "A client that authenticates with workload identity has no API key, " <>
+          "so use a client built with one for this call."
+  end
+
+  def put_client_secret(params, %__MODULE__{api_key: api_key}, _function),
+    do: put_inferred(params, "client_secret", api_key)
+
   # nil query values are omitted rather than sent as `key=`, matching build_url/3.
   defp put_query(req_options, query) do
     case Enum.reject(query, fn {_k, v} -> is_nil(v) end) do
