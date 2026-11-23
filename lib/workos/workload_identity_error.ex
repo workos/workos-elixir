@@ -9,7 +9,9 @@ defmodule WorkOS.WorkloadIdentityError do
       `"invalid_grant"`), or one of the SDK's own codes: `"exchange_failed"`,
       `"invalid_response"`, `"provider_failed"`, `"invalid_configuration"`
     * `:description` — the token endpoint's `error_description`, cut to 500
-      characters, or a short detail for an SDK code; `""` when there is none
+      characters, or a short detail for an SDK code; `""` when there is none.
+      If the endpoint repeats the identity token in its `error` or
+      `error_description`, the token is replaced with `[redacted]` first
     * `:hint` — one sentence on what to check; never empty
     * `:reason` — the underlying error when there is one, otherwise `nil`:
       the reason the provider returned, the name of the exception the

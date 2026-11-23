@@ -827,23 +827,83 @@ defmodule WorkOS.WorkloadIdentityTest do
     refute log =~ "SECRET-ACCESS-VALUE"
   end
 
-  test "WIF-17 an assertion echoed back by the token endpoint is removed from the error" do
-    token_endpoint =
-      token_endpoint([
-        {:oauth_error, "invalid_grant", "Rejected assertion SECRET-ASSERTION-VALUE."}
-      ])
+  test "WIF-17 an assertion the token endpoint repeats is replaced before the error keeps it" do
+    secret = "SECRET-ASSERTION-VALUE"
 
-    assert {:error, %WorkloadIdentityError{code: "invalid_grant"} = error} =
-             token_endpoint
-             |> start_credentials(
-               identity_token_provider: fn -> {:ok, "SECRET-ASSERTION-VALUE"} end
-             )
+    body =
+      JSON.encode!(%{
+        "error" => "invalid_grant",
+        "error_description" => "JWT #{secret} failed validation"
+      })
+
+    scenarios = [
+      # A terminal OAuth error.
+      {token_endpoint([{:status, 400, [], body}]), 1},
+      # A failure that is retried until retries run out: the last one is kept.
+      {mock({:status, 503, [], body}, []), WorkOS.Client.default_max_retries() + 1}
+    ]
+
+    for {token_endpoint, exchanges} <- scenarios do
+      {result, log} =
+        with_log([level: :debug], fn ->
+          token_endpoint
+          |> start_credentials(identity_token_provider: fn -> {:ok, secret} end)
+          |> client(api())
+          |> get()
+        end)
+
+      assert {:error, %WorkloadIdentityError{code: "invalid_grant"} = error} = result
+      assert error.description == "JWT [redacted] failed validation"
+      assert length(requests(token_endpoint)) == exchanges
+
+      for text <- [
+            log,
+            Exception.message(error),
+            inspect(error),
+            inspect(error, structs: false, limit: :infinity, printable_limit: :infinity)
+          ] do
+        refute text =~ secret
+      end
+    end
+  end
+
+  test "WIF-17 a repeated assertion is replaced in the error code too, and each time it occurs" do
+    secret = "SECRET-ASSERTION-VALUE"
+
+    body =
+      JSON.encode!(%{
+        "error" => "rejected_#{secret}",
+        "error_description" => "#{secret} is not valid: #{secret}"
+      })
+
+    assert {:error, %WorkloadIdentityError{} = error} =
+             token_endpoint([{:status, 400, [], body}])
+             |> start_credentials(identity_token_provider: fn -> {:ok, secret} end)
              |> client(api())
              |> get()
 
-    assert error.description == "Rejected assertion [REDACTED]."
-    refute Exception.message(error) =~ "SECRET-ASSERTION-VALUE"
-    refute inspect(error) =~ "SECRET-ASSERTION-VALUE"
+    assert error.code == "rejected_[redacted]"
+    assert error.description == "[redacted] is not valid: [redacted]"
+    refute Exception.message(error) =~ secret
+    refute inspect(error) =~ secret
+  end
+
+  test "WIF-17 a repeated assertion is replaced before the description is cut" do
+    secret = "SECRET-ASSERTION-VALUE"
+
+    # The assertion starts 10 characters before the limit. Cutting first would
+    # leave its first 10 characters at the end of the description.
+    description = String.duplicate("x", 490) <> secret <> " failed validation"
+    body = JSON.encode!(%{"error" => "invalid_grant", "error_description" => description})
+
+    assert {:error, %WorkloadIdentityError{code: "invalid_grant"} = error} =
+             token_endpoint([{:status, 400, [], body}])
+             |> start_credentials(identity_token_provider: fn -> {:ok, secret} end)
+             |> client(api())
+             |> get()
+
+    assert error.description == String.duplicate("x", 490) <> "[redacted]"
+    refute error.description =~ String.slice(secret, 0, 6)
   end
 
   # What a token source answers with, as a term the compiler knows nothing

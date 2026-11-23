@@ -30,7 +30,7 @@ defmodule WorkOS.WorkloadIdentity.Exchange do
   # among the Req options must not send the identity token anywhere else.
   @fixed_options [retry: false, redirect: false, decode_body: false, auth: nil]
 
-  @redacted "[REDACTED]"
+  @redacted "[redacted]"
 
   @type result ::
           {:ok, access_token :: String.t(), lifetime_ms :: pos_integer()}
@@ -216,8 +216,13 @@ defmodule WorkOS.WorkloadIdentity.Exchange do
 
   defp decode(_response), do: nil
 
-  # The endpoint's own text goes into the error, so an endpoint that echoes
-  # the assertion back must not be able to put it there.
+  # The endpoint's own text goes into the error, and an endpoint may repeat
+  # the assertion it was sent in `error` or in `error_description`. Every
+  # occurrence is replaced before the error keeps either string, for a final
+  # error and for a retried one alike. The description is cut to its limit
+  # after that (`WorkloadIdentityError.new/3`), so a cut cannot leave the
+  # start of a token behind. The assertion is never empty here: an empty
+  # token is a provider failure, and nothing is sent.
   defp oauth_error(%{"error" => code} = body, assertion) when is_binary(code) and code != "",
     do: {scrub(code, assertion), scrub(body["error_description"], assertion)}
 
