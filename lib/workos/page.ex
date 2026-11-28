@@ -43,6 +43,8 @@ defmodule WorkOS.Page do
   def next_params(params, cursor_key, cursor) do
     params
     |> Map.new(fn {k, v} -> {to_string(k), v} end)
+    # The API rejects requests that carry both cursors.
+    |> Map.delete("before")
     |> Map.put(cursor_key, cursor)
   end
 

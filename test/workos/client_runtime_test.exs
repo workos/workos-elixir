@@ -353,4 +353,31 @@ defmodule WorkOS.ClientRuntimeTest do
     assert {:ok, %WorkOS.Page{} = page} = WorkOS.AuditLogs.list_actions(build_client())
     assert page |> WorkOS.Page.stream() |> Enum.count() == 2
   end
+
+  test "auto-pagination drops the before cursor when following the after cursor" do
+    base = WorkOS.TestFixtures.fixture("audit_logs/list_actions")
+    page1 = Map.put(base, "list_metadata", %{"before" => nil, "after" => "cursor_page_2"})
+    page2 = Map.put(base, "list_metadata", %{"before" => nil, "after" => nil})
+    test_pid = self()
+
+    Req.Test.stub(WorkOS.Client, fn conn ->
+      conn = Plug.Conn.fetch_query_params(conn)
+      send(test_pid, {:query, conn.query_params})
+
+      if conn.query_params["after"] == "cursor_page_2" do
+        Req.Test.json(conn, page2)
+      else
+        Req.Test.json(conn, page1)
+      end
+    end)
+
+    assert {:ok, %WorkOS.Page{} = page} =
+             WorkOS.AuditLogs.list_actions(build_client(), %{before: "cursor_start", limit: 1})
+
+    assert page |> WorkOS.Page.stream() |> Enum.count() == 2
+
+    assert_received {:query, %{"before" => "cursor_start", "limit" => "1"}}
+    assert_received {:query, second}
+    assert second == %{"after" => "cursor_page_2", "limit" => "1"}
+  end
 end
